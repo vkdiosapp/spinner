@@ -18,6 +18,7 @@ class SpinnerConfigPage extends StatefulWidget {
 class _SpinnerConfigPageState extends State<SpinnerConfigPage> {
   final TextEditingController _titleController = TextEditingController();
   final List<TextEditingController> _itemControllers = [];
+  final List<FocusNode> _itemFocusNodes = [];
   final List<String> _items = [];
 
   @override
@@ -27,9 +28,10 @@ class _SpinnerConfigPageState extends State<SpinnerConfigPage> {
     _titleController.text = widget.initialTitle ?? 'Random Picker';
     if (widget.initialItems != null) {
       _items.addAll(widget.initialItems!);
-      // Create controllers for each item
+      // Create controllers and focus nodes for each item
       for (var item in _items) {
         _itemControllers.add(TextEditingController(text: item));
+        _itemFocusNodes.add(FocusNode());
       }
     }
   }
@@ -40,6 +42,9 @@ class _SpinnerConfigPageState extends State<SpinnerConfigPage> {
     for (var controller in _itemControllers) {
       controller.dispose();
     }
+    for (var focusNode in _itemFocusNodes) {
+      focusNode.dispose();
+    }
     super.dispose();
   }
 
@@ -47,13 +52,22 @@ class _SpinnerConfigPageState extends State<SpinnerConfigPage> {
     setState(() {
       _items.add('');
       _itemControllers.add(TextEditingController());
+      _itemFocusNodes.add(FocusNode());
+    });
+    // Focus on the newly added field after the widget rebuilds
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_itemFocusNodes.isNotEmpty) {
+        _itemFocusNodes.last.requestFocus();
+      }
     });
   }
 
   void _removeItem(int index) {
     setState(() {
       _itemControllers[index].dispose();
+      _itemFocusNodes[index].dispose();
       _itemControllers.removeAt(index);
+      _itemFocusNodes.removeAt(index);
       _items.removeAt(index);
     });
   }
@@ -76,6 +90,23 @@ class _SpinnerConfigPageState extends State<SpinnerConfigPage> {
         ),
       );
       return;
+    }
+
+    // Check for duplicate names (case-insensitive)
+    final seenNames = <String>{};
+    for (var item in updatedItems) {
+      final lowerItem = item.toLowerCase();
+      if (seenNames.contains(lowerItem)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Duplicate item name: "$item". Please use unique names.'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+        return;
+      }
+      seenNames.add(lowerItem);
     }
 
     Navigator.of(context).pushReplacement(
@@ -126,6 +157,7 @@ class _SpinnerConfigPageState extends State<SpinnerConfigPage> {
                     const SizedBox(height: 12),
                     TextField(
                       controller: _titleController,
+                      textCapitalization: TextCapitalization.words,
                       style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                         hintText: 'Enter spinner title',
@@ -186,6 +218,8 @@ class _SpinnerConfigPageState extends State<SpinnerConfigPage> {
                             Expanded(
                               child: TextField(
                                 controller: _itemControllers[index],
+                                focusNode: _itemFocusNodes[index],
+                                textCapitalization: TextCapitalization.words,
                                 style: const TextStyle(color: Colors.white),
                                 decoration: InputDecoration(
                                   hintText: 'Enter item name',

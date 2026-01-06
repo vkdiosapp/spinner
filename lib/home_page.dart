@@ -32,7 +32,7 @@ class HomePage extends StatelessWidget {
           child: Column(
             children: [
               const Text(
-                'Random Picker',
+                'Spinner',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 32,

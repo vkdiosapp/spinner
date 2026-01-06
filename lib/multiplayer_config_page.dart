@@ -10,6 +10,7 @@ class MultiplayerConfigPage extends StatefulWidget {
 
 class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
   final List<TextEditingController> _userControllers = [];
+  final List<FocusNode> _userFocusNodes = [];
   final List<String> _users = [];
   int _rounds = 3;
 
@@ -23,6 +24,9 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
     for (var controller in _userControllers) {
       controller.dispose();
     }
+    for (var focusNode in _userFocusNodes) {
+      focusNode.dispose();
+    }
     super.dispose();
   }
 
@@ -30,13 +34,22 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
     setState(() {
       _users.add('');
       _userControllers.add(TextEditingController());
+      _userFocusNodes.add(FocusNode());
+    });
+    // Focus on the newly added field after the widget rebuilds
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_userFocusNodes.isNotEmpty) {
+        _userFocusNodes.last.requestFocus();
+      }
     });
   }
 
   void _removeUser(int index) {
     setState(() {
       _userControllers[index].dispose();
+      _userFocusNodes[index].dispose();
       _userControllers.removeAt(index);
+      _userFocusNodes.removeAt(index);
       _users.removeAt(index);
     });
   }
@@ -59,6 +72,23 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
         ),
       );
       return;
+    }
+
+    // Check for duplicate names (case-insensitive)
+    final seenNames = <String>{};
+    for (var user in updatedUsers) {
+      final lowerUser = user.toLowerCase();
+      if (seenNames.contains(lowerUser)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Duplicate user name: "$user". Please use unique names.'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+        return;
+      }
+      seenNames.add(lowerUser);
     }
 
     Navigator.of(context).pushReplacement(
@@ -194,6 +224,8 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
                             Expanded(
                               child: TextField(
                                 controller: _userControllers[index],
+                                focusNode: _userFocusNodes[index],
+                                textCapitalization: TextCapitalization.words,
                                 style: const TextStyle(color: Colors.white),
                                 decoration: InputDecoration(
                                   hintText: 'Enter user name',

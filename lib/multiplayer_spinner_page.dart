@@ -22,8 +22,10 @@ class MultiplayerSpinnerPage extends StatefulWidget {
 }
 
 class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late AnimationController _controller;
+  late AnimationController _revealController;
+  late AnimationController _flyAnimationController;
   double _rotation = 0;
   double _randomOffset = 0;
   bool _isSpinning = false;
@@ -32,6 +34,17 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
   late List<Color> _segmentColors; // Store assigned colors to avoid duplicates
   final math.Random _random = math.Random();
   final ScreenshotController _screenshotController = ScreenshotController();
+  
+  // Animation state for flying number
+  String? _flyingNumber;
+  bool _isShowingNumber = false;
+  GlobalKey? _userScoreKey;
+  GlobalKey _spinnerCenterKey = GlobalKey();
+  
+  // Reveal animation state
+  bool _isRevealed = false;
+  int? _earnedPoints;
+  String? _earnedNumber;
   
   // Game state
   int _currentRound = 1;
@@ -140,6 +153,16 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
       vsync: this,
     );
 
+    _revealController = AnimationController(
+      duration: const Duration(milliseconds: 1200),
+      vsync: this,
+    );
+
+    _flyAnimationController = AnimationController(
+      duration: const Duration(milliseconds: 1000), // Reduced from 1500ms to 1000ms
+      vsync: this,
+    );
+
     _controller.addListener(() {
       setState(() {
         final curvedValue = Curves.decelerate.transform(_controller.value);
@@ -160,6 +183,8 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
   @override
   void dispose() {
     _controller.dispose();
+    _revealController.dispose();
+    _flyAnimationController.dispose();
     super.dispose();
   }
 
@@ -204,49 +229,93 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
     }
     
     final points = int.parse(_segments[segmentIndex].value);
+    final selectedNumber = _segments[segmentIndex].value;
 
-    // Add points to current user
-    final currentUser = widget.users[_currentUserIndex];
-    _scores[currentUser] = (_scores[currentUser] ?? 0) + points;
-    // Track round score
-    _roundScores[_currentRound]![currentUser] = 
-        (_roundScores[_currentRound]![currentUser] ?? 0) + points;
-
-    // Wait a moment to show the result before moving to next turn
+    // Show reveal animation first
     setState(() {
-      _isWaitingForNextTurn = true;
+      _earnedPoints = points;
+      _earnedNumber = selectedNumber;
+      _isRevealed = true;
     });
     
-    Future.delayed(const Duration(milliseconds: 1000), () {
-      if (!mounted) return;
+    // Start reveal animation
+    _revealController.forward(from: 0).then((_) {
+      // After reveal animation completes, wait a bit then automatically show flying animation
+      Future.delayed(const Duration(milliseconds: 800), () {
+        if (!mounted) return;
+        _autoHideRevealAndFly();
+      });
+    });
+  }
+  
+  void _autoHideRevealAndFly() {
+    // After reveal is closed, show flying number animation
+    if (_earnedNumber != null && _earnedPoints != null) {
+      _showFlyingNumberAnimation(_earnedNumber!, _earnedPoints!);
+    }
+    
+    setState(() {
+      _isRevealed = false;
+      _earnedPoints = null;
+      _earnedNumber = null;
+    });
+    _revealController.reset();
+  }
+  
+  void _showFlyingNumberAnimation(String number, int points) {
+    setState(() {
+      _flyingNumber = number;
+      _isShowingNumber = true;
+    });
+
+    // Reset and start fly animation
+    _flyAnimationController.reset();
+    _flyAnimationController.forward().then((_) {
+      // Add points after animation completes
+      final currentUser = widget.users[_currentUserIndex];
+      _scores[currentUser] = (_scores[currentUser] ?? 0) + points;
+      // Track round score
+      _roundScores[_currentRound]![currentUser] = 
+          (_roundScores[_currentRound]![currentUser] ?? 0) + points;
+
+      // Hide animation and move to next turn
+      setState(() {
+        _isShowingNumber = false;
+        _flyingNumber = null;
+        _isWaitingForNextTurn = true;
+      });
       
-      // Move to next user or next round
-      if (_currentUserIndex < widget.users.length - 1) {
-        // Next user in same round - reset spinner first
-        _resetSpinnerForNextTurn();
-        setState(() {
-          _currentUserIndex++;
-          _isWaitingForNextTurn = false;
-        });
-      } else {
-        // Round complete, move to next round
-        if (_currentRound < widget.rounds) {
+      Future.delayed(const Duration(milliseconds: 500), () {
+        if (!mounted) return;
+        
+        // Move to next user or next round
+        if (_currentUserIndex < widget.users.length - 1) {
+          // Next user in same round - reset spinner first
           _resetSpinnerForNextTurn();
           setState(() {
-            _currentRound++;
-            _currentUserIndex = 0;
+            _currentUserIndex++;
             _isWaitingForNextTurn = false;
-            // Initialize next round scores
-            _roundScores[_currentRound] = {};
-            for (var user in widget.users) {
-              _roundScores[_currentRound]![user] = 0;
-            }
           });
         } else {
-          // Game complete - navigate to results page
-          _navigateToResults();
+          // Round complete, move to next round
+          if (_currentRound < widget.rounds) {
+            _resetSpinnerForNextTurn();
+            setState(() {
+              _currentRound++;
+              _currentUserIndex = 0;
+              _isWaitingForNextTurn = false;
+              // Initialize next round scores
+              _roundScores[_currentRound] = {};
+              for (var user in widget.users) {
+                _roundScores[_currentRound]![user] = 0;
+              }
+            });
+          } else {
+            // Game complete - navigate to results page
+            _navigateToResults();
+          }
         }
-      }
+      });
     });
   }
 
@@ -264,6 +333,16 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
   }
 
   void _resetSpinnerForNextTurn() {
+    // Hide reveal animation if still showing
+    if (_isRevealed) {
+      setState(() {
+        _isRevealed = false;
+        _earnedPoints = null;
+        _earnedNumber = null;
+      });
+      _revealController.reset();
+    }
+    
     // Reset spinner rotation and offset for next turn
     setState(() {
       _rotation = 0;
@@ -498,9 +577,17 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF2D2D44),
-      body: SafeArea(
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) {
+        if (!didPop) {
+          // Show confirmation dialog when user tries to swipe back
+          _goHome();
+        }
+      },
+      child: Scaffold(
+        backgroundColor: const Color(0xFF2D2D44),
+        body: SafeArea(
         child: Stack(
           children: [
             // Main content (behind buttons)
@@ -574,6 +661,7 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
                           final currentRoundScore = _roundScores[_currentRound]?[user] ?? 0;
                           
                           return Container(
+                            key: isCurrentUser ? (_userScoreKey ??= GlobalKey()) : null,
                             width: (maxWidth - 60) / (widget.users.length > 3 ? 3 : widget.users.length) - 8,
                             constraints: const BoxConstraints(minWidth: 100, maxWidth: 150),
                             padding: const EdgeInsets.all(12),
@@ -628,6 +716,7 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
                     // Spinner Wheel
                     Center(
                       child: Container(
+                        key: _spinnerCenterKey,
                         height: finalSize + 50, // Fixed height to prevent cropping
                         width: finalSize,
                         margin: const EdgeInsets.all(20),
@@ -655,7 +744,7 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
                             ),
                             // Center Spin Button
                             GestureDetector(
-                                  onTap: _isWaitingForNextTurn ? null : _spin,
+                                  onTap: (_isWaitingForNextTurn || _isRevealed || _isShowingNumber || _isSpinning) ? null : _spin,
                                   child: Container(
                                     width: buttonSize,
                                     height: buttonSize,
@@ -694,6 +783,111 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
                                     ),
                                   ),
                                 ),
+                            // Reveal animation overlay on spinner
+                            if (_isRevealed && _earnedPoints != null && _earnedNumber != null)
+                              AnimatedBuilder(
+                                animation: _revealController,
+                                builder: (context, child) {
+                                  return FadeTransition(
+                                    opacity: _revealController,
+                                    child: ScaleTransition(
+                                      scale: Tween<double>(begin: 0.0, end: 1.0).animate(
+                                        CurvedAnimation(
+                                          parent: _revealController,
+                                          curve: Curves.elasticOut,
+                                        ),
+                                      ),
+                                      child: Container(
+                                        width: finalSize * 1.2,
+                                        height: finalSize * 1.2,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          gradient: RadialGradient(
+                                            colors: [
+                                              const Color(0xFFFFF9C4).withOpacity(0.95), // Light yellow
+                                              const Color(0xFFFFF59D).withOpacity(0.9), // Slightly darker yellow
+                                            ],
+                                          ),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: const Color(0xFFFFF59D).withOpacity(0.5),
+                                              blurRadius: 30,
+                                              spreadRadius: 10,
+                                            ),
+                                          ],
+                                        ),
+                                        child: Center(
+                                          child: Column(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: [
+                                              // Points label with animation
+                                              FadeTransition(
+                                                opacity: Tween<double>(begin: 0.0, end: 1.0).animate(
+                                                  CurvedAnimation(
+                                                    parent: _revealController,
+                                                    curve: const Interval(0.0, 0.5, curve: Curves.easeIn),
+                                                  ),
+                                                ),
+                                                child: Text(
+                                                  'EARNED',
+                                                  style: TextStyle(
+                                                    color: Colors.black87,
+                                                    fontSize: finalSize * 0.08,
+                                                    fontWeight: FontWeight.bold,
+                                                    letterSpacing: 3,
+                                                  ),
+                                                ),
+                                              ),
+                                              const SizedBox(height: 12),
+                                              // Number with animation
+                                              ScaleTransition(
+                                                scale: Tween<double>(begin: 0.0, end: 1.0).animate(
+                                                  CurvedAnimation(
+                                                    parent: _revealController,
+                                                    curve: const Interval(0.2, 0.7, curve: Curves.elasticOut),
+                                                  ),
+                                                ),
+                                                child: Text(
+                                                  _earnedNumber!,
+                                                  style: TextStyle(
+                                                    color: Colors.black,
+                                                    fontSize: finalSize * 0.25,
+                                                    fontWeight: FontWeight.bold,
+                                                    shadows: [
+                                                      Shadow(
+                                                        color: Colors.black.withOpacity(0.2),
+                                                        blurRadius: 10,
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                              const SizedBox(height: 8),
+                                              // Points text with animation
+                                              FadeTransition(
+                                                opacity: Tween<double>(begin: 0.0, end: 1.0).animate(
+                                                  CurvedAnimation(
+                                                    parent: _revealController,
+                                                    curve: const Interval(0.5, 0.8, curve: Curves.easeIn),
+                                                  ),
+                                                ),
+                                                child: Text(
+                                                  '${_earnedPoints} Points',
+                                                  style: TextStyle(
+                                                    color: Colors.black87,
+                                                    fontSize: finalSize * 0.07,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
                             ],
                           ),
                         ),
@@ -768,9 +962,173 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
                 ),
               ),
             ),
+            // Flying number animation overlay
+            if (_isShowingNumber && _flyingNumber != null)
+              _FlyingNumberWidget(
+                number: _flyingNumber!,
+                animationController: _flyAnimationController,
+                targetKey: _userScoreKey,
+                startKey: _spinnerCenterKey,
+              ),
           ],
         ),
       ),
+      ),
+    );
+  }
+}
+
+// Widget for flying number animation
+class _FlyingNumberWidget extends StatefulWidget {
+  final String number;
+  final AnimationController animationController;
+  final GlobalKey? targetKey;
+  final GlobalKey? startKey;
+
+  const _FlyingNumberWidget({
+    required this.number,
+    required this.animationController,
+    this.targetKey,
+    this.startKey,
+  });
+
+  @override
+  State<_FlyingNumberWidget> createState() => _FlyingNumberWidgetState();
+}
+
+class _FlyingNumberWidgetState extends State<_FlyingNumberWidget> {
+  Offset? _startPosition;
+  Offset? _endPosition;
+  Size? _screenSize;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _calculatePositions();
+    });
+  }
+
+  void _calculatePositions() {
+    final RenderBox? renderBox = context.findRenderObject() as RenderBox?;
+    if (renderBox != null) {
+      _screenSize = renderBox.size;
+      
+      // Start from spinner center if key is available, otherwise screen center
+      if (widget.startKey?.currentContext != null) {
+        final RenderBox? startBox = widget.startKey!.currentContext?.findRenderObject() as RenderBox?;
+        if (startBox != null) {
+          final startPosition = startBox.localToGlobal(Offset.zero);
+          final startSize = startBox.size;
+          _startPosition = Offset(
+            startPosition.dx + startSize.width / 2,
+            startPosition.dy + startSize.height / 2,
+          );
+        } else {
+          // Fallback: screen center
+          _startPosition = Offset(_screenSize!.width / 2, _screenSize!.height / 2);
+        }
+      } else {
+        // Fallback: screen center
+        _startPosition = Offset(_screenSize!.width / 2, _screenSize!.height / 2);
+      }
+      
+      // End at user score card if key is available
+      if (widget.targetKey?.currentContext != null) {
+        final RenderBox? targetBox = widget.targetKey!.currentContext?.findRenderObject() as RenderBox?;
+        if (targetBox != null) {
+          final targetPosition = targetBox.localToGlobal(Offset.zero);
+          final targetSize = targetBox.size;
+          _endPosition = Offset(
+            targetPosition.dx + targetSize.width / 2,
+            targetPosition.dy + targetSize.height / 2,
+          );
+        } else {
+          // Fallback: top center
+          _endPosition = Offset(_screenSize!.width / 2, 100);
+        }
+      } else {
+        // Fallback: top center
+        _endPosition = Offset(_screenSize!.width / 2, 100);
+      }
+      
+      setState(() {});
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_startPosition == null || _endPosition == null) {
+      return const SizedBox.shrink();
+    }
+
+    return AnimatedBuilder(
+      animation: widget.animationController,
+      builder: (context, child) {
+        final animationValue = widget.animationController.value;
+        
+        // Scale animation: start large, shrink, then grow slightly
+        double scale;
+        if (animationValue < 0.3) {
+          // Initial large display
+          scale = 1.0 + (0.3 - animationValue) * 2.0; // 1.6 to 1.0
+        } else if (animationValue < 0.7) {
+          // Shrink while moving
+          scale = 1.0 - (animationValue - 0.3) * 0.5; // 1.0 to 0.65
+        } else {
+          // Grow slightly at end
+          scale = 0.65 + (animationValue - 0.7) * 0.35; // 0.65 to 1.0
+        }
+        
+        // Position interpolation
+        final currentX = _startPosition!.dx + (_endPosition!.dx - _startPosition!.dx) * animationValue;
+        final currentY = _startPosition!.dy + (_endPosition!.dy - _startPosition!.dy) * animationValue;
+        
+        // Opacity: fade out at the end
+        final opacity = animationValue < 0.8 ? 1.0 : 1.0 - (animationValue - 0.8) * 5.0;
+        
+        return Positioned(
+          left: currentX - 40,
+          top: currentY - 40,
+          child: Opacity(
+            opacity: opacity.clamp(0.0, 1.0),
+            child: Transform.scale(
+              scale: scale,
+              child: Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFD700), // Gold color
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.5),
+                      blurRadius: 20,
+                      spreadRadius: 5,
+                    ),
+                  ],
+                ),
+                child: Center(
+                  child: Text(
+                    widget.number,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      shadows: [
+                        Shadow(
+                          color: Colors.black,
+                          blurRadius: 4,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

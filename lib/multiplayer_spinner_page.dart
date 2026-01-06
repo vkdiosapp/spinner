@@ -29,6 +29,7 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
   bool _isSpinning = false;
   bool _isWaitingForNextTurn = false;
   late List<SegmentInfo> _segments; // Track segment info including jackpot
+  late List<Color> _segmentColors; // Store assigned colors to avoid duplicates
   final math.Random _random = math.Random();
   final ScreenshotController _screenshotController = ScreenshotController();
   
@@ -87,6 +88,9 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
         currentAngle += regularAngle;
       }
     }
+    
+    // Initialize colors without duplicates (11 segments: 10 regular + 1 jackpot)
+    _initializeColors();
 
     _controller = AnimationController(
       duration: const Duration(seconds: 4),
@@ -241,14 +245,68 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
     _controller.forward();
   }
 
-  void _goHome() {
-    if (Navigator.of(context).canPop()) {
-      Navigator.of(context).pop();
-    } else {
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => const HomePage()),
-        (route) => false,
-      );
+  Future<void> _goHome() async {
+    // Show confirmation dialog before leaving
+    final shouldLeave = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: const Color(0xFF3D3D5C),
+          title: const Text(
+            'Leave Game?',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          content: const Text(
+            'Are you sure you want to leave the game?',
+            style: TextStyle(
+              color: Colors.white70,
+              fontSize: 16,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text(
+                'Cancel',
+                style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFEE5A6F),
+                foregroundColor: Colors.white,
+              ),
+              child: const Text(
+                'Leave',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+
+    // Only navigate if user confirmed
+    if (shouldLeave == true) {
+      if (Navigator.of(context).canPop()) {
+        Navigator.of(context).pop();
+      } else {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => const HomePage()),
+          (route) => false,
+        );
+      }
     }
   }
 
@@ -280,8 +338,9 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
     }
   }
 
-  Color _getSegmentColor(int index) {
-    final colors = [
+  void _initializeColors() {
+    // 12 basic colors to use repeatedly
+    final basicColors = [
       const Color(0xFFFF6B35), // Orange
       const Color(0xFF6C5CE7), // Purple
       const Color(0xFF74B9FF), // Light Blue
@@ -292,8 +351,80 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
       const Color(0xFF00B894), // Green
       const Color(0xFFFF6348), // Red Orange
       const Color(0xFF0984E3), // Blue
+      const Color(0xFFFD79A8), // Light Pink
+      const Color(0xFFFDCB6E), // Light Yellow
     ];
-    return colors[index % colors.length];
+    
+    _segmentColors = [];
+    
+    // Assign colors sequentially, ensuring no adjacent duplicates
+    for (int i = 0; i < _segments.length; i++) {
+      Color assignedColor;
+      
+      if (i == 0) {
+        // First segment - use first color
+        assignedColor = basicColors[0];
+      } else {
+        // For subsequent segments, find a color that's different from the previous one
+        final prevColor = _segmentColors[i - 1];
+        
+        // Start from the next sequential color index
+        int colorIndex = (i % basicColors.length);
+        
+        // Find a color that's different from the previous segment
+        int attempts = 0;
+        while (basicColors[colorIndex] == prevColor && attempts < basicColors.length) {
+          colorIndex = (colorIndex + 1) % basicColors.length;
+          attempts++;
+        }
+        
+        assignedColor = basicColors[colorIndex];
+      }
+      
+      _segmentColors.add(assignedColor);
+    }
+    
+    // Final check: ensure last segment doesn't match first (circular)
+    if (_segmentColors.length > 1) {
+      final lastIndex = _segmentColors.length - 1;
+      final firstColor = _segmentColors[0];
+      final secondToLastColor = _segmentColors[lastIndex - 1];
+      
+      if (_segmentColors[lastIndex] == firstColor) {
+        // Find a different color for the last segment that's not first or second-to-last
+        for (int i = 0; i < basicColors.length; i++) {
+          final candidateColor = basicColors[i];
+          if (candidateColor != firstColor && candidateColor != secondToLastColor) {
+            _segmentColors[lastIndex] = candidateColor;
+            break;
+          }
+        }
+      }
+    }
+    
+    // Double-check all adjacent pairs to ensure no duplicates
+    for (int i = 0; i < _segmentColors.length; i++) {
+      final nextIndex = (i + 1) % _segmentColors.length;
+      if (_segmentColors[i] == _segmentColors[nextIndex]) {
+        // Find a replacement color
+        final prevIndex = (i - 1 + _segmentColors.length) % _segmentColors.length;
+        final prevColor = _segmentColors[prevIndex];
+        final nextColor = _segmentColors[nextIndex];
+        
+        for (int j = 0; j < basicColors.length; j++) {
+          final candidateColor = basicColors[j];
+          if (candidateColor != prevColor && candidateColor != nextColor) {
+            _segmentColors[i] = candidateColor;
+            break;
+          }
+        }
+      }
+    }
+  }
+
+  Color _getSegmentColor(int index) {
+    // Return pre-assigned color for this segment
+    return _segmentColors[index % _segmentColors.length];
   }
 
   @override
@@ -303,63 +434,7 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
       body: SafeArea(
         child: Stack(
           children: [
-            // Back button - top left
-            Positioned(
-              top: 16,
-              left: 16,
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: _goHome,
-                  borderRadius: BorderRadius.circular(24),
-                  child: Container(
-                    width: 48,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF6C5CE7),
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.3),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: const Icon(
-                      Icons.arrow_back,
-                      color: Colors.white,
-                      size: 24,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            // Share button - top right
-            Positioned(
-              top: 16,
-              right: 16,
-              child: Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF6C5CE7),
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.3),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: IconButton(
-                  icon: const Icon(Icons.share, color: Colors.white),
-                  onPressed: _shareSpinner,
-                ),
-              ),
-            ),
-            // Main content
+            // Main content (behind buttons)
             LayoutBuilder(
               builder: (context, constraints) {
                 final maxWidth = constraints.maxWidth;
@@ -399,6 +474,7 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
                 return Screenshot(
                   controller: _screenshotController,
                   child: SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(horizontal: 80),
                     child: Column(
                       children: [
                     // Round info
@@ -508,8 +584,8 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
                                 painter: PointerPainter(),
                               ),
                             ),
-                              // Center Spin Button
-                              GestureDetector(
+                            // Center Spin Button
+                            GestureDetector(
                                   onTap: _isWaitingForNextTurn ? null : _spin,
                                   child: Container(
                                     width: buttonSize,
@@ -559,6 +635,69 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
                   ),
                 );
               },
+            ),
+            // Back button - top left (on top of content) - must be last to be on top
+            Positioned(
+              top: 16,
+              left: 16,
+              child: IgnorePointer(
+                ignoring: false,
+                child: Material(
+                  color: Colors.transparent,
+                  elevation: 10,
+                  child: Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF6C5CE7),
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: IconButton(
+                      icon: const Icon(Icons.arrow_back, color: Colors.white),
+                      onPressed: _goHome,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            // Share button - top right (on top of content)
+            Positioned(
+              top: 16,
+              right: 16,
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: _shareSpinner,
+                  borderRadius: BorderRadius.circular(24),
+                  child: Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF6C5CE7),
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: const Icon(
+                      Icons.share,
+                      color: Colors.white,
+                      size: 24,
+                    ),
+                  ),
+                ),
+              ),
             ),
           ],
         ),

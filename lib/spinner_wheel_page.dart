@@ -29,6 +29,7 @@ class _SpinnerWheelPageState extends State<SpinnerWheelPage>
   bool _isSpinning = false;
   late List<String> _items;
   late String _currentTitle;
+  late List<Color> _segmentColors; // Store assigned colors to avoid duplicates
   final math.Random _random = math.Random();
   final ScreenshotController _screenshotController = ScreenshotController();
 
@@ -39,6 +40,9 @@ class _SpinnerWheelPageState extends State<SpinnerWheelPage>
         ? ['100', '20', '15', '5', '50', '20', '10', '2']
         : List.from(widget.items);
     _currentTitle = widget.title;
+    
+    // Initialize colors without duplicates
+    _initializeColors();
 
     _controller = AnimationController(
       duration: const Duration(seconds: 4),
@@ -105,6 +109,8 @@ class _SpinnerWheelPageState extends State<SpinnerWheelPage>
       setState(() {
         _currentTitle = result['title'] as String;
         _items = List<String>.from(result['items'] as List);
+        // Reinitialize colors when items change
+        _initializeColors();
         // Reset spinner when items change
         _rotation = 0;
         _randomOffset = 0;
@@ -114,9 +120,9 @@ class _SpinnerWheelPageState extends State<SpinnerWheelPage>
     }
   }
 
-  Color _getSegmentColor(int index) {
-    // Different colors for each segment
-    final colors = [
+  void _initializeColors() {
+    // 12 basic colors to use repeatedly
+    final basicColors = [
       const Color(0xFFFF6B35), // Orange
       const Color(0xFF6C5CE7), // Purple
       const Color(0xFF74B9FF), // Light Blue
@@ -127,10 +133,80 @@ class _SpinnerWheelPageState extends State<SpinnerWheelPage>
       const Color(0xFF00B894), // Green
       const Color(0xFFFF6348), // Red Orange
       const Color(0xFF0984E3), // Blue
-      const Color(0xFF6C5CE7), // Purple (repeat if more than 10)
-      const Color(0xFF74B9FF), // Light Blue (repeat if more than 11)
+      const Color(0xFFFD79A8), // Light Pink
+      const Color(0xFFFDCB6E), // Light Yellow
     ];
-    return colors[index % colors.length];
+    
+    _segmentColors = [];
+    
+    // Assign colors sequentially, ensuring no adjacent duplicates
+    for (int i = 0; i < _items.length; i++) {
+      Color assignedColor;
+      
+      if (i == 0) {
+        // First segment - use first color
+        assignedColor = basicColors[0];
+      } else {
+        // For subsequent segments, find a color that's different from the previous one
+        final prevColor = _segmentColors[i - 1];
+        
+        // Start from the next sequential color index
+        int colorIndex = (i % basicColors.length);
+        
+        // Find a color that's different from the previous segment
+        int attempts = 0;
+        while (basicColors[colorIndex] == prevColor && attempts < basicColors.length) {
+          colorIndex = (colorIndex + 1) % basicColors.length;
+          attempts++;
+        }
+        
+        assignedColor = basicColors[colorIndex];
+      }
+      
+      _segmentColors.add(assignedColor);
+    }
+    
+    // Final check: ensure last segment doesn't match first (circular)
+    if (_segmentColors.length > 1) {
+      final lastIndex = _segmentColors.length - 1;
+      final firstColor = _segmentColors[0];
+      final secondToLastColor = _segmentColors[lastIndex - 1];
+      
+      if (_segmentColors[lastIndex] == firstColor) {
+        // Find a different color for the last segment that's not first or second-to-last
+        for (int i = 0; i < basicColors.length; i++) {
+          final candidateColor = basicColors[i];
+          if (candidateColor != firstColor && candidateColor != secondToLastColor) {
+            _segmentColors[lastIndex] = candidateColor;
+            break;
+          }
+        }
+      }
+    }
+    
+    // Double-check all adjacent pairs to ensure no duplicates
+    for (int i = 0; i < _segmentColors.length; i++) {
+      final nextIndex = (i + 1) % _segmentColors.length;
+      if (_segmentColors[i] == _segmentColors[nextIndex]) {
+        // Find a replacement color
+        final prevIndex = (i - 1 + _segmentColors.length) % _segmentColors.length;
+        final prevColor = _segmentColors[prevIndex];
+        final nextColor = _segmentColors[nextIndex];
+        
+        for (int j = 0; j < basicColors.length; j++) {
+          final candidateColor = basicColors[j];
+          if (candidateColor != prevColor && candidateColor != nextColor) {
+            _segmentColors[i] = candidateColor;
+            break;
+          }
+        }
+      }
+    }
+  }
+
+  Color _getSegmentColor(int index) {
+    // Return pre-assigned color for this segment
+    return _segmentColors[index % _segmentColors.length];
   }
 
   Future<void> _shareSpinner() async {
@@ -168,65 +244,7 @@ class _SpinnerWheelPageState extends State<SpinnerWheelPage>
       body: SafeArea(
         child: Stack(
           children: [
-            // Back button - top left
-            Positioned(
-              top: 16,
-              left: 16,
-              child: Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF6C5CE7),
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.3),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: IconButton(
-                  icon: const Icon(Icons.arrow_back, color: Colors.white),
-                  onPressed: () {
-                    if (Navigator.of(context).canPop()) {
-                      Navigator.of(context).pop();
-                    } else {
-                      Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(
-                          builder: (context) => const SpinnerConfigPage(),
-                        ),
-                      );
-                    }
-                  },
-                ),
-              ),
-            ),
-            // Share button - top right
-            Positioned(
-              top: 16,
-              right: 16,
-              child: Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF6C5CE7),
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.3),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: IconButton(
-                  icon: const Icon(Icons.share, color: Colors.white),
-                  onPressed: _shareSpinner,
-                ),
-              ),
-            ),
-            // Main content
+            // Main content (behind buttons)
             LayoutBuilder(
               builder: (context, constraints) {
                 // Calculate spinner size to fit screen with margins
@@ -414,6 +432,72 @@ class _SpinnerWheelPageState extends State<SpinnerWheelPage>
                   ),
                 );
               },
+            ),
+            // Back button - top left (on top of content)
+            Positioned(
+              top: 16,
+              left: 16,
+              child: Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF6C5CE7),
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.3),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: IconButton(
+                  icon: const Icon(Icons.arrow_back, color: Colors.white),
+                  onPressed: () {
+                    if (Navigator.of(context).canPop()) {
+                      Navigator.of(context).pop();
+                    } else {
+                      Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(
+                          builder: (context) => const SpinnerConfigPage(),
+                        ),
+                      );
+                    }
+                  },
+                ),
+              ),
+            ),
+            // Share button - top right (on top of content)
+            Positioned(
+              top: 16,
+              right: 16,
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: _shareSpinner,
+                  borderRadius: BorderRadius.circular(24),
+                  child: Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF6C5CE7),
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: const Icon(
+                      Icons.share,
+                      color: Colors.white,
+                      size: 24,
+                    ),
+                  ),
+                ),
+              ),
             ),
           ],
         ),

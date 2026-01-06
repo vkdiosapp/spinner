@@ -128,33 +128,9 @@ class _SpinnerEditPageState extends State<SpinnerEditPage> {
       body: SafeArea(
         child: Stack(
           children: [
-            // Back button - top left
-            Positioned(
-              top: 16,
-              left: 16,
-              child: Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF6C5CE7),
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.3),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: IconButton(
-                  icon: const Icon(Icons.arrow_back, color: Colors.white),
-                  onPressed: () => Navigator.of(context).pop(),
-                ),
-              ),
-            ),
             // Main content
             SingleChildScrollView(
-              padding: const EdgeInsets.only(top: 80, left: 20, right: 20, bottom: 20),
+              padding: const EdgeInsets.only(top: 80, left: 80, right: 80, bottom: 20),
               child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -311,6 +287,37 @@ class _SpinnerEditPageState extends State<SpinnerEditPage> {
             ),
               ],
             ),
+            ),
+            // Back button - top left (on top of content)
+            Positioned(
+              top: 16,
+              left: 16,
+              child: IgnorePointer(
+                ignoring: false,
+                child: Material(
+                  color: Colors.transparent,
+                  elevation: 10,
+                  child: Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF6C5CE7),
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: IconButton(
+                      icon: const Icon(Icons.arrow_back, color: Colors.white),
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
+                  ),
+                ),
+              ),
             ),
           ],
         ),

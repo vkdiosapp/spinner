@@ -5,11 +5,7 @@ class SpinnerConfigPage extends StatefulWidget {
   final String? initialTitle;
   final List<String>? initialItems;
 
-  const SpinnerConfigPage({
-    super.key,
-    this.initialTitle,
-    this.initialItems,
-  });
+  const SpinnerConfigPage({super.key, this.initialTitle, this.initialItems});
 
   @override
   State<SpinnerConfigPage> createState() => _SpinnerConfigPageState();
@@ -110,7 +106,9 @@ class _SpinnerConfigPageState extends State<SpinnerConfigPage> {
       if (seenNames.contains(lowerItem)) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Duplicate item name: "$item". Please use unique names.'),
+            content: Text(
+              'Duplicate item name: "$item". Please use unique names.',
+            ),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 3),
           ),
@@ -139,191 +137,226 @@ class _SpinnerConfigPageState extends State<SpinnerConfigPage> {
       body: SafeArea(
         child: Stack(
           children: [
-            // Back button - top left
-            Positioned(
-              top: 16,
-              left: 16,
-              child: Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF6C5CE7),
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.3),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: IconButton(
-                  icon: const Icon(Icons.arrow_back, color: Colors.white),
-                  onPressed: () => Navigator.of(context).pop(),
-                ),
-              ),
-            ),
             // Main content
             SingleChildScrollView(
-              padding: const EdgeInsets.only(top: 80, left: 20, right: 20, bottom: 20),
-              child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Title Input Section
-            Card(
-              color: const Color(0xFF3D3D5C),
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Spinner Title',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    TextField(
-                      controller: _titleController,
-                      textCapitalization: TextCapitalization.words,
-                      style: const TextStyle(color: Colors.white),
-                      decoration: InputDecoration(
-                        hintText: 'Enter spinner title',
-                        hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
-                        filled: true,
-                        fillColor: const Color(0xFF2D2D44),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 14,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+              padding: const EdgeInsets.only(
+                top: 80,
+                left: 80,
+                right: 80,
+                bottom: 20,
               ),
-            ),
-            const SizedBox(height: 24),
-            
-            // Items List Section
-            Card(
-              color: const Color(0xFF3D3D5C),
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Spinner Items',
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Page Title
+                  const Padding(
+                    padding: EdgeInsets.only(bottom: 24),
+                    child: Text(
+                      'Configure Spinner',
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 18,
+                        fontSize: 32,
                         fontWeight: FontWeight.bold,
                       ),
+                      textAlign: TextAlign.center,
                     ),
-                    const SizedBox(height: 12),
-                    ...List.generate(_items.length, (index) {
-                      return Container(
-                        margin: const EdgeInsets.only(bottom: 12),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: TextField(
-                                controller: _itemControllers[index],
-                                focusNode: _itemFocusNodes[index],
-                                textCapitalization: TextCapitalization.words,
-                                style: const TextStyle(color: Colors.white),
-                                decoration: InputDecoration(
-                                  hintText: 'Enter item name',
-                                  hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
-                                  filled: true,
-                                  fillColor: const Color(0xFF2D2D44),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide.none,
+                  ),
+                  // Title Input Section
+                  Card(
+                    color: const Color(0xFF3D3D5C),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Spinner Title',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          TextField(
+                            controller: _titleController,
+                            textCapitalization: TextCapitalization.words,
+                            style: const TextStyle(color: Colors.white),
+                            decoration: InputDecoration(
+                              hintText: 'Enter spinner title',
+                              hintStyle: TextStyle(
+                                color: Colors.white.withOpacity(0.5),
+                              ),
+                              filled: true,
+                              fillColor: const Color(0xFF2D2D44),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide.none,
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 14,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Items List Section
+                  Card(
+                    color: const Color(0xFF3D3D5C),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Spinner Items',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          ...List.generate(_items.length, (index) {
+                            return Container(
+                              margin: const EdgeInsets.only(bottom: 12),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: TextField(
+                                      controller: _itemControllers[index],
+                                      focusNode: _itemFocusNodes[index],
+                                      textCapitalization:
+                                          TextCapitalization.words,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                      ),
+                                      decoration: InputDecoration(
+                                        hintText: 'Enter item name',
+                                        hintStyle: TextStyle(
+                                          color: Colors.white.withOpacity(0.5),
+                                        ),
+                                        filled: true,
+                                        fillColor: const Color(0xFF2D2D44),
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                          borderSide: BorderSide.none,
+                                        ),
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                              horizontal: 16,
+                                              vertical: 14,
+                                            ),
+                                      ),
+                                    ),
                                   ),
-                                  contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 14,
+                                  const SizedBox(width: 12),
+                                  IconButton(
+                                    onPressed: () => _removeItem(index),
+                                    icon: const Icon(
+                                      Icons.delete_outline,
+                                      color: Colors.red,
+                                      size: 28,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }),
+                          if (_items.isEmpty)
+                            Padding(
+                              padding: const EdgeInsets.all(24),
+                              child: Center(
+                                child: Text(
+                                  'No items. Click "Add Item" to add items.',
+                                  style: TextStyle(
+                                    color: Colors.white.withOpacity(0.6),
+                                    fontSize: 14,
                                   ),
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 12),
-                            IconButton(
-                              onPressed: () => _removeItem(index),
-                              icon: const Icon(
-                                Icons.delete_outline,
-                                color: Colors.red,
-                                size: 28,
-                              ),
+                          const SizedBox(height: 12),
+                          // Add Item button at bottom
+                          TextButton.icon(
+                            onPressed: _addNewItem,
+                            icon: const Icon(Icons.add, color: Colors.white),
+                            label: const Text(
+                              'Add Item',
+                              style: TextStyle(color: Colors.white),
                             ),
-                          ],
-                        ),
-                      );
-                    }),
-                    if (_items.isEmpty)
-                      Padding(
-                        padding: const EdgeInsets.all(24),
-                        child: Center(
-                          child: Text(
-                            'No items. Click "Add Item" to add items.',
-                            style: TextStyle(
-                              color: Colors.white.withOpacity(0.6),
-                              fontSize: 14,
+                            style: TextButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 12),
                             ),
                           ),
-                        ),
-                      ),
-                    const SizedBox(height: 12),
-                    // Add Item button at bottom
-                    TextButton.icon(
-                      onPressed: _addNewItem,
-                      icon: const Icon(Icons.add, color: Colors.white),
-                      label: const Text(
-                        'Add Item',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        ],
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: 24),
+
+                  const SizedBox(height: 32),
+
+                  // Start Spinner Button
+                  ElevatedButton(
+                    onPressed: _startSpinner,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF6C5CE7),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 18),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 4,
+                    ),
+                    child: const Text(
+                      'Start Spinner',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 24),
-            
-            const SizedBox(height: 32),
-            
-            // Start Spinner Button
-            ElevatedButton(
-              onPressed: _startSpinner,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF6C5CE7),
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 18),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+            // Back button - top left (on top of content)
+            Positioned(
+              top: 16,
+              left: 16,
+              child: IgnorePointer(
+                ignoring: false,
+                child: Material(
+                  color: Colors.transparent,
+                  elevation: 10,
+                  child: Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF6C5CE7),
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: IconButton(
+                      icon: const Icon(Icons.arrow_back, color: Colors.white),
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
+                  ),
                 ),
-                elevation: 4,
               ),
-              child: const Text(
-                'Start Spinner',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-              ],
-            ),
             ),
           ],
         ),
@@ -331,4 +364,3 @@ class _SpinnerConfigPageState extends State<SpinnerConfigPage> {
     );
   }
 }
-

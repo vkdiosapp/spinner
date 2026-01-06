@@ -1,0 +1,83 @@
+{
+  "easy": {
+    "truth": [
+      "What is your crush name?",
+      "Who was your first kiss?",
+      "What is your biggest fear?",
+      "What is your most embarrassing moment?",
+      "What is your guilty pleasure?"
+    ],
+    "dare": [
+      "Make dog noise",
+      "Do 10 push-ups",
+      "Sing a song loudly",
+      "Dance for 30 seconds",
+      "Call your best friend and say I love you"
+    ]
+  },
+  "medium": {
+    "truth": [
+      "What is your biggest secret?",
+      "Who do you have a crush on right now?",
+      "What is the worst lie you've told?",
+      "What is your most embarrassing photo?",
+      "What is something you've never told your parents?"
+    ],
+    "dare": [
+      "Let someone go through your phone for 1 minute",
+      "Eat a spoonful of a condiment",
+      "Do your best impression of someone in the room",
+      "Post an embarrassing photo on social media",
+      "Call your ex and say hello"
+    ]
+  },
+  "hard": {
+    "truth": [
+      "What is your darkest secret?",
+      "Who in this room would you most like to kiss?",
+      "What is the worst thing you've done to a friend?",
+      "What is something illegal you've done?",
+      "What is your biggest regret?"
+    ],
+    "dare": [
+      "Let the group DM someone from your contacts",
+      "Eat a raw egg",
+      "Do 50 sit-ups",
+      "Let someone read your last 10 text messages",
+      "Call your crush and confess your feelings"
+    ]
+  },
+  "extreme": {
+    "truth": [
+      "What is the most hurtful thing someone has said to you?",
+      "What is something you've done that you're most ashamed of?",
+      "Who do you secretly hate?",
+      "What is your biggest insecurity?",
+      "What is the worst thing you've done while drunk?"
+    ],
+    "dare": [
+      "Let someone post a status on your social media",
+      "Eat something off the floor",
+      "Do 100 jumping jacks",
+      "Let someone look through your entire photo gallery",
+      "Call your parents and tell them you love them"
+    ]
+  },
+  "insane": {
+    "truth": [
+      "What is the most embarrassing thing in your search history?",
+      "What is something you've done that would ruin your reputation?",
+      "Who have you had a crush on for the longest time?",
+      "What is the worst thing you've lied about?",
+      "What is something you hope your family never finds out?"
+    ],
+    "dare": [
+      "Let the group send a text to anyone in your contacts",
+      "Do your most embarrassing dance move",
+      "Eat a combination of 3 random condiments",
+      "Let someone read your last 20 text messages",
+      "Call someone you haven't talked to in a year"
+    ]
+  }
+}
+

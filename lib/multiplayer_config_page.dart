@@ -17,6 +17,16 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
   @override
   void initState() {
     super.initState();
+    // Add one default user so it doesn't look empty
+    _users.add('');
+    _userControllers.add(TextEditingController());
+    _userFocusNodes.add(FocusNode());
+    // Focus on the first field after the widget builds
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_userFocusNodes.isNotEmpty) {
+        _userFocusNodes.first.requestFocus();
+      }
+    });
   }
 
   @override
@@ -105,17 +115,37 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF2D2D44),
-      appBar: AppBar(
-        title: const Text(
-          'Multiplayer Setup',
-          style: TextStyle(color: Colors.white),
-        ),
-        backgroundColor: const Color(0xFF6C5CE7),
-        iconTheme: const IconThemeData(color: Colors.white),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
+      body: SafeArea(
+        child: Stack(
+          children: [
+            // Back button - top left
+            Positioned(
+              top: 16,
+              left: 16,
+              child: Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF6C5CE7),
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.3),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: IconButton(
+                  icon: const Icon(Icons.arrow_back, color: Colors.white),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              ),
+            ),
+            // Main content
+            SingleChildScrollView(
+              padding: const EdgeInsets.only(top: 80, left: 20, right: 20, bottom: 20),
+              child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // Rounds Selection Section
@@ -194,26 +224,13 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          'Users',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        TextButton.icon(
-                          onPressed: _addNewUser,
-                          icon: const Icon(Icons.add, color: Colors.white),
-                          label: const Text(
-                            'User',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
-                      ],
+                    const Text(
+                      'Users',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const SizedBox(height: 12),
                     ...List.generate(_users.length, (index) {
@@ -269,6 +286,19 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
                           ),
                         ),
                       ),
+                    const SizedBox(height: 12),
+                    // Add User button at bottom
+                    TextButton.icon(
+                      onPressed: _addNewUser,
+                      icon: const Icon(Icons.add, color: Colors.white),
+                      label: const Text(
+                        'User',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -294,6 +324,9 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
+            ),
+              ],
+            ),
             ),
           ],
         ),

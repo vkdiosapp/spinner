@@ -142,9 +142,17 @@ class _SpinnerWheelPageState extends State<SpinnerWheelPage>
           '${tempDir.path}/spinner_${DateTime.now().millisecondsSinceEpoch}.png',
         );
         await file.writeAsBytes(image);
-        await Share.shareXFiles([
-          XFile(file.path),
-        ], text: 'Check out my spinner result!');
+        final screenSize = MediaQuery.of(context).size;
+        await Share.shareXFiles(
+          [XFile(file.path)],
+          text: 'Check out my spinner result!',
+          sharePositionOrigin: Rect.fromLTWH(
+            0,
+            0,
+            screenSize.width,
+            screenSize.height,
+          ),
+        );
       }
     } catch (e) {
       ScaffoldMessenger.of(
@@ -224,21 +232,31 @@ class _SpinnerWheelPageState extends State<SpinnerWheelPage>
                 // Calculate spinner size to fit screen with margins
                 final maxWidth = constraints.maxWidth;
                 final maxHeight = constraints.maxHeight;
-                final margin = 20.0; // Reduced margin to use more space
-                final arrowHeight =
-                    40.0; // Space for arrow at top (including shadow)
+                final margin = 20.0;
+                final arrowHeight = 40.0; // Space for arrow at top
+                final titleHeight = 100.0; // Space for title and padding
 
                 // Calculate available space
                 final availableWidth = maxWidth - (margin * 2);
-                final availableHeight = maxHeight - (margin * 2) - arrowHeight;
+                final availableHeight = maxHeight - titleHeight - arrowHeight - (margin * 2);
 
-                // Use the smaller dimension to ensure it fits, use maximum space
-                final spinnerSize =
-                    math.min(availableWidth, availableHeight) * 0.98;
-                // No maximum constraint - let it use all available space, but ensure minimum
+                // Use more of the screen for better coverage, especially on iPad
+                final screenSize = math.min(maxWidth, maxHeight);
+                final isLargeScreen = screenSize > 600; // iPad and larger devices
+                
+                // For large screens, use up to 75% of available space
+                // For smaller screens, use up to 85% of available space
+                final widthMultiplier = isLargeScreen ? 0.75 : 0.85;
+                final heightMultiplier = isLargeScreen ? 0.75 : 0.85;
+                
+                final spinnerSize = math.min(
+                  availableWidth * widthMultiplier,
+                  availableHeight * heightMultiplier,
+                );
+                // Ensure minimum size but allow dynamic growth
                 final finalSize = math.max(250.0, spinnerSize);
 
-                // Calculate arrow size proportionally - made bigger
+                // Calculate arrow size proportionally
                 final arrowWidth = finalSize * 0.22;
                 final arrowHeightSize = finalSize * 0.18;
 
@@ -247,166 +265,152 @@ class _SpinnerWheelPageState extends State<SpinnerWheelPage>
 
                 return Screenshot(
                   controller: _screenshotController,
-                  child: Column(
-                    children: [
-                      // Title above spinner
-                      Padding(
-                        padding: const EdgeInsets.only(top: 80, bottom: 20),
-                        child: Text(
-                          _currentTitle,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 32,
-                            fontWeight: FontWeight.bold,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        // Title above spinner
+                        Padding(
+                          padding: const EdgeInsets.only(top: 80, bottom: 20),
+                          child: Text(
+                            _currentTitle,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 32,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
-                      ),
-                      // Spinner Wheel with Arrow (centered)
-                      Expanded(
-                        child: Center(
-                          child: Container(
-                            margin: const EdgeInsets.all(20),
-                            child: Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                // Wheel
-                                Transform.rotate(
-                                  angle: _rotation * math.pi / 180,
-                                  child: CustomPaint(
-                                    size: Size(finalSize, finalSize),
-                                    painter: WheelPainter(
-                                      items: _items,
-                                      getSegmentColor: _getSegmentColor,
-                                    ),
+                        // Spinner Wheel with Arrow (centered)
+                        Container(
+                          height: finalSize + 50, // Fixed height to prevent cropping
+                          margin: const EdgeInsets.all(20),
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              // Wheel
+                              Transform.rotate(
+                                angle: _rotation * math.pi / 180,
+                                child: CustomPaint(
+                                  size: Size(finalSize, finalSize),
+                                  painter: WheelPainter(
+                                    items: _items,
+                                    getSegmentColor: _getSegmentColor,
                                   ),
                                 ),
-                                // Pointer on top of spinner (fixed position, 25px up)
-                                Positioned(
-                                  top: -25,
-                                  child: Container(
-                                    width: arrowWidth,
-                                    height: arrowHeightSize,
-                                    child: Image.asset(
-                                      'assets/images/arrow_pointer.png',
-                                      fit: BoxFit.contain,
-                                      errorBuilder: (context, error, stackTrace) {
-                                        // Fallback to custom painter if image not found
-                                        return CustomPaint(
-                                          size: Size(
-                                            arrowWidth,
-                                            arrowHeightSize,
-                                          ),
-                                          painter: PointerPainter(),
-                                        );
-                                      },
-                                    ),
-                                  ),
+                              ),
+                              // Pointer on spinner
+                              Positioned(
+                                top: 10,
+                                child: CustomPaint(
+                                  size: Size(arrowWidth, arrowHeightSize),
+                                  painter: PointerPainter(),
                                 ),
-                                // Center Spin Button
-                                GestureDetector(
-                                  onTap: _spin,
-                                  child: Container(
-                                    width: buttonSize,
-                                    height: buttonSize,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      gradient: const LinearGradient(
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight,
-                                        colors: [
-                                          Color(0xFF6C5CE7),
-                                          Color(0xFF5A4FCF),
-                                        ],
-                                      ),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black.withOpacity(0.3),
-                                          blurRadius: 10,
-                                          offset: const Offset(0, 5),
-                                        ),
+                              ),
+                              // Center Spin Button
+                              GestureDetector(
+                                onTap: _spin,
+                                child: Container(
+                                  width: buttonSize,
+                                  height: buttonSize,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    gradient: const LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                      colors: [
+                                        Color(0xFF6C5CE7),
+                                        Color(0xFF5A4FCF),
                                       ],
                                     ),
-                                    child: Container(
-                                      margin: EdgeInsets.all(buttonSize * 0.1),
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        border: Border.all(
-                                          color: const Color(0xFF8B7ED8),
-                                          width: 2,
-                                        ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.3),
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 5),
                                       ),
-                                      child: Icon(
-                                        Icons.refresh,
-                                        color: Colors.white,
-                                        size: buttonSize * 0.44,
+                                    ],
+                                  ),
+                                  child: Container(
+                                    margin: EdgeInsets.all(buttonSize * 0.1),
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: const Color(0xFF8B7ED8),
+                                        width: 2,
                                       ),
+                                    ),
+                                    child: Icon(
+                                      Icons.refresh,
+                                      color: Colors.white,
+                                      size: buttonSize * 0.44,
                                     ),
                                   ),
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         ),
-                      ),
-                      // Reset and Edit buttons at bottom
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(20),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: ElevatedButton(
-                                onPressed: _resetSpinner,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(
-                                    0xFFFF6B35,
-                                  ), // Orange
-                                  foregroundColor: Colors.white,
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 18,
+                        const SizedBox(height: 20),
+                        // Reset and Edit buttons at bottom
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(20),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: ElevatedButton(
+                                  onPressed: _resetSpinner,
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(
+                                      0xFFFF6B35,
+                                    ), // Orange
+                                    foregroundColor: Colors.white,
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 18,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    elevation: 4,
                                   ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  elevation: 4,
-                                ),
-                                child: const Text(
-                                  'Reset',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: ElevatedButton(
-                                onPressed: _editSpinner,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFF6C5CE7),
-                                  foregroundColor: Colors.white,
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 18,
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  elevation: 4,
-                                ),
-                                child: const Text(
-                                  'Edit',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
+                                  child: const Text(
+                                    'Reset',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                          ],
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: ElevatedButton(
+                                  onPressed: _editSpinner,
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xFF6C5CE7),
+                                    foregroundColor: Colors.white,
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 18,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    elevation: 4,
+                                  ),
+                                  child: const Text(
+                                    'Edit',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 );
               },
@@ -624,14 +628,11 @@ class WheelPainter extends CustomPainter {
 class PointerPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    // Create a stylized arrow pointer with rounded edges
     final path = Path();
     final centerX = size.width / 2;
     final arrowHeight = size.height;
     final arrowWidth = size.width;
 
-    // Draw arrow shape: rounded rectangle with pointed bottom
-    // Top rounded rectangle
     path.addRRect(
       RRect.fromRectAndRadius(
         Rect.fromLTWH(
@@ -644,71 +645,30 @@ class PointerPainter extends CustomPainter {
       ),
     );
 
-    // Pointed bottom (arrow tip)
     path.moveTo(centerX - arrowWidth * 0.3, arrowHeight * 0.6);
     path.lineTo(centerX, arrowHeight);
     path.lineTo(centerX + arrowWidth * 0.3, arrowHeight * 0.6);
     path.close();
 
-    // Draw shadow first - proper shadow below the arrow
-    final shadowPath = Path();
-    shadowPath.addRRect(
-      RRect.fromRectAndRadius(
-        Rect.fromLTWH(
-          centerX - arrowWidth * 0.3,
-          2,
-          arrowWidth * 0.6,
-          arrowHeight * 0.6,
-        ),
-        const Radius.circular(4),
-      ),
-    );
-    shadowPath.moveTo(centerX - arrowWidth * 0.3, arrowHeight * 0.6 + 2);
-    shadowPath.lineTo(centerX, arrowHeight + 4);
-    shadowPath.lineTo(centerX + arrowWidth * 0.3, arrowHeight * 0.6 + 2);
-    shadowPath.close();
-
-    final shadowPaint = Paint()
-      ..color = Colors.black.withOpacity(0.4)
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8)
-      ..style = PaintingStyle.fill;
-
-    canvas.drawPath(shadowPath, shadowPaint);
-
-    // Draw gradient for the pointer
     final gradientPaint = Paint()
       ..shader = LinearGradient(
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
         colors: [
-          const Color(0xFFFF69B4), // Pink
-          const Color(0xFFFF1493), // Deep Pink
+          const Color(0xFFFF69B4),
+          const Color(0xFFFF1493),
         ],
       ).createShader(Rect.fromLTWH(0, 0, size.width, size.height))
       ..style = PaintingStyle.fill;
 
     canvas.drawPath(path, gradientPaint);
 
-    // Add a highlight border
     final borderPaint = Paint()
       ..color = Colors.white.withOpacity(0.4)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.5;
 
     canvas.drawPath(path, borderPaint);
-
-    // Add inner highlight for depth
-    final highlightPath = Path();
-    highlightPath.moveTo(centerX - arrowWidth * 0.2, arrowHeight * 0.3);
-    highlightPath.lineTo(centerX, arrowHeight * 0.7);
-    highlightPath.lineTo(centerX + arrowWidth * 0.2, arrowHeight * 0.3);
-    highlightPath.close();
-
-    final highlightPaint = Paint()
-      ..color = Colors.white.withOpacity(0.2)
-      ..style = PaintingStyle.fill;
-
-    canvas.drawPath(highlightPath, highlightPaint);
   }
 
   @override

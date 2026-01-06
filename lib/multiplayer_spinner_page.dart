@@ -5,6 +5,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:path_provider/path_provider.dart';
 import 'home_page.dart';
+import 'multiplayer_results_page.dart';
 
 class MultiplayerSpinnerPage extends StatefulWidget {
   final List<String> users;
@@ -26,7 +27,8 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
   double _rotation = 0;
   double _randomOffset = 0;
   bool _isSpinning = false;
-  final List<String> _items = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+  bool _isWaitingForNextTurn = false;
+  late List<SegmentInfo> _segments; // Track segment info including jackpot
   final math.Random _random = math.Random();
   final ScreenshotController _screenshotController = ScreenshotController();
   
@@ -34,8 +36,7 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
   int _currentRound = 1;
   int _currentUserIndex = 0;
   Map<String, int> _scores = {};
-  bool _gameCompleted = false;
-  String? _winner;
+  Map<int, Map<String, int>> _roundScores = {}; // Track scores per round
 
   @override
   void initState() {
@@ -43,6 +44,48 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
     // Initialize scores
     for (var user in widget.users) {
       _scores[user] = 0;
+    }
+    // Initialize round scores
+    _roundScores[1] = {};
+    for (var user in widget.users) {
+      _roundScores[1]![user] = 0;
+    }
+
+    // Shuffle items randomly
+    final regularItems = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']..shuffle(_random);
+    
+    // Create segments with jackpot (10 degrees width - 1/3 of previous 30 degrees)
+    // Regular segment angle: (360 - 10) / 10 = 35 degrees each
+    final jackpotAngle = 10.0; // Fixed 10 degrees (1/3 of 30)
+    final regularAngle = (360.0 - jackpotAngle) / 10; // 35 degrees each
+    
+    _segments = [];
+    double currentAngle = 0;
+    
+    // Add jackpot at a random position
+    final jackpotPosition = _random.nextInt(11); // Position 0-10
+    
+    for (int i = 0; i < 11; i++) {
+      if (i == jackpotPosition) {
+        // Add jackpot segment (10 degrees - very thin!)
+        _segments.add(SegmentInfo(
+          value: '20',
+          isJackpot: true,
+          startAngle: currentAngle,
+          endAngle: currentAngle + jackpotAngle,
+        ));
+        currentAngle += jackpotAngle;
+      } else {
+        // Add regular segment (35 degrees)
+        final itemIndex = i > jackpotPosition ? i - 1 : i;
+        _segments.add(SegmentInfo(
+          value: regularItems[itemIndex],
+          isJackpot: false,
+          startAngle: currentAngle,
+          endAngle: currentAngle + regularAngle,
+        ));
+        currentAngle += regularAngle;
+      }
     }
 
     _controller = AnimationController(
@@ -74,70 +117,118 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
   }
 
   void _handleSpinComplete() {
-    // Calculate which segment the pointer is pointing to (0-9)
-    // The pointer is at the top, pointing down (-90 degrees or 270 degrees)
-    // Segments are drawn starting from -90 degrees (top), each segment is 36 degrees
-    // When the wheel rotates clockwise by R degrees, we need to find which segment is at the top
+    // Calculate which segment the pointer is pointing to
+    // The pointer is at the top, pointing down (-90 degrees in canvas coordinates)
+    // Segments are stored with angles starting from 0, but drawn starting from -90 degrees
+    // When the wheel rotates clockwise by R degrees:
+    //   - A segment stored at angle A is drawn at (A - 90) degrees (canvas)
+    //   - After rotation, it's drawn at (A - 90 + R) degrees (canvas)
+    // The pointer is fixed at -90 degrees (canvas)
+    // We need: A - 90 + R = -90, so A + R = 0, so A = -R (mod 360) = 360 - R
     
     // Normalize rotation to 0-360 range
     final normalizedRotation = _rotation % 360;
     
-    // The wheel rotates clockwise. Segment 0 starts at -90 degrees (top).
-    // After rotating by R degrees, segment 0 is at (-90 + R) degrees.
-    // The pointer is fixed at -90 degrees (top).
-    // We need to find which segment is now at -90 degrees after rotation.
-    // 
-    // If segment i starts at (-90 + i*36) degrees, after rotation it's at (-90 + i*36 + R) degrees.
-    // We want: -90 + i*36 + R = -90 (mod 360)
-    // So: i*36 + R = 0 (mod 360)
-    // So: i*36 = -R (mod 360) = (360 - R) (mod 360)
-    // So: i = (360 - R) / 36 (mod 10)
+    // Find which segment's start angle equals (360 - normalizedRotation) mod 360
+    // This is the segment that is now at the top after rotation
+    final targetStartAngle = (360 - normalizedRotation) % 360;
     
-    final segmentIndex = ((360 - normalizedRotation) / 36).floor() % 10;
-    final points = int.parse(_items[segmentIndex]);
+    // Find the segment that contains this start angle
+    int segmentIndex = 0;
+    for (int i = 0; i < _segments.length; i++) {
+      final segment = _segments[i];
+      final startAngle = segment.startAngle % 360;
+      final endAngle = segment.endAngle % 360;
+      
+      // Check if targetStartAngle falls within this segment's range
+      if (startAngle <= endAngle) {
+        // Normal case: segment doesn't cross 0
+        if (targetStartAngle >= startAngle && targetStartAngle < endAngle) {
+          segmentIndex = i;
+          break;
+        }
+      } else {
+        // Segment crosses 0 degrees (wraps around)
+        if (targetStartAngle >= startAngle || targetStartAngle < endAngle) {
+          segmentIndex = i;
+          break;
+        }
+      }
+    }
+    
+    final points = int.parse(_segments[segmentIndex].value);
 
     // Add points to current user
     final currentUser = widget.users[_currentUserIndex];
     _scores[currentUser] = (_scores[currentUser] ?? 0) + points;
+    // Track round score
+    _roundScores[_currentRound]![currentUser] = 
+        (_roundScores[_currentRound]![currentUser] ?? 0) + points;
 
-    // Move to next user or next round
-    if (_currentUserIndex < widget.users.length - 1) {
-      // Next user in same round
-      setState(() {
-        _currentUserIndex++;
-      });
-    } else {
-      // Round complete, move to next round
-      if (_currentRound < widget.rounds) {
+    // Wait a moment to show the result before moving to next turn
+    setState(() {
+      _isWaitingForNextTurn = true;
+    });
+    
+    Future.delayed(const Duration(milliseconds: 1000), () {
+      if (!mounted) return;
+      
+      // Move to next user or next round
+      if (_currentUserIndex < widget.users.length - 1) {
+        // Next user in same round - reset spinner first
+        _resetSpinnerForNextTurn();
         setState(() {
-          _currentRound++;
-          _currentUserIndex = 0;
+          _currentUserIndex++;
+          _isWaitingForNextTurn = false;
         });
       } else {
-        // Game complete - find winner
-        _determineWinner();
-      }
-    }
-  }
-
-  void _determineWinner() {
-    setState(() {
-      _gameCompleted = true;
-      // Find user with highest score
-      var maxScore = -1;
-      String? winner;
-      for (var entry in _scores.entries) {
-        if (entry.value > maxScore) {
-          maxScore = entry.value;
-          winner = entry.key;
+        // Round complete, move to next round
+        if (_currentRound < widget.rounds) {
+          _resetSpinnerForNextTurn();
+          setState(() {
+            _currentRound++;
+            _currentUserIndex = 0;
+            _isWaitingForNextTurn = false;
+            // Initialize next round scores
+            _roundScores[_currentRound] = {};
+            for (var user in widget.users) {
+              _roundScores[_currentRound]![user] = 0;
+            }
+          });
+        } else {
+          // Game complete - navigate to results page
+          _navigateToResults();
         }
       }
-      _winner = winner;
     });
   }
 
+  void _navigateToResults() {
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (context) => MultiplayerResultsPage(
+          users: widget.users,
+          rounds: widget.rounds,
+          roundScores: _roundScores,
+          totalScores: Map<String, int>.from(_scores),
+        ),
+      ),
+    );
+  }
+
+  void _resetSpinnerForNextTurn() {
+    // Reset spinner rotation and offset for next turn
+    setState(() {
+      _rotation = 0;
+      _randomOffset = 0;
+      _isSpinning = false;
+      _isWaitingForNextTurn = false;
+    });
+    _controller.reset();
+  }
+
   void _spin() {
-    if (_isSpinning || _gameCompleted) return;
+    if (_isSpinning || _isWaitingForNextTurn) return;
 
     _randomOffset = _random.nextDouble() * 360;
 
@@ -150,28 +241,15 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
     _controller.forward();
   }
 
-  void _resetGame() {
-    setState(() {
-      _currentRound = 1;
-      _currentUserIndex = 0;
-      _scores.clear();
-      for (var user in widget.users) {
-        _scores[user] = 0;
-      }
-      _gameCompleted = false;
-      _winner = null;
-      _rotation = 0;
-      _randomOffset = 0;
-      _isSpinning = false;
-    });
-    _controller.reset();
-  }
-
   void _goHome() {
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (context) => const HomePage()),
-      (route) => false,
-    );
+    if (Navigator.of(context).canPop()) {
+      Navigator.of(context).pop();
+    } else {
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => const HomePage()),
+        (route) => false,
+      );
+    }
   }
 
   Future<void> _shareSpinner() async {
@@ -183,9 +261,17 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
           '${tempDir.path}/spinner_${DateTime.now().millisecondsSinceEpoch}.png',
         );
         await file.writeAsBytes(image);
-        await Share.shareXFiles([
-          XFile(file.path),
-        ], text: 'Check out my multiplayer spinner result!');
+        final screenSize = MediaQuery.of(context).size;
+        await Share.shareXFiles(
+          [XFile(file.path)],
+          text: 'Check out my multiplayer spinner result!',
+          sharePositionOrigin: Rect.fromLTWH(
+            0,
+            0,
+            screenSize.width,
+            screenSize.height,
+          ),
+        );
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -221,23 +307,31 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
             Positioned(
               top: 16,
               left: 16,
-              child: Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF6C5CE7),
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.3),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: _goHome,
+                  borderRadius: BorderRadius.circular(24),
+                  child: Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF6C5CE7),
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                child: IconButton(
-                  icon: const Icon(Icons.arrow_back, color: Colors.white),
-                  onPressed: _goHome,
+                    child: const Icon(
+                      Icons.arrow_back,
+                      color: Colors.white,
+                      size: 24,
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -273,10 +367,29 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
                 final margin = 20.0;
                 final arrowHeight = 40.0;
 
+                // Calculate available space dynamically
+                // Use more of the screen for larger devices
+                final screenSize = math.min(maxWidth, maxHeight);
+                final isLargeScreen = screenSize > 600; // iPad and larger devices
+                
+                // Calculate user section height dynamically
+                final userRows = (widget.users.length / 3).ceil();
+                final userSectionHeight = userRows * 70.0 + 40.0; // Approximate height per row
+                final turnTextHeight = 40.0;
+                final topPadding = 20.0; // Reduced padding
+                final bottomPadding = 20.0;
+                
                 final availableWidth = maxWidth - (margin * 2);
-                final availableHeight = maxHeight - (margin * 2) - arrowHeight;
+                final availableHeight = maxHeight - topPadding - userSectionHeight - turnTextHeight - bottomPadding - arrowHeight;
 
-                final spinnerSize = math.min(availableWidth, availableHeight) * 0.98;
+                // Use more aggressive spinner size calculation for better screen coverage
+                // For large screens (iPad), use up to 75% of available space
+                // For smaller screens, use up to 85% of available space
+                final widthMultiplier = isLargeScreen ? 0.75 : 0.85;
+                final heightMultiplier = isLargeScreen ? 0.75 : 0.85;
+                
+                final spinnerSize = math.min(availableWidth * widthMultiplier, availableHeight * heightMultiplier);
+                // Remove max size limit for large screens, allow spinner to grow dynamically
                 final finalSize = math.max(250.0, spinnerSize);
 
                 final arrowWidth = finalSize * 0.22;
@@ -285,8 +398,9 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
 
                 return Screenshot(
                   controller: _screenshotController,
-                  child: Column(
-                    children: [
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
                     // Round info
                     Padding(
                       padding: const EdgeInsets.only(top: 80, bottom: 12),
@@ -309,8 +423,11 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
                         children: widget.users.asMap().entries.map((entry) {
                           final index = entry.key;
                           final user = entry.value;
-                          final score = _scores[user] ?? 0;
-                          final isCurrentUser = index == _currentUserIndex && !_gameCompleted;
+                          final isCurrentUser = index == _currentUserIndex;
+                          
+                          // Get current round score for this user
+                          final currentRoundScore = _roundScores[_currentRound]?[user] ?? 0;
+                          
                           return Container(
                             width: (maxWidth - 60) / (widget.users.length > 3 ? 3 : widget.users.length) - 8,
                             constraints: const BoxConstraints(minWidth: 100, maxWidth: 150),
@@ -340,7 +457,7 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
-                                  'Score: $score',
+                                  'Score: $currentRoundScore',
                                   style: const TextStyle(
                                     color: Colors.white70,
                                     fontSize: 16,
@@ -356,9 +473,7 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
                     const SizedBox(height: 12),
                     // Current user turn text below user grid
                     Text(
-                      _gameCompleted
-                          ? 'Game Complete!'
-                          : '${widget.users[_currentUserIndex]}' "'s Turn",
+                      '${widget.users[_currentUserIndex]}' "'s Turn",
                       style: const TextStyle(
                         color: Colors.white70,
                         fontSize: 18,
@@ -366,46 +481,36 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
                     ),
                     const SizedBox(height: 20),
                     // Spinner Wheel
-                    Expanded(
-                      child: Center(
-                        child: Container(
-                          margin: const EdgeInsets.all(20),
-                          child: Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              // Wheel
-                              Transform.rotate(
-                                angle: _rotation * math.pi / 180,
-                                child: CustomPaint(
-                                  size: Size(finalSize, finalSize),
-                                  painter: WheelPainter(
-                                    items: _items,
-                                    getSegmentColor: _getSegmentColor,
-                                  ),
+                    Center(
+                      child: Container(
+                        height: finalSize + 50, // Fixed height to prevent cropping
+                        width: finalSize,
+                        margin: const EdgeInsets.all(20),
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            // Wheel
+                            Transform.rotate(
+                              angle: _rotation * math.pi / 180,
+                              child: CustomPaint(
+                                size: Size(finalSize, finalSize),
+                                painter: MultiplayerWheelPainter(
+                                  segments: _segments,
+                                  getSegmentColor: _getSegmentColor,
                                 ),
                               ),
-                              // Pointer
-                              Positioned(
-                                top: -25,
-                                child: Container(
-                                  width: arrowWidth,
-                                  height: arrowHeightSize,
-                                  child: Image.asset(
-                                    'assets/images/arrow_pointer.png',
-                                    fit: BoxFit.contain,
-                                    errorBuilder: (context, error, stackTrace) {
-                                      return CustomPaint(
-                                        size: Size(arrowWidth, arrowHeightSize),
-                                        painter: PointerPainter(),
-                                      );
-                                    },
-                                  ),
-                                ),
+                            ),
+                            // Pointer
+                            Positioned(
+                              top: 10,
+                              child: CustomPaint(
+                                size: Size(arrowWidth, arrowHeightSize),
+                                painter: PointerPainter(),
                               ),
+                            ),
                               // Center Spin Button
-                              if (!_gameCompleted)
-                                GestureDetector(
-                                  onTap: _spin,
+                              GestureDetector(
+                                  onTap: _isWaitingForNextTurn ? null : _spin,
                                   child: Container(
                                     width: buttonSize,
                                     height: buttonSize,
@@ -447,104 +552,10 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
                             ],
                           ),
                         ),
-                      ),
                     ),
-                    // Winner announcement or buttons
-                    if (_gameCompleted)
-                      Container(
-                        padding: const EdgeInsets.all(20),
-                        child: Column(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(24),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF6C5CE7),
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              child: Column(
-                                children: [
-                                  const Text(
-                                    '🏆 Winner! 🏆',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 28,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 12),
-                                  Text(
-                                    _winner ?? '',
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 32,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    'Score: ${_scores[_winner]}',
-                                    style: const TextStyle(
-                                      color: Colors.white70,
-                                      fontSize: 20,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 20),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: ElevatedButton(
-                                    onPressed: _resetGame,
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: const Color(0xFFFF6B35),
-                                      foregroundColor: Colors.white,
-                                      padding: const EdgeInsets.symmetric(vertical: 18),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      elevation: 4,
-                                    ),
-                                    child: const Text(
-                                      'Play Again',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: ElevatedButton(
-                                    onPressed: _goHome,
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: const Color(0xFF6C5CE7),
-                                      foregroundColor: Colors.white,
-                                      padding: const EdgeInsets.symmetric(vertical: 18),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      elevation: 4,
-                                    ),
-                                    child: const Text(
-                                      'Home',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      )
-                    else
-                      const SizedBox(height: 20),
-                    ],
+                    const SizedBox(height: 20),
+                      ],
+                    ),
                   ),
                 );
               },
@@ -556,59 +567,83 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
   }
 }
 
-// Reuse WheelPainter and PointerPainter from spinner_wheel_page
-class WheelPainter extends CustomPainter {
-  final List<String> items;
+// Segment info for multiplayer wheel with jackpot
+class SegmentInfo {
+  final String value;
+  final bool isJackpot;
+  final double startAngle; // in degrees
+  final double endAngle; // in degrees
+
+  SegmentInfo({
+    required this.value,
+    required this.isJackpot,
+    required this.startAngle,
+    required this.endAngle,
+  });
+}
+
+// Custom painter for multiplayer wheel with variable segment sizes
+class MultiplayerWheelPainter extends CustomPainter {
+  final List<SegmentInfo> segments;
   final Color Function(int) getSegmentColor;
 
-  WheelPainter({required this.items, required this.getSegmentColor});
+  MultiplayerWheelPainter({required this.segments, required this.getSegmentColor});
 
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
     final borderWidth = 4.0;
     final radius = (size.width / 2) - (borderWidth / 2);
-    final anglePerSegment = 2 * math.pi / items.length;
 
-    for (int i = 0; i < items.length; i++) {
-      final startAngle = i * anglePerSegment - math.pi / 2;
-      final endAngle = (i + 1) * anglePerSegment - math.pi / 2;
+    for (int i = 0; i < segments.length; i++) {
+      final segment = segments[i];
+      // Convert degrees to radians and adjust for top start (-90 degrees)
+      final startAngle = (segment.startAngle - 90) * math.pi / 180;
+      final endAngle = (segment.endAngle - 90) * math.pi / 180;
+      final segmentAngle = endAngle - startAngle;
 
+      // Use gold color for jackpot, regular color for others
       final paint = Paint()
-        ..color = getSegmentColor(i)
+        ..color = segment.isJackpot 
+            ? const Color(0xFFFFD700) // Gold for jackpot
+            : getSegmentColor(i % 10)
         ..style = PaintingStyle.fill;
 
       canvas.drawArc(
         Rect.fromCircle(center: center, radius: radius),
         startAngle,
-        endAngle - startAngle,
+        segmentAngle,
         true,
         paint,
       );
 
+      // Draw border - thicker for jackpot
       final borderPaint = Paint()
-        ..color = Colors.white.withOpacity(0.3)
+        ..color = segment.isJackpot 
+            ? Colors.white 
+            : Colors.white.withOpacity(0.3)
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 2;
+        ..strokeWidth = segment.isJackpot ? 3 : 2;
 
       canvas.drawArc(
         Rect.fromCircle(center: center, radius: radius),
         startAngle,
-        endAngle - startAngle,
+        segmentAngle,
         true,
         borderPaint,
       );
 
-      final textAngle = startAngle + anglePerSegment / 2;
+      // Draw text
+      final textAngle = startAngle + segmentAngle / 2;
       final textRadius = radius * 0.82;
-      final text = items[i];
+      final text = segment.value;
 
       final textPainter = TextPainter(
         text: TextSpan(
           text: text,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 24,
+          style: TextStyle(
+            color: segment.isJackpot ? Colors.black : Colors.white,
+            fontSize: segment.isJackpot ? 20 : 24,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -628,10 +663,26 @@ class WheelPainter extends CustomPainter {
       );
       canvas.restore();
 
-      final starRadius = radius * 0.5;
-      final starX = center.dx + starRadius * math.cos(textAngle);
-      final starY = center.dy + starRadius * math.sin(textAngle);
-      _drawStar(canvas, Offset(starX, starY), 8, Colors.white.withOpacity(0.6));
+      // Draw stars - more prominent for jackpot
+      if (!segment.isJackpot) {
+        final starRadius = radius * 0.5;
+        final starX = center.dx + starRadius * math.cos(textAngle);
+        final starY = center.dy + starRadius * math.sin(textAngle);
+        _drawStar(canvas, Offset(starX, starY), 8, Colors.white.withOpacity(0.6));
+      } else {
+        // Draw sparkle effect for jackpot
+        final sparkleRadius = radius * 0.5;
+        final sparkleX = center.dx + sparkleRadius * math.cos(textAngle);
+        final sparkleY = center.dy + sparkleRadius * math.sin(textAngle);
+        _drawStar(canvas, Offset(sparkleX, sparkleY), 12, Colors.yellow.withOpacity(0.8));
+        // Draw additional sparkles around jackpot
+        for (int j = 0; j < 3; j++) {
+          final offsetAngle = textAngle + (j - 1) * segmentAngle * 0.3;
+          final offsetX = center.dx + sparkleRadius * math.cos(offsetAngle);
+          final offsetY = center.dy + sparkleRadius * math.sin(offsetAngle);
+          _drawStar(canvas, Offset(offsetX, offsetY), 6, Colors.yellow.withOpacity(0.6));
+        }
+      }
     }
 
     final circleBorderPaint = Paint()

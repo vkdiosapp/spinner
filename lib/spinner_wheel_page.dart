@@ -166,14 +166,16 @@ class _SpinnerWheelPageState extends State<SpinnerWheelPage>
       _segmentColors.add(assignedColor);
     }
     
-    // Final check: ensure last segment doesn't match first (circular)
+    // Ensure last segment doesn't match first (circular adjacency)
     if (_segmentColors.length > 1) {
       final lastIndex = _segmentColors.length - 1;
       final firstColor = _segmentColors[0];
       final secondToLastColor = _segmentColors[lastIndex - 1];
+      final lastColor = _segmentColors[lastIndex];
       
-      if (_segmentColors[lastIndex] == firstColor) {
-        // Find a different color for the last segment that's not first or second-to-last
+      // If last segment matches first, find a replacement
+      if (lastColor == firstColor) {
+        // Find a color that's different from both first and second-to-last
         for (int i = 0; i < basicColors.length; i++) {
           final candidateColor = basicColors[i];
           if (candidateColor != firstColor && candidateColor != secondToLastColor) {
@@ -184,19 +186,54 @@ class _SpinnerWheelPageState extends State<SpinnerWheelPage>
       }
     }
     
-    // Double-check all adjacent pairs to ensure no duplicates
+    // Double-check all adjacent pairs including circular (last to first)
     for (int i = 0; i < _segmentColors.length; i++) {
       final nextIndex = (i + 1) % _segmentColors.length;
+      
+      // Check if current segment matches next segment
       if (_segmentColors[i] == _segmentColors[nextIndex]) {
-        // Find a replacement color
+        // Find a replacement color that's different from both neighbors
         final prevIndex = (i - 1 + _segmentColors.length) % _segmentColors.length;
         final prevColor = _segmentColors[prevIndex];
         final nextColor = _segmentColors[nextIndex];
         
+        // Try to find a suitable replacement
+        bool found = false;
         for (int j = 0; j < basicColors.length; j++) {
           final candidateColor = basicColors[j];
           if (candidateColor != prevColor && candidateColor != nextColor) {
             _segmentColors[i] = candidateColor;
+            found = true;
+            break;
+          }
+        }
+        
+        // If no suitable color found, try replacing the next segment instead
+        if (!found) {
+          for (int j = 0; j < basicColors.length; j++) {
+            final candidateColor = basicColors[j];
+            final nextNextIndex = (nextIndex + 1) % _segmentColors.length;
+            final nextNextColor = _segmentColors[nextNextIndex];
+            
+            if (candidateColor != _segmentColors[i] && candidateColor != nextNextColor) {
+              _segmentColors[nextIndex] = candidateColor;
+              break;
+            }
+          }
+        }
+      }
+    }
+    
+    // Final verification: explicitly check first and last segments
+    if (_segmentColors.length > 1) {
+      final lastIndex = _segmentColors.length - 1;
+      if (_segmentColors[0] == _segmentColors[lastIndex]) {
+        // Find a replacement for the last segment
+        final secondToLastColor = _segmentColors[lastIndex - 1];
+        for (int i = 0; i < basicColors.length; i++) {
+          final candidateColor = basicColors[i];
+          if (candidateColor != _segmentColors[0] && candidateColor != secondToLastColor) {
+            _segmentColors[lastIndex] = candidateColor;
             break;
           }
         }

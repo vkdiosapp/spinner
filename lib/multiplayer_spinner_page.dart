@@ -52,8 +52,51 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
       _roundScores[1]![user] = 0;
     }
 
-    // Shuffle items randomly
-    final regularItems = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']..shuffle(_random);
+    // Generate random two-digit numbers from specific ranges
+    final twoDigitNumbers = <String>[];
+    
+    // First: 1-9 (formatted as 01-09)
+    final firstNumber = _random.nextInt(9) + 1; // 1-9
+    twoDigitNumbers.add(firstNumber.toString().padLeft(2, '0'));
+    
+    // Second: 11-19
+    final secondNumber = _random.nextInt(9) + 11; // 11-19
+    twoDigitNumbers.add(secondNumber.toString());
+    
+    // Third: 21-29
+    final thirdNumber = _random.nextInt(9) + 21; // 21-29
+    twoDigitNumbers.add(thirdNumber.toString());
+    
+    // Fourth: 31-39
+    final fourthNumber = _random.nextInt(9) + 31; // 31-39
+    twoDigitNumbers.add(fourthNumber.toString());
+    
+    // Fifth: 41-49
+    final fifthNumber = _random.nextInt(9) + 41; // 41-49
+    twoDigitNumbers.add(fifthNumber.toString());
+    
+    // Sixth: 51-59
+    final sixthNumber = _random.nextInt(9) + 51; // 51-59
+    twoDigitNumbers.add(sixthNumber.toString());
+    
+    // Seventh: 61-69
+    final seventhNumber = _random.nextInt(9) + 61; // 61-69
+    twoDigitNumbers.add(seventhNumber.toString());
+    
+    // Eighth: 71-79
+    final eighthNumber = _random.nextInt(9) + 71; // 71-79
+    twoDigitNumbers.add(eighthNumber.toString());
+    
+    // Ninth: 81-89
+    final ninthNumber = _random.nextInt(9) + 81; // 81-89
+    twoDigitNumbers.add(ninthNumber.toString());
+    
+    // Tenth: 91-99
+    final tenthNumber = _random.nextInt(9) + 91; // 91-99
+    twoDigitNumbers.add(tenthNumber.toString());
+    
+    // Shuffle the two-digit numbers
+    twoDigitNumbers.shuffle(_random);
     
     // Create segments with jackpot (10 degrees width - 1/3 of previous 30 degrees)
     // Regular segment angle: (360 - 10) / 10 = 35 degrees each
@@ -68,19 +111,19 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
     
     for (int i = 0; i < 11; i++) {
       if (i == jackpotPosition) {
-        // Add jackpot segment (10 degrees - very thin!)
+        // Add jackpot segment (10 degrees - very thin!) - worth 100 points
         _segments.add(SegmentInfo(
-          value: '20',
+          value: '100',
           isJackpot: true,
           startAngle: currentAngle,
           endAngle: currentAngle + jackpotAngle,
         ));
         currentAngle += jackpotAngle;
       } else {
-        // Add regular segment (35 degrees)
+        // Add regular segment (35 degrees) with two-digit number
         final itemIndex = i > jackpotPosition ? i - 1 : i;
         _segments.add(SegmentInfo(
-          value: regularItems[itemIndex],
+          value: twoDigitNumbers[itemIndex],
           isJackpot: false,
           startAngle: currentAngle,
           endAngle: currentAngle + regularAngle,
@@ -339,7 +382,7 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
   }
 
   void _initializeColors() {
-    // 12 basic colors to use repeatedly
+    // 12 basic colors to use
     final basicColors = [
       const Color(0xFFFF6B35), // Orange
       const Color(0xFF6C5CE7), // Purple
@@ -357,64 +400,90 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
     
     _segmentColors = [];
     
-    // Assign colors sequentially, ensuring no adjacent duplicates
+    // We have 11 segments (10 regular + 1 jackpot)
+    // Use a smarter algorithm to ensure no duplicates and first != last
+    final usedColors = <Color>{};
+    int colorIndex = 0;
+    
     for (int i = 0; i < _segments.length; i++) {
-      Color assignedColor;
+      Color assignedColor = basicColors[0]; // Default fallback
       
       if (i == 0) {
         // First segment - use first color
         assignedColor = basicColors[0];
-      } else {
-        // For subsequent segments, find a color that's different from the previous one
+        usedColors.add(assignedColor);
+      } else if (i == _segments.length - 1) {
+        // Last segment - must be different from first and previous
+        final firstColor = _segmentColors[0];
         final prevColor = _segmentColors[i - 1];
         
-        // Start from the next sequential color index
-        int colorIndex = (i % basicColors.length);
-        
-        // Find a color that's different from the previous segment
-        int attempts = 0;
-        while (basicColors[colorIndex] == prevColor && attempts < basicColors.length) {
-          colorIndex = (colorIndex + 1) % basicColors.length;
-          attempts++;
+        // Find a color that's not first, not previous, and preferably not used yet
+        bool found = false;
+        for (int j = 0; j < basicColors.length; j++) {
+          final candidateColor = basicColors[j];
+          if (candidateColor != firstColor && 
+              candidateColor != prevColor && 
+              !usedColors.contains(candidateColor)) {
+            assignedColor = candidateColor;
+            usedColors.add(assignedColor);
+            found = true;
+            break;
+          }
         }
         
-        assignedColor = basicColors[colorIndex];
+        // If all colors are used, find one that's at least different from first and previous
+        if (!found) {
+          for (int j = 0; j < basicColors.length; j++) {
+            final candidateColor = basicColors[j];
+            if (candidateColor != firstColor && candidateColor != prevColor) {
+              assignedColor = candidateColor;
+              break;
+            }
+          }
+        }
+      } else {
+        // Middle segments - different from previous, avoid duplicates if possible
+        final prevColor = _segmentColors[i - 1];
+        
+        // Try to find an unused color first
+        bool found = false;
+        for (int j = 0; j < basicColors.length; j++) {
+          final candidateColor = basicColors[j];
+          if (candidateColor != prevColor && !usedColors.contains(candidateColor)) {
+            assignedColor = candidateColor;
+            usedColors.add(assignedColor);
+            found = true;
+            break;
+          }
+        }
+        
+        // If all colors are used, find one that's at least different from previous
+        if (!found) {
+          colorIndex = (colorIndex + 1) % basicColors.length;
+          int attempts = 0;
+          while (basicColors[colorIndex] == prevColor && attempts < basicColors.length) {
+            colorIndex = (colorIndex + 1) % basicColors.length;
+            attempts++;
+          }
+          assignedColor = basicColors[colorIndex];
+        }
       }
       
       _segmentColors.add(assignedColor);
     }
     
-    // Final check: ensure last segment doesn't match first (circular)
+    // Final verification: ensure first and last are definitely different
     if (_segmentColors.length > 1) {
       final lastIndex = _segmentColors.length - 1;
-      final firstColor = _segmentColors[0];
-      final secondToLastColor = _segmentColors[lastIndex - 1];
-      
-      if (_segmentColors[lastIndex] == firstColor) {
-        // Find a different color for the last segment that's not first or second-to-last
+      if (_segmentColors[0] == _segmentColors[lastIndex]) {
+        // Force a different color for last segment
+        final firstColor = _segmentColors[0];
+        final secondToLastColor = _segmentColors[lastIndex - 1];
+        
         for (int i = 0; i < basicColors.length; i++) {
           final candidateColor = basicColors[i];
           if (candidateColor != firstColor && candidateColor != secondToLastColor) {
             _segmentColors[lastIndex] = candidateColor;
-            break;
-          }
-        }
-      }
-    }
-    
-    // Double-check all adjacent pairs to ensure no duplicates
-    for (int i = 0; i < _segmentColors.length; i++) {
-      final nextIndex = (i + 1) % _segmentColors.length;
-      if (_segmentColors[i] == _segmentColors[nextIndex]) {
-        // Find a replacement color
-        final prevIndex = (i - 1 + _segmentColors.length) % _segmentColors.length;
-        final prevColor = _segmentColors[prevIndex];
-        final nextColor = _segmentColors[nextIndex];
-        
-        for (int j = 0; j < basicColors.length; j++) {
-          final candidateColor = basicColors[j];
-          if (candidateColor != prevColor && candidateColor != nextColor) {
-            _segmentColors[i] = candidateColor;
             break;
           }
         }

@@ -159,7 +159,7 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
     );
 
     _flyAnimationController = AnimationController(
-      duration: const Duration(milliseconds: 1000), // Reduced from 1500ms to 1000ms
+      duration: const Duration(milliseconds: 400), // 400ms for flying animation
       vsync: this,
     );
 
@@ -285,37 +285,36 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
         _isWaitingForNextTurn = true;
       });
       
-      Future.delayed(const Duration(milliseconds: 500), () {
-        if (!mounted) return;
-        
-        // Move to next user or next round
-        if (_currentUserIndex < widget.users.length - 1) {
-          // Next user in same round - reset spinner first
+      // No delay - move immediately to next turn
+      if (!mounted) return;
+      
+      // Move to next user or next round
+      if (_currentUserIndex < widget.users.length - 1) {
+        // Next user in same round - reset spinner first
+        _resetSpinnerForNextTurn();
+        setState(() {
+          _currentUserIndex++;
+          _isWaitingForNextTurn = false;
+        });
+      } else {
+        // Round complete, move to next round
+        if (_currentRound < widget.rounds) {
           _resetSpinnerForNextTurn();
           setState(() {
-            _currentUserIndex++;
+            _currentRound++;
+            _currentUserIndex = 0;
             _isWaitingForNextTurn = false;
+            // Initialize next round scores
+            _roundScores[_currentRound] = {};
+            for (var user in widget.users) {
+              _roundScores[_currentRound]![user] = 0;
+            }
           });
         } else {
-          // Round complete, move to next round
-          if (_currentRound < widget.rounds) {
-            _resetSpinnerForNextTurn();
-            setState(() {
-              _currentRound++;
-              _currentUserIndex = 0;
-              _isWaitingForNextTurn = false;
-              // Initialize next round scores
-              _roundScores[_currentRound] = {};
-              for (var user in widget.users) {
-                _roundScores[_currentRound]![user] = 0;
-              }
-            });
-          } else {
-            // Game complete - navigate to results page
-            _navigateToResults();
-          }
+          // Game complete - navigate to results page
+          _navigateToResults();
         }
-      });
+      }
     });
   }
 
@@ -1112,12 +1111,12 @@ class _FlyingNumberWidgetState extends State<_FlyingNumberWidget> {
                   child: Text(
                     widget.number,
                     style: const TextStyle(
-                      color: Colors.white,
+                      color: Colors.black,
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
                       shadows: [
                         Shadow(
-                          color: Colors.black,
+                          color: Colors.white,
                           blurRadius: 4,
                         ),
                       ],

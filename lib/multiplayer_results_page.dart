@@ -45,16 +45,49 @@ class _MultiplayerResultsPageState extends State<MultiplayerResultsPage> {
     }
   }
 
-  Color _getMedalColor(int rank) {
+  Gradient? _getMedalGradient(int rank) {
     switch (rank) {
       case 1:
-        return const Color(0xFFFFD700); // Gold
+        // Gold gradient - rich yellow to orange with shine
+        return LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            const Color(0xFFFFD700), // Bright gold
+            const Color(0xFFFFA500), // Orange gold
+            const Color(0xFFFFD700), // Bright gold
+            const Color(0xFFFFC125), // Goldenrod
+          ],
+          stops: const [0.0, 0.3, 0.6, 1.0],
+        );
       case 2:
-        return const Color(0xFFC0C0C0); // Silver
+        // Silver gradient - metallic gray to white with shine
+        return LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            const Color(0xFFE8E8E8), // Light silver
+            const Color(0xFFFFFFFF), // White
+            const Color(0xFFC0C0C0), // Silver
+            const Color(0xFFE8E8E8), // Light silver
+          ],
+          stops: const [0.0, 0.3, 0.6, 1.0],
+        );
       case 3:
-        return const Color(0xFFCD7F32); // Bronze
+        // Bronze gradient - brown to copper with metallic shine
+        return LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            const Color(0xFFCD7F32), // Bronze
+            const Color(0xFFB87333), // Darker bronze
+            const Color(0xFFCD853F), // Peru bronze
+            const Color(0xFFCD7F32), // Bronze
+          ],
+          stops: const [0.0, 0.3, 0.6, 1.0],
+        );
       default:
-        return Colors.white; // White background for better black text visibility
+        return null; // No gradient for ranks 4+
     }
   }
 
@@ -186,9 +219,9 @@ class _MultiplayerResultsPageState extends State<MultiplayerResultsPage> {
               controller: _screenshotController,
               child: SingleChildScrollView(
                 padding: const EdgeInsets.only(top: 80, left: 20, right: 20, bottom: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
                     // Title
                     const Text(
                       '🏆 Game Results 🏆',
@@ -207,20 +240,28 @@ class _MultiplayerResultsPageState extends State<MultiplayerResultsPage> {
                       final user = userEntry.key;
                       final totalScore = userEntry.value;
                       final medalEmoji = _getMedalEmoji(rank);
-                      final medalColor = _getMedalColor(rank);
+                      final medalGradient = _getMedalGradient(rank);
 
                       return Container(
                         margin: const EdgeInsets.only(bottom: 16),
                         decoration: BoxDecoration(
-                          color: medalColor,
+                          gradient: medalGradient,
+                          color: medalGradient == null ? Colors.white : null, // White for ranks 4+
                           borderRadius: BorderRadius.circular(16),
                           border: rank <= 3
-                              ? Border.all(color: Colors.white, width: 2)
+                              ? Border.all(color: Colors.white.withOpacity(0.8), width: 2.5)
                               : null,
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.2),
-                              blurRadius: 8,
+                              color: rank <= 3 
+                                  ? (rank == 1 
+                                      ? const Color(0xFFFFD700).withOpacity(0.4) // Gold glow
+                                      : rank == 2 
+                                          ? const Color(0xFFC0C0C0).withOpacity(0.4) // Silver glow
+                                          : const Color(0xFFCD7F32).withOpacity(0.4)) // Bronze glow
+                                  : Colors.black.withOpacity(0.2),
+                              blurRadius: rank <= 3 ? 12 : 8,
+                              spreadRadius: rank <= 3 ? 2 : 0,
                               offset: const Offset(0, 4),
                             ),
                           ],
@@ -307,10 +348,10 @@ class _MultiplayerResultsPageState extends State<MultiplayerResultsPage> {
                         ),
                       );
                     }),
-                const SizedBox(height: 20),
-              ],
-            ),
-          ),
+                    const SizedBox(height: 20),
+                  ],
+                ),
+              ),
             ),
           ],
         ),

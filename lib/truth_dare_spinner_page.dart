@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:convert';
 import 'dart:math' as math;
+import 'sound_vibration_helper.dart';
 
 class TruthDareSpinnerPage extends StatefulWidget {
   final String level;
@@ -105,6 +106,9 @@ class _TruthDareSpinnerPageState extends State<TruthDareSpinnerPage>
     }
 
     _randomOffset = _random.nextDouble() * 360;
+
+    // Play sound and vibration
+    SoundVibrationHelper.playSpinEffects();
 
     setState(() {
       _isSpinning = true;

@@ -3,9 +3,50 @@ import 'spinner_config_page.dart';
 import 'multiplayer_config_page.dart';
 import 'dice_page.dart';
 import 'truth_dare_level_page.dart';
+// TODO: Uncomment tomorrow to re-enable sound/vibration toggles
+// import 'sound_vibration_settings.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  // TODO: Uncomment tomorrow to re-enable sound/vibration toggles
+  /*
+  bool _soundEnabled = true;
+  bool _vibrationEnabled = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSettings();
+  }
+
+  Future<void> _loadSettings() async {
+    await SoundVibrationSettings.initialize();
+    setState(() {
+      _soundEnabled = SoundVibrationSettings.soundEnabled;
+      _vibrationEnabled = SoundVibrationSettings.vibrationEnabled;
+    });
+  }
+
+  Future<void> _toggleSound() async {
+    await SoundVibrationSettings.toggleSound();
+    setState(() {
+      _soundEnabled = SoundVibrationSettings.soundEnabled;
+    });
+  }
+
+  Future<void> _toggleVibration() async {
+    await SoundVibrationSettings.toggleVibration();
+    setState(() {
+      _vibrationEnabled = SoundVibrationSettings.vibrationEnabled;
+    });
+  }
+  */
 
   @override
   Widget build(BuildContext context) {
@@ -43,30 +84,32 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFF2D2D44),
       body: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final isLandscape = constraints.maxWidth > constraints.maxHeight;
-            final itemSize = isLandscape
-                ? constraints.maxWidth / 5
-                : constraints.maxWidth / 2.5;
-            
-            return Center(
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const SizedBox(height: 20),
-                      const Text(
-                        'Spinner',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 30),
+        child: Stack(
+          children: [
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final isLandscape = constraints.maxWidth > constraints.maxHeight;
+                final itemSize = isLandscape
+                    ? constraints.maxWidth / 5
+                    : constraints.maxWidth / 2.5;
+                
+                return Center(
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const SizedBox(height: 20),
+                          const Text(
+                            'Spinner',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 32,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 30),
                       Wrap(
                         alignment: WrapAlignment.center,
                         spacing: 12,
@@ -136,13 +179,88 @@ class HomePage extends StatelessWidget {
                           );
                         }).toList(),
                       ),
-                      const SizedBox(height: 20),
+                          const SizedBox(height: 20),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+            // Sound and Vibration toggle buttons - top right (above all UI)
+            // TODO: Uncomment tomorrow to re-enable sound/vibration toggles
+            /*
+            Positioned(
+              top: 16,
+              right: 16,
+              child: IgnorePointer(
+                ignoring: false,
+                child: Material(
+                  color: Colors.transparent,
+                  elevation: 10,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Vibration toggle button
+                      Container(
+                        width: 48,
+                        height: 48,
+                        margin: const EdgeInsets.only(right: 12),
+                        decoration: BoxDecoration(
+                          color: _vibrationEnabled 
+                              ? const Color(0xFF6C5CE7)
+                              : const Color(0xFF3D3D5C),
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.3),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: IconButton(
+                          icon: Icon(
+                            _vibrationEnabled ? Icons.vibration : Icons.vibration_outlined,
+                            color: Colors.white,
+                          ),
+                          onPressed: _toggleVibration,
+                          tooltip: _vibrationEnabled ? 'Vibration On' : 'Vibration Off',
+                        ),
+                      ),
+                      // Sound toggle button
+                      Container(
+                        width: 48,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          color: _soundEnabled 
+                              ? const Color(0xFF6C5CE7)
+                              : const Color(0xFF3D3D5C),
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.3),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: IconButton(
+                          icon: Icon(
+                            _soundEnabled ? Icons.volume_up : Icons.volume_off,
+                            color: Colors.white,
+                          ),
+                          onPressed: _toggleSound,
+                          tooltip: _soundEnabled ? 'Sound On' : 'Sound Off',
+                        ),
+                      ),
                     ],
                   ),
                 ),
               ),
-            );
-          },
+            ),
+            */
+          ],
         ),
       ),
     );

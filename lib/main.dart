@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'home_page.dart';
+import 'sound_vibration_settings.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await SoundVibrationSettings.initialize();
   runApp(const MyApp());
 }
 

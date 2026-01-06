@@ -6,6 +6,7 @@ import 'package:screenshot/screenshot.dart';
 import 'package:path_provider/path_provider.dart';
 import 'home_page.dart';
 import 'multiplayer_results_page.dart';
+import 'sound_vibration_helper.dart';
 
 class MultiplayerSpinnerPage extends StatefulWidget {
   final List<String> users;
@@ -356,6 +357,9 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
     if (_isSpinning || _isWaitingForNextTurn) return;
 
     _randomOffset = _random.nextDouble() * 360;
+
+    // Play sound and vibration
+    SoundVibrationHelper.playSpinEffects();
 
     setState(() {
       _isSpinning = true;

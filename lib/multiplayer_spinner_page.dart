@@ -26,7 +26,6 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
     with TickerProviderStateMixin {
   late AnimationController _controller;
   late AnimationController _revealController;
-  late AnimationController _flyAnimationController;
   double _rotation = 0;
   double _randomOffset = 0;
   bool _isSpinning = false;
@@ -35,12 +34,6 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
   late List<Color> _segmentColors; // Store assigned colors to avoid duplicates
   final math.Random _random = math.Random();
   final ScreenshotController _screenshotController = ScreenshotController();
-  
-  // Animation state for flying number
-  String? _flyingNumber;
-  bool _isShowingNumber = false;
-  GlobalKey? _userScoreKey;
-  GlobalKey _spinnerCenterKey = GlobalKey();
   
   // Reveal animation state
   bool _isRevealed = false;
@@ -159,11 +152,6 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
       vsync: this,
     );
 
-    _flyAnimationController = AnimationController(
-      duration: const Duration(milliseconds: 400), // 400ms for flying animation
-      vsync: this,
-    );
-
     _controller.addListener(() {
       setState(() {
         final curvedValue = Curves.decelerate.transform(_controller.value);
@@ -193,7 +181,6 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
     SoundVibrationHelper.stopContinuousSound();
     _controller.dispose();
     _revealController.dispose();
-    _flyAnimationController.dispose();
     super.dispose();
   }
 
@@ -258,80 +245,63 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
   }
   
   void _autoHideRevealAndFly() {
-    // After reveal is closed, show flying number animation
+    // After reveal is closed, add points and move to next turn
     if (_earnedNumber != null && _earnedPoints != null) {
-      _showFlyingNumberAnimation(_earnedNumber!, _earnedPoints!);
-    }
-    
-    setState(() {
-      _isRevealed = false;
-      _earnedPoints = null;
-      _earnedNumber = null;
-    });
-    _revealController.reset();
-  }
-  
-  void _showFlyingNumberAnimation(String number, int points) {
-    // Reset user score key to ensure it gets reassigned to current user
-    setState(() {
-      _flyingNumber = number;
-      _isShowingNumber = true;
-      // Force key reset so it gets reassigned to current user's card
-      _userScoreKey = null;
-    });
-
-    // Wait a frame to ensure the key is reassigned before calculating positions
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      // Reset and start fly animation
-      _flyAnimationController.reset();
-      _flyAnimationController.forward().then((_) {
-        // Add points after animation completes
-        final currentUser = widget.users[_currentUserIndex];
-        _scores[currentUser] = (_scores[currentUser] ?? 0) + points;
-        // Track round score
-        _roundScores[_currentRound]![currentUser] = 
-            (_roundScores[_currentRound]![currentUser] ?? 0) + points;
-
-        // Hide animation and move to next turn
+      final points = _earnedPoints!;
+      final currentUser = widget.users[_currentUserIndex];
+      _scores[currentUser] = (_scores[currentUser] ?? 0) + points;
+      // Track round score
+      _roundScores[_currentRound]![currentUser] = 
+          (_roundScores[_currentRound]![currentUser] ?? 0) + points;
+      
+      // Move to next turn
+      setState(() {
+        _isRevealed = false;
+        _earnedPoints = null;
+        _earnedNumber = null;
+        _isWaitingForNextTurn = true;
+      });
+      _revealController.reset();
+      
+      // Move to next user or next round
+      if (!mounted) return;
+      
+      if (_currentUserIndex < widget.users.length - 1) {
+        // Next user in same round - reset spinner first
+        _resetSpinnerForNextTurn();
         setState(() {
-          _isShowingNumber = false;
-          _flyingNumber = null;
-          _isWaitingForNextTurn = true;
+          _currentUserIndex++;
+          _isWaitingForNextTurn = false;
         });
-        
-        // No delay - move immediately to next turn
-        if (!mounted) return;
-        
-        // Move to next user or next round
-        if (_currentUserIndex < widget.users.length - 1) {
-          // Next user in same round - reset spinner first
+      } else {
+        // Round complete, move to next round
+        if (_currentRound < widget.rounds) {
           _resetSpinnerForNextTurn();
           setState(() {
-            _currentUserIndex++;
+            _currentRound++;
+            _currentUserIndex = 0;
             _isWaitingForNextTurn = false;
+            // Initialize next round scores
+            _roundScores[_currentRound] = {};
+            for (var user in widget.users) {
+              _roundScores[_currentRound]![user] = 0;
+            }
           });
         } else {
-          // Round complete, move to next round
-          if (_currentRound < widget.rounds) {
-            _resetSpinnerForNextTurn();
-            setState(() {
-              _currentRound++;
-              _currentUserIndex = 0;
-              _isWaitingForNextTurn = false;
-              // Initialize next round scores
-              _roundScores[_currentRound] = {};
-              for (var user in widget.users) {
-                _roundScores[_currentRound]![user] = 0;
-              }
-            });
-          } else {
-            // Game complete - navigate to results page
-            _navigateToResults();
-          }
+          // Game complete - navigate to results page
+          _navigateToResults();
         }
+      }
+    } else {
+      setState(() {
+        _isRevealed = false;
+        _earnedPoints = null;
+        _earnedNumber = null;
       });
-    });
+      _revealController.reset();
+    }
   }
+  
 
   void _navigateToResults() {
     Navigator.of(context).pushReplacement(
@@ -363,13 +333,11 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
     }
     
     // Reset spinner rotation and offset for next turn
-    // Also reset user score key so it gets reassigned to the new current user
     setState(() {
       _rotation = 0;
       _randomOffset = 0;
       _isSpinning = false;
       _isWaitingForNextTurn = false;
-      _userScoreKey = null; // Reset key so it gets reassigned to new current user
     });
     _controller.reset();
   }
@@ -449,10 +417,10 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
       if (Navigator.of(context).canPop()) {
         Navigator.of(context).pop();
       } else {
-        Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => const HomePage()),
-          (route) => false,
-        );
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (context) => const HomePage()),
+      (route) => false,
+    );
       }
     }
   }
@@ -611,39 +579,39 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
         }
       },
       child: Scaffold(
-        backgroundColor: const Color(0xFF2D2D44),
-        body: SafeArea(
+      backgroundColor: const Color(0xFF2D2D44),
+      body: SafeArea(
           child: Column(
             children: [
               // Fixed header with back button, title, and share button
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                child: Stack(
+        child: Stack(
                   alignment: Alignment.center,
-                  children: [
+          children: [
                     // Back button - left aligned
                     Align(
                       alignment: Alignment.centerLeft,
-                      child: Container(
-                        width: 48,
-                        height: 48,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF6C5CE7),
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.3),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: IconButton(
-                          icon: const Icon(Icons.arrow_back, color: Colors.white),
-                          onPressed: _goHome,
-                        ),
-                      ),
+              child: Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF6C5CE7),
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.3),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
                     ),
+                  ],
+                ),
+                child: IconButton(
+                  icon: const Icon(Icons.arrow_back, color: Colors.white),
+                  onPressed: _goHome,
+                ),
+              ),
+            ),
                     // Title - centered on screen
                     Text(
                       'Round $_currentRound / ${widget.rounds}',
@@ -657,35 +625,35 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
                     // Share button - right aligned
                     Align(
                       alignment: Alignment.centerRight,
-                      child: Container(
-                        width: 48,
-                        height: 48,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF6C5CE7),
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.3),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: IconButton(
-                          icon: const Icon(Icons.share, color: Colors.white, size: 24),
-                          onPressed: _shareSpinner,
-                        ),
-                      ),
+              child: Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF6C5CE7),
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.3),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
                     ),
+                  ],
+                ),
+                child: IconButton(
+                          icon: const Icon(Icons.share, color: Colors.white, size: 24),
+                  onPressed: _shareSpinner,
+                ),
+              ),
+            ),
                   ],
                 ),
               ),
               // Scrollable content
               Expanded(
                 child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    final maxWidth = constraints.maxWidth;
-                    final maxHeight = constraints.maxHeight;
+              builder: (context, constraints) {
+                final maxWidth = constraints.maxWidth;
+                final maxHeight = constraints.maxHeight;
                     // Calculate available space dynamically
                     // Use more of the screen for larger devices
                     final screenSize = math.min(maxWidth, maxHeight);
@@ -699,8 +667,8 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
                     final turnTextHeight = 40.0;
                     final topPadding = 20.0; // Reduced padding
                     final bottomPadding = 20.0;
-                    
-                    final availableWidth = maxWidth - (margin * 2);
+
+                final availableWidth = maxWidth - (margin * 2);
                     final availableHeight = maxHeight - topPadding - userSectionHeight - turnTextHeight - bottomPadding - arrowHeight;
 
                     // Use more aggressive spinner size calculation for better screen coverage
@@ -712,18 +680,18 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
                     // Ensure a reasonable minimum, allow dynamic growth
                     final finalSize = math.max(230.0, spinnerSize);
 
-                    final arrowWidth = finalSize * 0.22;
-                    final arrowHeightSize = finalSize * 0.18;
-                    final buttonSize = finalSize * 0.27;
+                final arrowWidth = finalSize * 0.22;
+                final arrowHeightSize = finalSize * 0.18;
+                final buttonSize = finalSize * 0.27;
 
-                    return Screenshot(
-                      controller: _screenshotController,
+                return Screenshot(
+                  controller: _screenshotController,
                       child: SingleChildScrollView(
                         padding: EdgeInsets.symmetric(
                           horizontal: isLargeScreen ? 80 : 16,
                         ),
-                        child: Column(
-                          children: [
+                  child: Column(
+                    children: [
                             const SizedBox(height: 12),
                     // Users and scores - Wrap to show all users at once
                     Padding(
@@ -741,7 +709,6 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
                           final currentRoundScore = _roundScores[_currentRound]?[user] ?? 0;
                           
                           return Container(
-                            key: isCurrentUser ? (_userScoreKey ??= GlobalKey()) : null,
                             width: (maxWidth - 60) / (widget.users.length > 3 ? 3 : widget.users.length) - 8,
                             constraints: const BoxConstraints(minWidth: 100, maxWidth: 150),
                             padding: const EdgeInsets.all(12),
@@ -795,36 +762,35 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
                     const SizedBox(height: 20),
                     // Spinner Wheel
                     Center(
-                      child: Container(
-                        key: _spinnerCenterKey,
+                        child: Container(
                         height: finalSize + 50, // Fixed height to prevent cropping
                         width: finalSize,
-                        margin: const EdgeInsets.all(20),
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            // Wheel
-                            Transform.rotate(
-                              angle: _rotation * math.pi / 180,
-                              child: CustomPaint(
-                                size: Size(finalSize, finalSize),
+                          margin: const EdgeInsets.all(20),
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              // Wheel
+                              Transform.rotate(
+                                angle: _rotation * math.pi / 180,
+                                child: CustomPaint(
+                                  size: Size(finalSize, finalSize),
                                 painter: MultiplayerWheelPainter(
                                   segments: _segments,
-                                  getSegmentColor: _getSegmentColor,
+                                    getSegmentColor: _getSegmentColor,
+                                  ),
                                 ),
                               ),
-                            ),
-                            // Pointer
-                            Positioned(
+                              // Pointer
+                              Positioned(
                               top: 10,
                               child: CustomPaint(
-                                size: Size(arrowWidth, arrowHeightSize),
-                                painter: PointerPainter(),
+                                        size: Size(arrowWidth, arrowHeightSize),
+                                        painter: PointerPainter(),
+                                ),
                               ),
-                            ),
-                            // Center Spin Button
-                            GestureDetector(
-                                  onTap: (_isWaitingForNextTurn || _isRevealed || _isShowingNumber || _isSpinning) ? null : _spin,
+                              // Center Spin Button
+                                GestureDetector(
+                                  onTap: (_isWaitingForNextTurn || _isRevealed || _isSpinning) ? null : _spin,
                                   child: Container(
                                     width: buttonSize,
                                     height: buttonSize,
@@ -880,7 +846,7 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
                                       child: Container(
                                         width: finalSize * 1.2,
                                         height: finalSize * 1.2,
-                                        decoration: BoxDecoration(
+                              decoration: BoxDecoration(
                                           shape: BoxShape.circle,
                                           gradient: RadialGradient(
                                             colors: [
@@ -897,9 +863,9 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
                                           ],
                                         ),
                                         child: Center(
-                                          child: Column(
+                              child: Column(
                                             mainAxisAlignment: MainAxisAlignment.center,
-                                            children: [
+                                children: [
                                               // Points label with animation
                                               FadeTransition(
                                                 opacity: Tween<double>(begin: 0.0, end: 1.0).animate(
@@ -910,15 +876,15 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
                                                 ),
                                                 child: Text(
                                                   'EARNED',
-                                                  style: TextStyle(
+                                    style: TextStyle(
                                                     color: Colors.black87,
                                                     fontSize: finalSize * 0.08,
-                                                    fontWeight: FontWeight.bold,
+                                      fontWeight: FontWeight.bold,
                                                     letterSpacing: 3,
                                                   ),
-                                                ),
-                                              ),
-                                              const SizedBox(height: 12),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 12),
                                               // Number with animation
                                               ScaleTransition(
                                                 scale: Tween<double>(begin: 0.0, end: 1.0).animate(
@@ -932,15 +898,15 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
                                                   style: TextStyle(
                                                     color: Colors.black,
                                                     fontSize: finalSize * 0.25,
-                                                    fontWeight: FontWeight.bold,
+                                      fontWeight: FontWeight.bold,
                                                     shadows: [
                                                       Shadow(
                                                         color: Colors.black.withOpacity(0.2),
                                                         blurRadius: 10,
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
+                                  ),
+                                ],
+                              ),
+                            ),
                                               ),
                                               const SizedBox(height: 8),
                                               // Points text with animation
@@ -949,215 +915,41 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
                                                   CurvedAnimation(
                                                     parent: _revealController,
                                                     curve: const Interval(0.5, 0.8, curve: Curves.easeIn),
-                                                  ),
-                                                ),
+                                      ),
+                                    ),
                                                 child: Text(
                                                   '${_earnedPoints} Points',
-                                                  style: TextStyle(
+                                      style: TextStyle(
                                                     color: Colors.black87,
                                                     fontSize: finalSize * 0.07,
                                                     fontWeight: FontWeight.w600,
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
                                       ),
+                                    ),
+                                  ),
+                                            ],
+                                      ),
+                                    ),
+                                  ),
                                     ),
                                   );
                                 },
-                              ),
-                            ],
-                          ),
+                                ),
+                              ],
+                            ),
                         ),
                           ),
-                          const SizedBox(height: 20),
-                        ],
+                      const SizedBox(height: 20),
+                    ],
                       ),
-                    ),
-                  );
-                },
-              ),
+                  ),
+                );
+              },
             ),
-            // Flying number animation overlay
-            if (_isShowingNumber && _flyingNumber != null)
-              _FlyingNumberWidget(
-                number: _flyingNumber!,
-                animationController: _flyAnimationController,
-                targetKey: _userScoreKey,
-                startKey: _spinnerCenterKey,
-              ),
+            ),
           ],
         ),
+        ),
       ),
-      ),
-    );
-  }
-}
-
-// Widget for flying number animation
-class _FlyingNumberWidget extends StatefulWidget {
-  final String number;
-  final AnimationController animationController;
-  final GlobalKey? targetKey;
-  final GlobalKey? startKey;
-
-  const _FlyingNumberWidget({
-    required this.number,
-    required this.animationController,
-    this.targetKey,
-    this.startKey,
-  });
-
-  @override
-  State<_FlyingNumberWidget> createState() => _FlyingNumberWidgetState();
-}
-
-class _FlyingNumberWidgetState extends State<_FlyingNumberWidget> {
-  Offset? _startPosition;
-  Offset? _endPosition;
-  Size? _screenSize;
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _calculatePositions();
-    });
-  }
-
-  @override
-  void didUpdateWidget(_FlyingNumberWidget oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    // Recalculate positions if target key changed
-    if (oldWidget.targetKey != widget.targetKey) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _calculatePositions();
-      });
-    }
-  }
-
-  void _calculatePositions() {
-    final RenderBox? renderBox = context.findRenderObject() as RenderBox?;
-    if (renderBox != null) {
-      _screenSize = renderBox.size;
-      
-      // Start from spinner center if key is available, otherwise screen center
-      if (widget.startKey?.currentContext != null) {
-        final RenderBox? startBox = widget.startKey!.currentContext?.findRenderObject() as RenderBox?;
-        if (startBox != null) {
-          final startPosition = startBox.localToGlobal(Offset.zero);
-          final startSize = startBox.size;
-          _startPosition = Offset(
-            startPosition.dx + startSize.width / 2,
-            startPosition.dy + startSize.height / 2,
-          );
-        } else {
-          // Fallback: screen center
-          _startPosition = Offset(_screenSize!.width / 2, _screenSize!.height / 2);
-        }
-      } else {
-        // Fallback: screen center
-        _startPosition = Offset(_screenSize!.width / 2, _screenSize!.height / 2);
-      }
-      
-      // End at user score card if key is available
-      if (widget.targetKey?.currentContext != null) {
-        final RenderBox? targetBox = widget.targetKey!.currentContext?.findRenderObject() as RenderBox?;
-        if (targetBox != null) {
-          final targetPosition = targetBox.localToGlobal(Offset.zero);
-          final targetSize = targetBox.size;
-          _endPosition = Offset(
-            targetPosition.dx + targetSize.width / 2,
-            targetPosition.dy + targetSize.height / 2,
-          );
-        } else {
-          // Fallback: top center
-          _endPosition = Offset(_screenSize!.width / 2, 100);
-        }
-      } else {
-        // Fallback: top center
-        _endPosition = Offset(_screenSize!.width / 2, 100);
-      }
-      
-      setState(() {});
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (_startPosition == null || _endPosition == null) {
-      return const SizedBox.shrink();
-    }
-
-    return AnimatedBuilder(
-      animation: widget.animationController,
-      builder: (context, child) {
-        final animationValue = widget.animationController.value;
-        
-        // Scale animation: start large, shrink, then grow slightly
-        double scale;
-        if (animationValue < 0.3) {
-          // Initial large display
-          scale = 1.0 + (0.3 - animationValue) * 2.0; // 1.6 to 1.0
-        } else if (animationValue < 0.7) {
-          // Shrink while moving
-          scale = 1.0 - (animationValue - 0.3) * 0.5; // 1.0 to 0.65
-        } else {
-          // Grow slightly at end
-          scale = 0.65 + (animationValue - 0.7) * 0.35; // 0.65 to 1.0
-        }
-        
-        // Position interpolation
-        final currentX = _startPosition!.dx + (_endPosition!.dx - _startPosition!.dx) * animationValue;
-        final currentY = _startPosition!.dy + (_endPosition!.dy - _startPosition!.dy) * animationValue;
-        
-        // Opacity: fade out at the end
-        final opacity = animationValue < 0.8 ? 1.0 : 1.0 - (animationValue - 0.8) * 5.0;
-        
-        return Positioned(
-          left: currentX - 40,
-          top: currentY - 40,
-          child: Opacity(
-            opacity: opacity.clamp(0.0, 1.0),
-            child: Transform.scale(
-              scale: scale,
-              child: Container(
-                width: 80,
-                height: 80,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFFD700), // Gold color
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.5),
-                      blurRadius: 20,
-                      spreadRadius: 5,
-                    ),
-                  ],
-                ),
-                child: Center(
-                  child: Text(
-                    widget.number,
-                    style: const TextStyle(
-                      color: Colors.black,
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      shadows: [
-                        Shadow(
-                          color: Colors.white,
-                          blurRadius: 4,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        );
-      },
     );
   }
 }
@@ -1260,10 +1052,10 @@ class MultiplayerWheelPainter extends CustomPainter {
 
       // Draw stars - more prominent for jackpot
       if (!segment.isJackpot) {
-        final starRadius = radius * 0.5;
-        final starX = center.dx + starRadius * math.cos(textAngle);
-        final starY = center.dy + starRadius * math.sin(textAngle);
-        _drawStar(canvas, Offset(starX, starY), 8, Colors.white.withOpacity(0.6));
+      final starRadius = radius * 0.5;
+      final starX = center.dx + starRadius * math.cos(textAngle);
+      final starY = center.dy + starRadius * math.sin(textAngle);
+      _drawStar(canvas, Offset(starX, starY), 8, Colors.white.withOpacity(0.6));
       } else {
         // Draw sparkle effect for jackpot
         final sparkleRadius = radius * 0.5;

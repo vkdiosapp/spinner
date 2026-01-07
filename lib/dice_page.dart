@@ -212,30 +212,59 @@ class _DicePageState extends State<DicePage>
     return Scaffold(
       backgroundColor: const Color(0xFF2D2D44),
       body: SafeArea(
-        child: Stack(
+        child: Column(
           children: [
-            // Main content
-            SingleChildScrollView(
-              child: Padding(
-                  padding: const EdgeInsets.only(top: 80, left: 20, right: 20, bottom: 20),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      // Page Title
-                      const Padding(
-                        padding: EdgeInsets.only(bottom: 24),
-                        child: Text(
-                          'Dice',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 32,
-                            fontWeight: FontWeight.bold,
+            // Fixed header with back button and title
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  // Back button - left aligned
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF6C5CE7),
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
                           ),
-                          textAlign: TextAlign.center,
-                        ),
+                        ],
                       ),
-                      // Two dice spinners side by side
-                      Row(
+                      child: IconButton(
+                        icon: const Icon(Icons.arrow_back, color: Colors.white),
+                        onPressed: () => Navigator.of(context).pop(),
+                      ),
+                    ),
+                  ),
+                  // Title - centered on screen
+                  const Text(
+                    'Dice',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // Scrollable content
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Two dice spinners side by side
+                    Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           // Dice 1
@@ -262,9 +291,9 @@ class _DicePageState extends State<DicePage>
                           ),
                         ],
                       ),
-                      const SizedBox(height: 40),
-                      // Single Spin Button
-                      SizedBox(
+                    const SizedBox(height: 40),
+                    // Single Spin Button
+                    SizedBox(
                         width: double.infinity,
                         height: 60,
                         child: ElevatedButton(
@@ -286,9 +315,9 @@ class _DicePageState extends State<DicePage>
                           ),
                         ),
                       ),
-                      const SizedBox(height: 40),
-                      // Results display (always visible)
-                      Container(
+                    const SizedBox(height: 40),
+                    // Results display (always visible)
+                    Container(
                         width: double.infinity,
                         padding: const EdgeInsets.all(24),
                         decoration: BoxDecoration(
@@ -328,31 +357,7 @@ class _DicePageState extends State<DicePage>
                           ],
                         ),
                       ),
-                    ],
-                  ),
-                ),
-              ),
-            // Back button - top left (on top of content)
-            Positioned(
-              top: 16,
-              left: 16,
-              child: Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF6C5CE7),
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.3),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
                   ],
-                ),
-                child: IconButton(
-                  icon: const Icon(Icons.arrow_back, color: Colors.white),
-                  onPressed: () => Navigator.of(context).pop(),
                 ),
               ),
             ),

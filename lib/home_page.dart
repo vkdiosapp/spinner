@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'spinner_config_page.dart';
 import 'multiplayer_config_page.dart';
 import 'dice_page.dart';
-import 'truth_dare_level_page.dart';
+import 'truth_dare_config_page.dart';
 // TODO: Uncomment tomorrow to re-enable sound/vibration toggles
 // import 'sound_vibration_settings.dart';
 
@@ -77,7 +77,7 @@ class _HomePageState extends State<HomePage> {
         'description': 'Play truth and dare with friends',
         'icon': Icons.celebration,
         'color': const Color(0xFFFF1493),
-        'route': const TruthDareLevelPage(),
+        'route': const TruthDareConfigPage(),
       },
     ];
 

@@ -6,10 +6,12 @@ import 'sound_vibration_helper.dart';
 
 class TruthDareSpinnerPage extends StatefulWidget {
   final String level;
+  final List<String> users;
 
   const TruthDareSpinnerPage({
     super.key,
     required this.level,
+    required this.users,
   });
 
   @override
@@ -31,6 +33,9 @@ class _TruthDareSpinnerPageState extends State<TruthDareSpinnerPage>
   Set<int> _usedTruthIndices = {};
   Set<int> _usedDareIndices = {};
   final math.Random _random = math.Random();
+  
+  // User turn management
+  int _currentUserIndex = 0;
 
   @override
   void initState() {
@@ -92,6 +97,9 @@ class _TruthDareSpinnerPageState extends State<TruthDareSpinnerPage>
 
   void _spin() {
     if (_isSpinning || _isRevealed) return;
+    
+    // Only allow current user to spin
+    // This check is handled in the UI by disabling the button, but keep as safety
 
     // Check if all items are used
     if (_usedTruthIndices.length >= _truthItems.length &&
@@ -222,6 +230,15 @@ class _TruthDareSpinnerPageState extends State<TruthDareSpinnerPage>
       _selectedMessage = null;
     });
     _revealController.reset();
+    
+    // Move to next user after closing reveal
+    _moveToNextUser();
+  }
+  
+  void _moveToNextUser() {
+    setState(() {
+      _currentUserIndex = (_currentUserIndex + 1) % widget.users.length;
+    });
   }
 
   @override
@@ -237,54 +254,141 @@ class _TruthDareSpinnerPageState extends State<TruthDareSpinnerPage>
     return Scaffold(
       backgroundColor: const Color(0xFF2D2D44),
       body: SafeArea(
-        child: Stack(
+        child: Column(
           children: [
-            // Main content
-            LayoutBuilder(
-              builder: (context, constraints) {
-                final maxWidth = constraints.maxWidth;
-                final maxHeight = constraints.maxHeight;
-                final margin = 20.0;
-                final arrowHeight = 40.0;
-                final titleHeight = 100.0;
-
-                // Calculate available space
-                final availableWidth = maxWidth - (margin * 2);
-                final availableHeight = maxHeight - titleHeight - arrowHeight - (margin * 2);
-
-                // Use more of the screen for better coverage
-                final screenSize = math.min(maxWidth, maxHeight);
-                final isLargeScreen = screenSize > 600;
-                
-                final widthMultiplier = isLargeScreen ? 0.75 : 0.85;
-                final heightMultiplier = isLargeScreen ? 0.75 : 0.85;
-                
-                final spinnerSize = math.min(
-                  availableWidth * widthMultiplier,
-                  availableHeight * heightMultiplier,
-                );
-                final finalSize = math.max(250.0, spinnerSize);
-
-                final buttonSize = finalSize * 0.25;
-                final arrowWidth = finalSize * 0.22;
-                final arrowHeightSize = finalSize * 0.18;
-
-                return SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 80),
-                  child: Column(
-                    children: [
-                      // Title above spinner
-                      Padding(
-                        padding: const EdgeInsets.only(top: 80, bottom: 20),
-                        child: Text(
-                          '${widget.level} Level',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 32,
-                            fontWeight: FontWeight.bold,
+            // Fixed header with back button and title
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  // Back button - left aligned
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF6C5CE7),
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
                           ),
+                        ],
+                      ),
+                      child: IconButton(
+                        icon: const Icon(Icons.arrow_back, color: Colors.white),
+                        onPressed: () => Navigator.of(context).pop(),
+                      ),
+                    ),
+                  ),
+                  // Title - centered on screen
+                  Text(
+                    '${widget.level} Level',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // Scrollable content
+            Expanded(
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final maxWidth = constraints.maxWidth;
+                  final maxHeight = constraints.maxHeight;
+                  final screenSize = math.min(maxWidth, maxHeight);
+                  final isLargeScreen = screenSize > 600;
+                  final margin = isLargeScreen ? 20.0 : 12.0;
+                  final arrowHeight = isLargeScreen ? 40.0 : 28.0;
+
+                  // Calculate available space
+                  final availableWidth = maxWidth - (margin * 2);
+                  final availableHeight = maxHeight - arrowHeight - (margin * 2);
+
+                  // Use more of the screen for better coverage
+                  final widthMultiplier = isLargeScreen ? 0.8 : 0.95;
+                  final heightMultiplier = isLargeScreen ? 0.8 : 0.95;
+                  
+                  final spinnerSize = math.min(
+                    availableWidth * widthMultiplier,
+                    availableHeight * heightMultiplier,
+                  );
+                  final finalSize = math.max(230.0, spinnerSize);
+
+                  final buttonSize = finalSize * 0.25;
+                  final arrowWidth = finalSize * 0.22;
+                  final arrowHeightSize = finalSize * 0.18;
+
+                  return SingleChildScrollView(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: isLargeScreen ? 80 : 16,
+                    ),
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 20),
+                      // Users list - similar to multiplayer
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Wrap(
+                          spacing: 12,
+                          runSpacing: 12,
+                          alignment: WrapAlignment.center,
+                          children: widget.users.asMap().entries.map((entry) {
+                            final index = entry.key;
+                            final user = entry.value;
+                            final isCurrentUser = index == _currentUserIndex;
+                            
+                            return Container(
+                              width: (maxWidth - 60) / (widget.users.length > 3 ? 3 : widget.users.length) - 8,
+                              constraints: const BoxConstraints(minWidth: 100, maxWidth: 150),
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: isCurrentUser
+                                    ? const Color(0xFF6C5CE7)
+                                    : const Color(0xFF3D3D5C),
+                                borderRadius: BorderRadius.circular(12),
+                                border: isCurrentUser
+                                    ? Border.all(color: Colors.white, width: 2)
+                                    : null,
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    user,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ),
+                            );
+                          }).toList(),
                         ),
                       ),
+                      const SizedBox(height: 12),
+                      // Current user turn text
+                      Text(
+                        '${widget.users[_currentUserIndex]}' "'s Turn",
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 18,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
                       // Spinner with reveal overlay - centered
                       Center(
                         child: Container(
@@ -314,43 +418,46 @@ class _TruthDareSpinnerPageState extends State<TruthDareSpinnerPage>
                                 ),
                               ),
                             ),
-                            // Center Button
+                            // Center Button - only enabled for current user when not spinning/revealed
                             GestureDetector(
-                              onTap: _isSpinning || _isRevealed ? null : _spin,
-                              child: Container(
-                                width: buttonSize,
-                                height: buttonSize,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  gradient: const LinearGradient(
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                    colors: [
-                                      Color(0xFF6C5CE7),
-                                      Color(0xFF5A4FCF),
-                                    ],
-                                  ),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.3),
-                                      blurRadius: 10,
-                                      offset: const Offset(0, 5),
-                                    ),
-                                  ],
-                                ),
+                              onTap: (_isSpinning || _isRevealed) ? null : _spin,
+                              child: Opacity(
+                                opacity: (_isSpinning || _isRevealed) ? 0.5 : 1.0,
                                 child: Container(
-                                  margin: EdgeInsets.all(buttonSize * 0.1),
+                                  width: buttonSize,
+                                  height: buttonSize,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
-                                    border: Border.all(
-                                      color: const Color(0xFF8B7ED8),
-                                      width: 2,
+                                    gradient: const LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                      colors: [
+                                        Color(0xFF6C5CE7),
+                                        Color(0xFF5A4FCF),
+                                      ],
                                     ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.3),
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 5),
+                                      ),
+                                    ],
                                   ),
-                                  child: Icon(
-                                    Icons.refresh,
-                                    color: Colors.white,
-                                    size: buttonSize * 0.44,
+                                  child: Container(
+                                    margin: EdgeInsets.all(buttonSize * 0.1),
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: const Color(0xFF8B7ED8),
+                                        width: 2,
+                                      ),
+                                    ),
+                                    child: Icon(
+                                      Icons.refresh,
+                                      color: Colors.white,
+                                      size: buttonSize * 0.44,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -510,40 +617,10 @@ class _TruthDareSpinnerPageState extends State<TruthDareSpinnerPage>
                       ),
                     ),
                       const SizedBox(height: 20),
-                    ],
-                  ),
-                );
-              },
-            ),
-            // Back button - top left (on top of content)
-            Positioned(
-              top: 16,
-              left: 16,
-              child: IgnorePointer(
-                ignoring: false,
-                child: Material(
-                  color: Colors.transparent,
-                  elevation: 10,
-                  child: Container(
-                    width: 48,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF6C5CE7),
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.3),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
                       ],
                     ),
-                    child: IconButton(
-                      icon: const Icon(Icons.arrow_back, color: Colors.white),
-                      onPressed: () => Navigator.of(context).pop(),
-                    ),
-                  ),
-                ),
+                  );
+                },
               ),
             ),
           ],

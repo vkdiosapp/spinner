@@ -160,78 +160,86 @@ class _MultiplayerResultsPageState extends State<MultiplayerResultsPage> {
     return Scaffold(
       backgroundColor: const Color(0xFF2D2D44),
       body: SafeArea(
-        child: Stack(
+        child: Column(
           children: [
-            // Back button - top left
-            Positioned(
-              top: 16,
-              left: 16,
-              child: Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF6C5CE7),
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.3),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: IconButton(
-                  icon: const Icon(Icons.arrow_back, color: Colors.white),
-                  onPressed: _goHome,
-                ),
-              ),
-            ),
-            // Share button - top right
-            Builder(
-              builder: (context) {
-                return Positioned(
-                  top: 16,
-                  right: 16,
-                  child: Container(
-                    width: 48,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF6C5CE7),
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.3),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: IconButton(
-                      icon: const Icon(Icons.share, color: Colors.white),
-                      onPressed: () => _shareResults(context),
-                    ),
-                  ),
-                );
-              },
-            ),
-            // Main content
-            Screenshot(
-              controller: _screenshotController,
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.only(top: 80, left: 20, right: 20, bottom: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    // Title
-                    const Text(
-                      '🏆 Game Results 🏆',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
+            // Fixed header with back button, title, and share button
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  // Back button - left aligned
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF6C5CE7),
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: IconButton(
+                        icon: const Icon(Icons.arrow_back, color: Colors.white),
+                        onPressed: _goHome,
                       ),
                     ),
+                  ),
+                  // Title - centered on screen
+                  const Text(
+                    '🏆 Game Results 🏆',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  // Share button - right aligned
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Builder(
+                      builder: (context) {
+                        return Container(
+                          width: 48,
+                          height: 48,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF6C5CE7),
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.3),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: IconButton(
+                            icon: const Icon(Icons.share, color: Colors.white, size: 24),
+                            onPressed: () => _shareResults(context),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // Scrollable content
+            Expanded(
+              child: Screenshot(
+                controller: _screenshotController,
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
                     const SizedBox(height: 30),
                     // Users List with Rankings
                     ..._sortedUsers.asMap().entries.map((entry) {
@@ -349,7 +357,8 @@ class _MultiplayerResultsPageState extends State<MultiplayerResultsPage> {
                       );
                     }),
                     const SizedBox(height: 20),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),

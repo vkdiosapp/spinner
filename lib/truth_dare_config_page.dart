@@ -1,98 +1,82 @@
 import 'package:flutter/material.dart';
-import 'spinner_wheel_page.dart';
+import 'truth_dare_level_page.dart';
 
-class SpinnerConfigPage extends StatefulWidget {
-  final String? initialTitle;
-  final List<String>? initialItems;
-
-  const SpinnerConfigPage({super.key, this.initialTitle, this.initialItems});
+class TruthDareConfigPage extends StatefulWidget {
+  const TruthDareConfigPage({super.key});
 
   @override
-  State<SpinnerConfigPage> createState() => _SpinnerConfigPageState();
+  State<TruthDareConfigPage> createState() => _TruthDareConfigPageState();
 }
 
-class _SpinnerConfigPageState extends State<SpinnerConfigPage> {
-  final TextEditingController _titleController = TextEditingController();
-  final List<TextEditingController> _itemControllers = [];
-  final List<FocusNode> _itemFocusNodes = [];
-  final List<String> _items = [];
+class _TruthDareConfigPageState extends State<TruthDareConfigPage> {
+  final List<TextEditingController> _userControllers = [];
+  final List<FocusNode> _userFocusNodes = [];
+  final List<String> _users = [];
 
   @override
   void initState() {
     super.initState();
-    // Set initial values if provided, otherwise use defaults
-    _titleController.text = widget.initialTitle ?? 'Random Picker';
-    if (widget.initialItems != null && widget.initialItems!.isNotEmpty) {
-      _items.addAll(widget.initialItems!);
-      // Create controllers and focus nodes for each item
-      for (var item in _items) {
-        _itemControllers.add(TextEditingController(text: item));
-        _itemFocusNodes.add(FocusNode());
+    // Add one default user so it doesn't look empty
+    _users.add('');
+    _userControllers.add(TextEditingController());
+    _userFocusNodes.add(FocusNode());
+    // Focus on the first field after the widget builds
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_userFocusNodes.isNotEmpty) {
+        _userFocusNodes.first.requestFocus();
       }
-    } else {
-      // Add one default item so it doesn't look empty
-      _items.add('');
-      _itemControllers.add(TextEditingController());
-      _itemFocusNodes.add(FocusNode());
-      // Focus on the first field after the widget builds
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (_itemFocusNodes.isNotEmpty) {
-          _itemFocusNodes.first.requestFocus();
-        }
-      });
-    }
+    });
   }
 
   @override
   void dispose() {
-    _titleController.dispose();
-    for (var controller in _itemControllers) {
+    for (var controller in _userControllers) {
       controller.dispose();
     }
-    for (var focusNode in _itemFocusNodes) {
+    for (var focusNode in _userFocusNodes) {
       focusNode.dispose();
     }
     super.dispose();
   }
 
-  void _addNewItem() {
+  void _addNewUser() {
     setState(() {
-      _items.add('');
-      _itemControllers.add(TextEditingController());
-      _itemFocusNodes.add(FocusNode());
+      _users.add('');
+      _userControllers.add(TextEditingController());
+      _userFocusNodes.add(FocusNode());
     });
     // Focus on the newly added field after the widget rebuilds
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_itemFocusNodes.isNotEmpty) {
-        _itemFocusNodes.last.requestFocus();
+      if (_userFocusNodes.isNotEmpty) {
+        _userFocusNodes.last.requestFocus();
       }
     });
   }
 
-  void _removeItem(int index) {
+  void _removeUser(int index) {
     setState(() {
-      _itemControllers[index].dispose();
-      _itemFocusNodes[index].dispose();
-      _itemControllers.removeAt(index);
-      _itemFocusNodes.removeAt(index);
-      _items.removeAt(index);
+      _userControllers[index].dispose();
+      _userFocusNodes[index].dispose();
+      _userControllers.removeAt(index);
+      _userFocusNodes.removeAt(index);
+      _users.removeAt(index);
     });
   }
 
-  void _startSpinner() {
-    // Update items from controllers
-    final updatedItems = <String>[];
-    for (var controller in _itemControllers) {
+  void _startTruthDare() {
+    // Update users from controllers
+    final updatedUsers = <String>[];
+    for (var controller in _userControllers) {
       final text = controller.text.trim();
       if (text.isNotEmpty) {
-        updatedItems.add(text);
+        updatedUsers.add(text);
       }
     }
 
-    if (updatedItems.isEmpty) {
+    if (updatedUsers.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Please add at least one item'),
+          content: Text('Please add at least one user'),
           backgroundColor: Colors.red,
         ),
       );
@@ -101,13 +85,13 @@ class _SpinnerConfigPageState extends State<SpinnerConfigPage> {
 
     // Check for duplicate names (case-insensitive)
     final seenNames = <String>{};
-    for (var item in updatedItems) {
-      final lowerItem = item.toLowerCase();
-      if (seenNames.contains(lowerItem)) {
+    for (var user in updatedUsers) {
+      final lowerUser = user.toLowerCase();
+      if (seenNames.contains(lowerUser)) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Duplicate item name: "$item". Please use unique names.',
+              'Duplicate user name: "$user". Please use unique names.',
             ),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 3),
@@ -115,17 +99,12 @@ class _SpinnerConfigPageState extends State<SpinnerConfigPage> {
         );
         return;
       }
-      seenNames.add(lowerItem);
+      seenNames.add(lowerUser);
     }
 
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
-        builder: (context) => SpinnerWheelPage(
-          title: _titleController.text.trim().isEmpty
-              ? 'Random Picker'
-              : _titleController.text.trim(),
-          items: updatedItems,
-        ),
+        builder: (context) => TruthDareLevelPage(users: updatedUsers),
       ),
     );
   }
@@ -168,7 +147,7 @@ class _SpinnerConfigPageState extends State<SpinnerConfigPage> {
                   ),
                   // Title - centered on screen
                   const Text(
-                    'Spinner',
+                    'Truth & Dare',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: Colors.white,
@@ -189,7 +168,7 @@ class _SpinnerConfigPageState extends State<SpinnerConfigPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // Title Input Section
+                    // Users List Section
                     Card(
                       color: const Color(0xFF3D3D5C),
                       child: Padding(
@@ -198,7 +177,7 @@ class _SpinnerConfigPageState extends State<SpinnerConfigPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Text(
-                              'Spinner Title',
+                              'Users',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 18,
@@ -206,66 +185,22 @@ class _SpinnerConfigPageState extends State<SpinnerConfigPage> {
                               ),
                             ),
                             const SizedBox(height: 12),
-                            TextField(
-                              controller: _titleController,
-                              textCapitalization: TextCapitalization.words,
-                              style: const TextStyle(color: Colors.white),
-                              decoration: InputDecoration(
-                                hintText: 'Enter spinner title',
-                                hintStyle: TextStyle(
-                                  color: Colors.white.withOpacity(0.5),
-                                ),
-                                filled: true,
-                                fillColor: const Color(0xFF2D2D44),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide.none,
-                                ),
-                                contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 14,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-
-                    // Items List Section
-                    Card(
-                      color: const Color(0xFF3D3D5C),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Spinner Items',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            ...List.generate(_items.length, (index) {
+                            ...List.generate(_users.length, (index) {
                               return Container(
                                 margin: const EdgeInsets.only(bottom: 12),
                                 child: Row(
                                   children: [
                                     Expanded(
                                       child: TextField(
-                                        controller: _itemControllers[index],
-                                        focusNode: _itemFocusNodes[index],
+                                        controller: _userControllers[index],
+                                        focusNode: _userFocusNodes[index],
                                         textCapitalization:
                                             TextCapitalization.words,
                                         style: const TextStyle(
                                           color: Colors.white,
                                         ),
                                         decoration: InputDecoration(
-                                          hintText: 'Enter item name',
+                                          hintText: 'Enter user name',
                                           hintStyle: TextStyle(
                                             color: Colors.white.withOpacity(
                                               0.5,
@@ -289,7 +224,7 @@ class _SpinnerConfigPageState extends State<SpinnerConfigPage> {
                                     ),
                                     const SizedBox(width: 12),
                                     IconButton(
-                                      onPressed: () => _removeItem(index),
+                                      onPressed: () => _removeUser(index),
                                       icon: const Icon(
                                         Icons.delete_outline,
                                         color: Colors.red,
@@ -300,12 +235,12 @@ class _SpinnerConfigPageState extends State<SpinnerConfigPage> {
                                 ),
                               );
                             }),
-                            if (_items.isEmpty)
+                            if (_users.isEmpty)
                               Padding(
                                 padding: const EdgeInsets.all(24),
                                 child: Center(
                                   child: Text(
-                                    'No items. Click "Add Item" to add items.',
+                                    'No users. Click "User" to add users.',
                                     style: TextStyle(
                                       color: Colors.white.withOpacity(0.6),
                                       fontSize: 14,
@@ -314,12 +249,12 @@ class _SpinnerConfigPageState extends State<SpinnerConfigPage> {
                                 ),
                               ),
                             const SizedBox(height: 12),
-                            // Add Item button at bottom
+                            // Add User button at bottom
                             TextButton.icon(
-                              onPressed: _addNewItem,
+                              onPressed: _addNewUser,
                               icon: const Icon(Icons.add, color: Colors.white),
                               label: const Text(
-                                'Add Item',
+                                'User',
                                 style: TextStyle(color: Colors.white),
                               ),
                               style: TextButton.styleFrom(
@@ -332,15 +267,13 @@ class _SpinnerConfigPageState extends State<SpinnerConfigPage> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 24),
-
                     const SizedBox(height: 32),
 
-                    // Start Spinner Button
+                    // Start Button
                     ElevatedButton(
-                      onPressed: _startSpinner,
+                      onPressed: _startTruthDare,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF6C5CE7),
+                        backgroundColor: const Color(0xFFFF1493),
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 18),
                         shape: RoundedRectangleBorder(
@@ -349,7 +282,7 @@ class _SpinnerConfigPageState extends State<SpinnerConfigPage> {
                         elevation: 4,
                       ),
                       child: const Text(
-                        'Start Spinner',
+                        'Start',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,

@@ -283,66 +283,130 @@ class _SpinnerWheelPageState extends State<SpinnerWheelPage>
     return Scaffold(
       backgroundColor: const Color(0xFF2D2D44), // Dark purple background
       body: SafeArea(
-        child: Stack(
+        child: Column(
           children: [
-            // Main content (behind buttons)
-            LayoutBuilder(
-              builder: (context, constraints) {
-                // Calculate spinner size to fit screen with margins
-                final maxWidth = constraints.maxWidth;
-                final maxHeight = constraints.maxHeight;
-                final margin = 20.0;
-                final arrowHeight = 40.0; // Space for arrow at top
-                final titleHeight = 100.0; // Space for title and padding
-
-                // Calculate available space
-                final availableWidth = maxWidth - (margin * 2);
-                final availableHeight = maxHeight - titleHeight - arrowHeight - (margin * 2);
-
-                // Use more of the screen for better coverage, especially on iPad
-                final screenSize = math.min(maxWidth, maxHeight);
-                final isLargeScreen = screenSize > 600; // iPad and larger devices
-                
-                // For large screens, use up to 75% of available space
-                // For smaller screens, use up to 85% of available space
-                final widthMultiplier = isLargeScreen ? 0.75 : 0.85;
-                final heightMultiplier = isLargeScreen ? 0.75 : 0.85;
-                
-                final spinnerSize = math.min(
-                  availableWidth * widthMultiplier,
-                  availableHeight * heightMultiplier,
-                );
-                // Ensure minimum size but allow dynamic growth
-                final finalSize = math.max(250.0, spinnerSize);
-
-                // Calculate arrow size proportionally
-                final arrowWidth = finalSize * 0.22;
-                final arrowHeightSize = finalSize * 0.18;
-
-                // Calculate button size proportionally
-                final buttonSize = finalSize * 0.27;
-
-                return Screenshot(
-                  controller: _screenshotController,
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        // Title above spinner
-                        Padding(
-                          padding: const EdgeInsets.only(top: 80, bottom: 20),
-                          child: Text(
-                            _currentTitle,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 32,
-                              fontWeight: FontWeight.bold,
-                            ),
+            // Fixed header with back button, title, and share button
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  // Back button - left aligned
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF6C5CE7),
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
                           ),
-                        ),
+                        ],
+                      ),
+                      child: IconButton(
+                        icon: const Icon(Icons.arrow_back, color: Colors.white),
+                        onPressed: () {
+                          if (Navigator.of(context).canPop()) {
+                            Navigator.of(context).pop();
+                          } else {
+                            Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(
+                                builder: (context) => const SpinnerConfigPage(),
+                              ),
+                            );
+                          }
+                        },
+                      ),
+                    ),
+                  ),
+                  // Title - centered on screen
+                  Text(
+                    _currentTitle,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  // Share button - right aligned
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF6C5CE7),
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: IconButton(
+                        icon: const Icon(Icons.share, color: Colors.white, size: 24),
+                        onPressed: _shareSpinner,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // Scrollable content
+            Expanded(
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  // Calculate spinner size to fit screen with margins
+                  final maxWidth = constraints.maxWidth;
+                  final maxHeight = constraints.maxHeight;
+                  final screenSize = math.min(maxWidth, maxHeight);
+                  final isLargeScreen = screenSize > 600; // iPad and larger devices
+
+                  // Slightly smaller reserved areas on mobile so spinner can grow more
+                  final margin = isLargeScreen ? 20.0 : 12.0;
+                  final arrowHeight = isLargeScreen ? 40.0 : 28.0; // Space for arrow at top
+
+                  // Calculate available space
+                  final availableWidth = maxWidth - (margin * 2);
+                  final availableHeight = maxHeight - arrowHeight - (margin * 2);
+
+                  // Use more of the screen for better coverage
+                  // Mobile gets a bit more aggressive fill than iPad
+                  final widthMultiplier = isLargeScreen ? 0.8 : 0.95;
+                  final heightMultiplier = isLargeScreen ? 0.8 : 0.95;
+
+                  final spinnerSize = math.min(
+                    availableWidth * widthMultiplier,
+                    availableHeight * heightMultiplier,
+                  );
+                  // Ensure minimum size but allow dynamic growth
+                  final finalSize = math.max(230.0, spinnerSize);
+
+                  // Calculate arrow size proportionally
+                  final arrowWidth = finalSize * 0.22;
+                  final arrowHeightSize = finalSize * 0.18;
+
+                  // Calculate button size proportionally
+                  final buttonSize = finalSize * 0.27;
+
+                  return Screenshot(
+                    controller: _screenshotController,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 20),
                         // Spinner Wheel with Arrow (centered)
                         Container(
                           height: finalSize + 50, // Fixed height to prevent cropping
-                          margin: const EdgeInsets.all(20),
+                          margin: EdgeInsets.all(isLargeScreen ? 20 : 12),
                           child: Stack(
                             alignment: Alignment.center,
                             children: [
@@ -468,76 +532,11 @@ class _SpinnerWheelPageState extends State<SpinnerWheelPage>
                             ],
                           ),
                         ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                );
-              },
-            ),
-            // Back button - top left (on top of content)
-            Positioned(
-              top: 16,
-              left: 16,
-              child: Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF6C5CE7),
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.3),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: IconButton(
-                  icon: const Icon(Icons.arrow_back, color: Colors.white),
-                  onPressed: () {
-                    if (Navigator.of(context).canPop()) {
-                      Navigator.of(context).pop();
-                    } else {
-                      Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(
-                          builder: (context) => const SpinnerConfigPage(),
-                        ),
-                      );
-                    }
-                  },
-                ),
-              ),
-            ),
-            // Share button - top right (on top of content)
-            Positioned(
-              top: 16,
-              right: 16,
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: _shareSpinner,
-                  borderRadius: BorderRadius.circular(24),
-                  child: Container(
-                    width: 48,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF6C5CE7),
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.3),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: const Icon(
-                      Icons.share,
-                      color: Colors.white,
-                      size: 24,
-                    ),
-                  ),
-                ),
+                  );
+                },
               ),
             ),
           ],

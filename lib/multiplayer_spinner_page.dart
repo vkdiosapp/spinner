@@ -591,63 +591,118 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
       child: Scaffold(
         backgroundColor: const Color(0xFF2D2D44),
         body: SafeArea(
-        child: Stack(
-          children: [
-            // Main content (behind buttons)
-            LayoutBuilder(
-              builder: (context, constraints) {
-                final maxWidth = constraints.maxWidth;
-                final maxHeight = constraints.maxHeight;
-                final margin = 20.0;
-                final arrowHeight = 40.0;
-
-                // Calculate available space dynamically
-                // Use more of the screen for larger devices
-                final screenSize = math.min(maxWidth, maxHeight);
-                final isLargeScreen = screenSize > 600; // iPad and larger devices
-                
-                // Calculate user section height dynamically
-                final userRows = (widget.users.length / 3).ceil();
-                final userSectionHeight = userRows * 70.0 + 40.0; // Approximate height per row
-                final turnTextHeight = 40.0;
-                final topPadding = 20.0; // Reduced padding
-                final bottomPadding = 20.0;
-                
-                final availableWidth = maxWidth - (margin * 2);
-                final availableHeight = maxHeight - topPadding - userSectionHeight - turnTextHeight - bottomPadding - arrowHeight;
-
-                // Use more aggressive spinner size calculation for better screen coverage
-                // For large screens (iPad), use up to 75% of available space
-                // For smaller screens, use up to 85% of available space
-                final widthMultiplier = isLargeScreen ? 0.75 : 0.85;
-                final heightMultiplier = isLargeScreen ? 0.75 : 0.85;
-                
-                final spinnerSize = math.min(availableWidth * widthMultiplier, availableHeight * heightMultiplier);
-                // Remove max size limit for large screens, allow spinner to grow dynamically
-                final finalSize = math.max(250.0, spinnerSize);
-
-                final arrowWidth = finalSize * 0.22;
-                final arrowHeightSize = finalSize * 0.18;
-                final buttonSize = finalSize * 0.27;
-
-                return Screenshot(
-                  controller: _screenshotController,
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: 80),
-                    child: Column(
-                      children: [
-                    // Round info
-                    Padding(
-                      padding: const EdgeInsets.only(top: 80, bottom: 12),
-                      child: Text(
-                        'Round $_currentRound / ${widget.rounds}',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
+          child: Column(
+            children: [
+              // Fixed header with back button, title, and share button
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    // Back button - left aligned
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Container(
+                        width: 48,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF6C5CE7),
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.3),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: IconButton(
+                          icon: const Icon(Icons.arrow_back, color: Colors.white),
+                          onPressed: _goHome,
                         ),
                       ),
                     ),
+                    // Title - centered on screen
+                    Text(
+                      'Round $_currentRound / ${widget.rounds}',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    // Share button - right aligned
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Container(
+                        width: 48,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF6C5CE7),
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.3),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: IconButton(
+                          icon: const Icon(Icons.share, color: Colors.white, size: 24),
+                          onPressed: _shareSpinner,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // Scrollable content
+              Expanded(
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final maxWidth = constraints.maxWidth;
+                    final maxHeight = constraints.maxHeight;
+                    // Calculate available space dynamically
+                    // Use more of the screen for larger devices
+                    final screenSize = math.min(maxWidth, maxHeight);
+                    final isLargeScreen = screenSize > 600; // iPad and larger devices
+                    final margin = isLargeScreen ? 20.0 : 12.0;
+                    final arrowHeight = isLargeScreen ? 40.0 : 28.0;
+                    
+                    // Calculate user section height dynamically
+                    final userRows = (widget.users.length / 3).ceil();
+                    final userSectionHeight = userRows * 70.0 + 40.0; // Approximate height per row
+                    final turnTextHeight = 40.0;
+                    final topPadding = 20.0; // Reduced padding
+                    final bottomPadding = 20.0;
+                    
+                    final availableWidth = maxWidth - (margin * 2);
+                    final availableHeight = maxHeight - topPadding - userSectionHeight - turnTextHeight - bottomPadding - arrowHeight;
+
+                    // Use more aggressive spinner size calculation for better screen coverage
+                    // Let mobile use a bit more of the available space than iPad
+                    final widthMultiplier = isLargeScreen ? 0.8 : 0.95;
+                    final heightMultiplier = isLargeScreen ? 0.8 : 0.95;
+                    
+                    final spinnerSize = math.min(availableWidth * widthMultiplier, availableHeight * heightMultiplier);
+                    // Ensure a reasonable minimum, allow dynamic growth
+                    final finalSize = math.max(230.0, spinnerSize);
+
+                    final arrowWidth = finalSize * 0.22;
+                    final arrowHeightSize = finalSize * 0.18;
+                    final buttonSize = finalSize * 0.27;
+
+                    return Screenshot(
+                      controller: _screenshotController,
+                      child: SingleChildScrollView(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: isLargeScreen ? 80 : 16,
+                        ),
+                        child: Column(
+                          children: [
+                            const SizedBox(height: 12),
                     // Users and scores - Wrap to show all users at once
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -894,75 +949,13 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
                             ],
                           ),
                         ),
+                          ),
+                          const SizedBox(height: 20),
+                        ],
+                      ),
                     ),
-                    const SizedBox(height: 20),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
-            // Back button - top left (on top of content) - must be last to be on top
-            Positioned(
-              top: 16,
-              left: 16,
-              child: IgnorePointer(
-                ignoring: false,
-                child: Material(
-                  color: Colors.transparent,
-                  elevation: 10,
-                  child: Container(
-                    width: 48,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF6C5CE7),
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.3),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: IconButton(
-                      icon: const Icon(Icons.arrow_back, color: Colors.white),
-                      onPressed: _goHome,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            // Share button - top right (on top of content)
-            Positioned(
-              top: 16,
-              right: 16,
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: _shareSpinner,
-                  borderRadius: BorderRadius.circular(24),
-                  child: Container(
-                    width: 48,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF6C5CE7),
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.3),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: const Icon(
-                      Icons.share,
-                      color: Colors.white,
-                      size: 24,
-                    ),
-                  ),
-                ),
+                  );
+                },
               ),
             ),
             // Flying number animation overlay

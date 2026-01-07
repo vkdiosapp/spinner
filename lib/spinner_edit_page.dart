@@ -126,14 +126,57 @@ class _SpinnerEditPageState extends State<SpinnerEditPage> {
     return Scaffold(
       backgroundColor: const Color(0xFF2D2D44),
       body: SafeArea(
-        child: Stack(
+        child: Column(
           children: [
-            // Main content
-            SingleChildScrollView(
-              padding: const EdgeInsets.only(top: 80, left: 80, right: 80, bottom: 20),
-              child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
+            // Fixed header with back button and title
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  // Back button - left aligned
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF6C5CE7),
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: IconButton(
+                        icon: const Icon(Icons.arrow_back, color: Colors.white),
+                        onPressed: () => Navigator.of(context).pop(),
+                      ),
+                    ),
+                  ),
+                  // Title - centered on screen
+                  const Text(
+                    'Edit Spinner',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // Scrollable form content
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
             // Title Input Section
             Card(
               color: const Color(0xFF3D3D5C),
@@ -285,37 +328,7 @@ class _SpinnerEditPageState extends State<SpinnerEditPage> {
                 ),
               ),
             ),
-              ],
-            ),
-            ),
-            // Back button - top left (on top of content)
-            Positioned(
-              top: 16,
-              left: 16,
-              child: IgnorePointer(
-                ignoring: false,
-                child: Material(
-                  color: Colors.transparent,
-                  elevation: 10,
-                  child: Container(
-                    width: 48,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF6C5CE7),
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.3),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: IconButton(
-                      icon: const Icon(Icons.arrow_back, color: Colors.white),
-                      onPressed: () => Navigator.of(context).pop(),
-                    ),
-                  ),
+                  ],
                 ),
               ),
             ),

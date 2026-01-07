@@ -56,12 +56,18 @@ class _TruthDareSpinnerPageState extends State<TruthDareSpinnerPage>
       setState(() {
         final curvedValue = Curves.decelerate.transform(_controller.value);
         _rotation = (curvedValue * 360 * 6) + _randomOffset;
+        
+        // Calculate speed based on curve derivative (rate of change)
+        final speed = _calculateSpeed(_controller.value);
+        SoundVibrationHelper.updateSpeed(speed);
       });
     });
 
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
         _handleSpinComplete();
+        // Stop continuous sound when animation completes
+        SoundVibrationHelper.stopContinuousSound();
       }
     });
   }
@@ -88,8 +94,15 @@ class _TruthDareSpinnerPageState extends State<TruthDareSpinnerPage>
     }
   }
 
+  // Calculate speed based on animation value (0.0 to 1.0)
+  double _calculateSpeed(double animationValue) {
+    return (1.0 - animationValue).clamp(0.1, 1.0);
+  }
+
   @override
   void dispose() {
+    // Stop continuous sound when disposing
+    SoundVibrationHelper.stopContinuousSound();
     _controller.dispose();
     _revealController.dispose();
     super.dispose();
@@ -115,8 +128,9 @@ class _TruthDareSpinnerPageState extends State<TruthDareSpinnerPage>
 
     _randomOffset = _random.nextDouble() * 360;
 
-    // Play sound and vibration
+    // Play initial sound and vibration, then start continuous sound
     SoundVibrationHelper.playSpinEffects();
+    SoundVibrationHelper.startContinuousSound();
 
     setState(() {
       _isSpinning = true;

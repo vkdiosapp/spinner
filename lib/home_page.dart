@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:vibration/vibration.dart';
 import 'spinner_config_page.dart';
 import 'multiplayer_config_page.dart';
 import 'dice_page.dart';
 import 'truth_dare_config_page.dart';
-// TODO: Uncomment tomorrow to re-enable sound/vibration toggles
-// import 'sound_vibration_settings.dart';
+import 'sound_vibration_settings.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -14,8 +15,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  // TODO: Uncomment tomorrow to re-enable sound/vibration toggles
-  /*
   bool _soundEnabled = true;
   bool _vibrationEnabled = true;
 
@@ -38,6 +37,26 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       _soundEnabled = SoundVibrationSettings.soundEnabled;
     });
+    // Play maximum sound feedback when toggled
+    try {
+      // Use alert sound (louder) for maximum capability
+      SystemSound.play(SystemSoundType.alert);
+      // Also use strong haptic feedback for additional feedback
+      HapticFeedback.heavyImpact();
+    } catch (e) {
+      try {
+        // Fallback to click sound
+        SystemSound.play(SystemSoundType.click);
+        HapticFeedback.mediumImpact();
+      } catch (e2) {
+        try {
+          // Final fallback to haptic only
+          HapticFeedback.mediumImpact();
+        } catch (e3) {
+          // Ignore errors
+        }
+      }
+    }
   }
 
   Future<void> _toggleVibration() async {
@@ -45,8 +64,32 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       _vibrationEnabled = SoundVibrationSettings.vibrationEnabled;
     });
+    // Provide maximum vibration feedback when toggled
+    try {
+      // Check if device has vibrator
+      final hasVibrator = await Vibration.hasVibrator();
+      if (hasVibrator == true) {
+        // Use longer duration for maximum vibration
+        await Vibration.vibrate(duration: 200);
+        // Also add haptic feedback for additional strength
+        HapticFeedback.heavyImpact();
+      } else {
+        // Fallback to strongest haptic feedback
+        HapticFeedback.heavyImpact();
+      }
+    } catch (e) {
+      // Fallback to strongest haptic feedback
+      try {
+        HapticFeedback.heavyImpact();
+      } catch (e2) {
+        try {
+          HapticFeedback.mediumImpact();
+        } catch (e3) {
+          // Ignore errors
+        }
+      }
+    }
   }
-  */
 
   @override
   Widget build(BuildContext context) {
@@ -188,8 +231,6 @@ class _HomePageState extends State<HomePage> {
               },
             ),
             // Sound and Vibration toggle buttons - top right (above all UI)
-            // TODO: Uncomment tomorrow to re-enable sound/vibration toggles
-            /*
             Positioned(
               top: 16,
               right: 16,
@@ -259,7 +300,6 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             ),
-            */
           ],
         ),
       ),

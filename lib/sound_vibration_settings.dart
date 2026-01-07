@@ -12,10 +12,17 @@ class SoundVibrationSettings {
   static Future<void> initialize() async {
     if (_initialized) return;
     
-    final prefs = await SharedPreferences.getInstance();
-    _soundEnabled = prefs.getBool(_soundEnabledKey) ?? true;
-    _vibrationEnabled = prefs.getBool(_vibrationEnabledKey) ?? true;
-    _initialized = true;
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      _soundEnabled = prefs.getBool(_soundEnabledKey) ?? true;
+      _vibrationEnabled = prefs.getBool(_vibrationEnabledKey) ?? true;
+      _initialized = true;
+    } catch (e) {
+      // If initialization fails, use defaults
+      _soundEnabled = true;
+      _vibrationEnabled = true;
+      _initialized = true;
+    }
   }
 
   // Get sound enabled state

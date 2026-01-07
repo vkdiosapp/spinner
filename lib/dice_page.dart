@@ -46,6 +46,12 @@ class _DicePageState extends State<DicePage>
       setState(() {
         final curvedValue = Curves.decelerate.transform(_controller1.value);
         _rotation1 = (curvedValue * 360 * 6) + _randomOffset1;
+        
+        // Calculate speed based on both controllers (average)
+        final speed1 = _calculateSpeed(_controller1.value);
+        final speed2 = _controller2.isAnimating ? _calculateSpeed(_controller2.value) : 0.0;
+        final avgSpeed = _controller2.isAnimating ? (speed1 + speed2) / 2 : speed1;
+        SoundVibrationHelper.updateSpeed(avgSpeed);
       });
     });
 
@@ -53,6 +59,12 @@ class _DicePageState extends State<DicePage>
       setState(() {
         final curvedValue = Curves.decelerate.transform(_controller2.value);
         _rotation2 = (curvedValue * 360 * 6) + _randomOffset2;
+        
+        // Calculate speed based on both controllers (average)
+        final speed1 = _controller1.isAnimating ? _calculateSpeed(_controller1.value) : 0.0;
+        final speed2 = _calculateSpeed(_controller2.value);
+        final avgSpeed = _controller1.isAnimating ? (speed1 + speed2) / 2 : speed2;
+        SoundVibrationHelper.updateSpeed(avgSpeed);
       });
     });
 
@@ -158,17 +170,26 @@ class _DicePageState extends State<DicePage>
     });
   }
 
+  // Calculate speed based on animation value (0.0 to 1.0)
+  double _calculateSpeed(double animationValue) {
+    return (1.0 - animationValue).clamp(0.1, 1.0);
+  }
+
   void _checkBothComplete() {
     if (_controller1.status == AnimationStatus.completed &&
         _controller2.status == AnimationStatus.completed) {
       setState(() {
         _isSpinning = false;
       });
+      // Stop continuous sound when both animations complete
+      SoundVibrationHelper.stopContinuousSound();
     }
   }
 
   @override
   void dispose() {
+    // Stop continuous sound when disposing
+    SoundVibrationHelper.stopContinuousSound();
     _controller1.dispose();
     _controller2.dispose();
     super.dispose();
@@ -181,8 +202,9 @@ class _DicePageState extends State<DicePage>
     _randomOffset1 = _random.nextDouble() * 360;
     _randomOffset2 = _random.nextDouble() * 360;
 
-    // Play sound and vibration
+    // Play initial sound and vibration, then start continuous sound
     SoundVibrationHelper.playSpinEffects();
+    SoundVibrationHelper.startContinuousSound();
 
     setState(() {
       _isSpinning = true;

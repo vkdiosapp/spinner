@@ -56,6 +56,12 @@ class _SpinnerWheelPageState extends State<SpinnerWheelPage>
         final curvedValue = Curves.decelerate.transform(_controller.value);
         // 6 full rotations + random offset for random stopping position
         _rotation = (curvedValue * 360 * 6) + _randomOffset;
+        
+        // Calculate speed based on curve derivative (rate of change)
+        // Decelerate curve: starts fast, ends slow
+        // Speed is proportional to the derivative of the curve
+        final speed = _calculateSpeed(_controller.value);
+        SoundVibrationHelper.updateSpeed(speed);
       });
     });
 
@@ -64,12 +70,16 @@ class _SpinnerWheelPageState extends State<SpinnerWheelPage>
         setState(() {
           _isSpinning = false;
         });
+        // Stop continuous sound when animation completes
+        SoundVibrationHelper.stopContinuousSound();
       }
     });
   }
 
   @override
   void dispose() {
+    // Stop continuous sound when disposing
+    SoundVibrationHelper.stopContinuousSound();
     _controller.dispose();
     super.dispose();
   }
@@ -80,8 +90,9 @@ class _SpinnerWheelPageState extends State<SpinnerWheelPage>
     // Generate random offset (0 to 360 degrees) for random stopping position
     _randomOffset = _random.nextDouble() * 360;
 
-    // Play sound and vibration
+    // Play initial sound and vibration, then start continuous sound
     SoundVibrationHelper.playSpinEffects();
+    SoundVibrationHelper.startContinuousSound();
 
     setState(() {
       _isSpinning = true;
@@ -90,6 +101,17 @@ class _SpinnerWheelPageState extends State<SpinnerWheelPage>
 
     _controller.reset();
     _controller.forward();
+  }
+
+  // Calculate speed based on animation value (0.0 to 1.0)
+  // For decelerate curve: speed decreases as value increases
+  double _calculateSpeed(double animationValue) {
+    // Decelerate curve derivative approximation
+    // At value 0.0, speed is 1.0 (fastest)
+    // At value 1.0, speed is near 0.0 (slowest)
+    // Using a simple approximation: speed = 1.0 - animationValue
+    // But we want it to decelerate more smoothly, so we use a curve
+    return (1.0 - animationValue).clamp(0.1, 1.0);
   }
 
   void _resetSpinner() {

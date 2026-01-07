@@ -168,6 +168,10 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
       setState(() {
         final curvedValue = Curves.decelerate.transform(_controller.value);
         _rotation = (curvedValue * 360 * 6) + _randomOffset;
+        
+        // Calculate speed based on curve derivative (rate of change)
+        final speed = _calculateSpeed(_controller.value);
+        SoundVibrationHelper.updateSpeed(speed);
       });
     });
 
@@ -177,12 +181,16 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
           _isSpinning = false;
           _handleSpinComplete();
         });
+        // Stop continuous sound when animation completes
+        SoundVibrationHelper.stopContinuousSound();
       }
     });
   }
 
   @override
   void dispose() {
+    // Stop continuous sound when disposing
+    SoundVibrationHelper.stopContinuousSound();
     _controller.dispose();
     _revealController.dispose();
     _flyAnimationController.dispose();
@@ -264,58 +272,64 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
   }
   
   void _showFlyingNumberAnimation(String number, int points) {
+    // Reset user score key to ensure it gets reassigned to current user
     setState(() {
       _flyingNumber = number;
       _isShowingNumber = true;
+      // Force key reset so it gets reassigned to current user's card
+      _userScoreKey = null;
     });
 
-    // Reset and start fly animation
-    _flyAnimationController.reset();
-    _flyAnimationController.forward().then((_) {
-      // Add points after animation completes
-      final currentUser = widget.users[_currentUserIndex];
-      _scores[currentUser] = (_scores[currentUser] ?? 0) + points;
-      // Track round score
-      _roundScores[_currentRound]![currentUser] = 
-          (_roundScores[_currentRound]![currentUser] ?? 0) + points;
+    // Wait a frame to ensure the key is reassigned before calculating positions
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Reset and start fly animation
+      _flyAnimationController.reset();
+      _flyAnimationController.forward().then((_) {
+        // Add points after animation completes
+        final currentUser = widget.users[_currentUserIndex];
+        _scores[currentUser] = (_scores[currentUser] ?? 0) + points;
+        // Track round score
+        _roundScores[_currentRound]![currentUser] = 
+            (_roundScores[_currentRound]![currentUser] ?? 0) + points;
 
-      // Hide animation and move to next turn
-      setState(() {
-        _isShowingNumber = false;
-        _flyingNumber = null;
-        _isWaitingForNextTurn = true;
-      });
-      
-      // No delay - move immediately to next turn
-      if (!mounted) return;
-      
-      // Move to next user or next round
-      if (_currentUserIndex < widget.users.length - 1) {
-        // Next user in same round - reset spinner first
-        _resetSpinnerForNextTurn();
+        // Hide animation and move to next turn
         setState(() {
-          _currentUserIndex++;
-          _isWaitingForNextTurn = false;
+          _isShowingNumber = false;
+          _flyingNumber = null;
+          _isWaitingForNextTurn = true;
         });
-      } else {
-        // Round complete, move to next round
-        if (_currentRound < widget.rounds) {
+        
+        // No delay - move immediately to next turn
+        if (!mounted) return;
+        
+        // Move to next user or next round
+        if (_currentUserIndex < widget.users.length - 1) {
+          // Next user in same round - reset spinner first
           _resetSpinnerForNextTurn();
           setState(() {
-            _currentRound++;
-            _currentUserIndex = 0;
+            _currentUserIndex++;
             _isWaitingForNextTurn = false;
-            // Initialize next round scores
-            _roundScores[_currentRound] = {};
-            for (var user in widget.users) {
-              _roundScores[_currentRound]![user] = 0;
-            }
           });
         } else {
-          // Game complete - navigate to results page
-          _navigateToResults();
+          // Round complete, move to next round
+          if (_currentRound < widget.rounds) {
+            _resetSpinnerForNextTurn();
+            setState(() {
+              _currentRound++;
+              _currentUserIndex = 0;
+              _isWaitingForNextTurn = false;
+              // Initialize next round scores
+              _roundScores[_currentRound] = {};
+              for (var user in widget.users) {
+                _roundScores[_currentRound]![user] = 0;
+              }
+            });
+          } else {
+            // Game complete - navigate to results page
+            _navigateToResults();
+          }
         }
-      }
+      });
     });
   }
 
@@ -332,6 +346,11 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
     );
   }
 
+  // Calculate speed based on animation value (0.0 to 1.0)
+  double _calculateSpeed(double animationValue) {
+    return (1.0 - animationValue).clamp(0.1, 1.0);
+  }
+
   void _resetSpinnerForNextTurn() {
     // Hide reveal animation if still showing
     if (_isRevealed) {
@@ -344,11 +363,13 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
     }
     
     // Reset spinner rotation and offset for next turn
+    // Also reset user score key so it gets reassigned to the new current user
     setState(() {
       _rotation = 0;
       _randomOffset = 0;
       _isSpinning = false;
       _isWaitingForNextTurn = false;
+      _userScoreKey = null; // Reset key so it gets reassigned to new current user
     });
     _controller.reset();
   }
@@ -358,8 +379,9 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
 
     _randomOffset = _random.nextDouble() * 360;
 
-    // Play sound and vibration
+    // Play initial sound and vibration, then start continuous sound
     SoundVibrationHelper.playSpinEffects();
+    SoundVibrationHelper.startContinuousSound();
 
     setState(() {
       _isSpinning = true;
@@ -1003,6 +1025,17 @@ class _FlyingNumberWidgetState extends State<_FlyingNumberWidget> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _calculatePositions();
     });
+  }
+
+  @override
+  void didUpdateWidget(_FlyingNumberWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Recalculate positions if target key changed
+    if (oldWidget.targetKey != widget.targetKey) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _calculatePositions();
+      });
+    }
   }
 
   void _calculatePositions() {

@@ -8,6 +8,7 @@ import 'spinner_edit_page.dart';
 import 'spinner_config_page.dart';
 import 'sound_vibration_helper.dart';
 import 'ad_helper.dart';
+import 'spinner_colors.dart';
 
 class SpinnerWheelPage extends StatefulWidget {
   final List<String> items;
@@ -148,46 +149,21 @@ class _SpinnerWheelPageState extends State<SpinnerWheelPage>
   }
 
   void _initializeColors() {
-    // 12 basic colors to use repeatedly
-    final basicColors = [
-      const Color(0xFFFF6B35), // Orange
-      const Color(0xFF6C5CE7), // Purple
-      const Color(0xFF74B9FF), // Light Blue
-      const Color(0xFF00D2D3), // Cyan
-      const Color(0xFFFFC312), // Yellow
-      const Color(0xFFEE5A6F), // Pink
-      const Color(0xFF5F27CD), // Dark Purple
-      const Color(0xFF00B894), // Green
-      const Color(0xFFFF6348), // Red Orange
-      const Color(0xFF0984E3), // Blue
-      const Color(0xFFFD79A8), // Light Pink
-      const Color(0xFFFDCB6E), // Light Yellow
-    ];
-    
     _segmentColors = [];
     
-    // Assign colors sequentially, ensuring no adjacent duplicates
+    // Assign colors sequentially (line-wise) from SpinnerColors
+    // Colors repeat if there are more segments than available colors
     for (int i = 0; i < _items.length; i++) {
-      Color assignedColor;
+      // Get color by index, which will cycle through the color list
+      Color assignedColor = SpinnerColors.getColor(i);
       
-      if (i == 0) {
-        // First segment - use first color
-        assignedColor = basicColors[0];
-      } else {
-        // For subsequent segments, find a color that's different from the previous one
+      // Ensure no adjacent duplicates (including circular - last to first)
+      if (i > 0) {
         final prevColor = _segmentColors[i - 1];
-        
-        // Start from the next sequential color index
-        int colorIndex = (i % basicColors.length);
-        
-        // Find a color that's different from the previous segment
-        int attempts = 0;
-        while (basicColors[colorIndex] == prevColor && attempts < basicColors.length) {
-          colorIndex = (colorIndex + 1) % basicColors.length;
-          attempts++;
+        // If current color matches previous, get next color
+        if (assignedColor == prevColor) {
+          assignedColor = SpinnerColors.getColor(i + 1);
         }
-        
-        assignedColor = basicColors[colorIndex];
       }
       
       _segmentColors.add(assignedColor);
@@ -196,70 +172,15 @@ class _SpinnerWheelPageState extends State<SpinnerWheelPage>
     // Ensure last segment doesn't match first (circular adjacency)
     if (_segmentColors.length > 1) {
       final lastIndex = _segmentColors.length - 1;
-      final firstColor = _segmentColors[0];
-      final secondToLastColor = _segmentColors[lastIndex - 1];
-      final lastColor = _segmentColors[lastIndex];
-      
-      // If last segment matches first, find a replacement
-      if (lastColor == firstColor) {
-        // Find a color that's different from both first and second-to-last
-        for (int i = 0; i < basicColors.length; i++) {
-          final candidateColor = basicColors[i];
-          if (candidateColor != firstColor && candidateColor != secondToLastColor) {
-            _segmentColors[lastIndex] = candidateColor;
-            break;
-          }
-        }
-      }
-    }
-    
-    // Double-check all adjacent pairs including circular (last to first)
-    for (int i = 0; i < _segmentColors.length; i++) {
-      final nextIndex = (i + 1) % _segmentColors.length;
-      
-      // Check if current segment matches next segment
-      if (_segmentColors[i] == _segmentColors[nextIndex]) {
-        // Find a replacement color that's different from both neighbors
-        final prevIndex = (i - 1 + _segmentColors.length) % _segmentColors.length;
-        final prevColor = _segmentColors[prevIndex];
-        final nextColor = _segmentColors[nextIndex];
-        
-        // Try to find a suitable replacement
-        bool found = false;
-        for (int j = 0; j < basicColors.length; j++) {
-          final candidateColor = basicColors[j];
-          if (candidateColor != prevColor && candidateColor != nextColor) {
-            _segmentColors[i] = candidateColor;
-            found = true;
-            break;
-          }
-        }
-        
-        // If no suitable color found, try replacing the next segment instead
-        if (!found) {
-          for (int j = 0; j < basicColors.length; j++) {
-            final candidateColor = basicColors[j];
-            final nextNextIndex = (nextIndex + 1) % _segmentColors.length;
-            final nextNextColor = _segmentColors[nextNextIndex];
-            
-            if (candidateColor != _segmentColors[i] && candidateColor != nextNextColor) {
-              _segmentColors[nextIndex] = candidateColor;
-              break;
-            }
-          }
-        }
-      }
-    }
-    
-    // Final verification: explicitly check first and last segments
-    if (_segmentColors.length > 1) {
-      final lastIndex = _segmentColors.length - 1;
       if (_segmentColors[0] == _segmentColors[lastIndex]) {
-        // Find a replacement for the last segment
+        // Find a different color for the last segment
+        final firstColor = _segmentColors[0];
         final secondToLastColor = _segmentColors[lastIndex - 1];
-        for (int i = 0; i < basicColors.length; i++) {
-          final candidateColor = basicColors[i];
-          if (candidateColor != _segmentColors[0] && candidateColor != secondToLastColor) {
+        
+        // Try to find a color that's different from both first and second-to-last
+        for (int i = 0; i < SpinnerColors.segmentColors.length; i++) {
+          final candidateColor = SpinnerColors.segmentColors[i];
+          if (candidateColor != firstColor && candidateColor != secondToLastColor) {
             _segmentColors[lastIndex] = candidateColor;
             break;
           }

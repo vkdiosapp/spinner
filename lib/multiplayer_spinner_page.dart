@@ -4,6 +4,7 @@ import 'home_page.dart';
 import 'multiplayer_results_page.dart';
 import 'sound_vibration_helper.dart';
 import 'ad_helper.dart';
+import 'spinner_colors.dart';
 
 class MultiplayerSpinnerPage extends StatefulWidget {
   final List<String> users;
@@ -476,109 +477,54 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
   }
 
   void _initializeColors() {
-    // 12 basic colors to use
-    final basicColors = [
-      const Color(0xFFFF6B35), // Orange
-      const Color(0xFF6C5CE7), // Purple
-      const Color(0xFF74B9FF), // Light Blue
-      const Color(0xFF00D2D3), // Cyan
-      const Color(0xFFFFC312), // Yellow
-      const Color(0xFFEE5A6F), // Pink
-      const Color(0xFF5F27CD), // Dark Purple
-      const Color(0xFF00B894), // Green
-      const Color(0xFFFF6348), // Red Orange
-      const Color(0xFF0984E3), // Blue
-      const Color(0xFFFD79A8), // Light Pink
-      const Color(0xFFFDCB6E), // Light Yellow
-    ];
-    
     _segmentColors = [];
     
-    // We have 11 segments (10 regular + 1 jackpot)
-    // Use a smarter algorithm to ensure no duplicates and first != last
-    final usedColors = <Color>{};
+    // Assign colors sequentially (line-wise) from SpinnerColors
+    // Skip jackpot segments (they use gold color in the painter)
     int colorIndex = 0;
     
     for (int i = 0; i < _segments.length; i++) {
-      Color assignedColor = basicColors[0]; // Default fallback
-      
-      if (i == 0) {
-        // First segment - use first color
-        assignedColor = basicColors[0];
-        usedColors.add(assignedColor);
-      } else if (i == _segments.length - 1) {
-        // Last segment - must be different from first and previous
-        final firstColor = _segmentColors[0];
-        final prevColor = _segmentColors[i - 1];
+      // Jackpot segments use gold color (handled in painter), so skip them here
+      // For regular segments, assign colors sequentially
+      if (!_segments[i].isJackpot) {
+        Color assignedColor = SpinnerColors.getColor(colorIndex);
         
-        // Find a color that's not first, not previous, and preferably not used yet
-        bool found = false;
-        for (int j = 0; j < basicColors.length; j++) {
-          final candidateColor = basicColors[j];
-          if (candidateColor != firstColor && 
-              candidateColor != prevColor && 
-              !usedColors.contains(candidateColor)) {
-            assignedColor = candidateColor;
-            usedColors.add(assignedColor);
-            found = true;
-            break;
+        // Ensure no adjacent duplicates
+        if (i > 0 && _segmentColors.isNotEmpty) {
+          final prevColor = _segmentColors[i - 1];
+          // If current color matches previous, get next color
+          if (assignedColor == prevColor) {
+            colorIndex++;
+            assignedColor = SpinnerColors.getColor(colorIndex);
           }
         }
         
-        // If all colors are used, find one that's at least different from first and previous
-        if (!found) {
-          for (int j = 0; j < basicColors.length; j++) {
-            final candidateColor = basicColors[j];
-            if (candidateColor != firstColor && candidateColor != prevColor) {
-              assignedColor = candidateColor;
-              break;
-            }
-          }
-        }
+        _segmentColors.add(assignedColor);
+        colorIndex++;
       } else {
-        // Middle segments - different from previous, avoid duplicates if possible
-        final prevColor = _segmentColors[i - 1];
-        
-        // Try to find an unused color first
-        bool found = false;
-        for (int j = 0; j < basicColors.length; j++) {
-          final candidateColor = basicColors[j];
-          if (candidateColor != prevColor && !usedColors.contains(candidateColor)) {
-            assignedColor = candidateColor;
-            usedColors.add(assignedColor);
-            found = true;
-            break;
-          }
-        }
-        
-        // If all colors are used, find one that's at least different from previous
-        if (!found) {
-          colorIndex = (colorIndex + 1) % basicColors.length;
-          int attempts = 0;
-          while (basicColors[colorIndex] == prevColor && attempts < basicColors.length) {
-            colorIndex = (colorIndex + 1) % basicColors.length;
-            attempts++;
-          }
-          assignedColor = basicColors[colorIndex];
-        }
+        // For jackpot, we still add a color to maintain index alignment
+        // but it won't be used (painter uses gold for jackpot)
+        _segmentColors.add(const Color(0xFFFFD700)); // Gold (not used, but maintains alignment)
       }
-      
-      _segmentColors.add(assignedColor);
     }
     
-    // Final verification: ensure first and last are definitely different
+    // Ensure last segment doesn't match first (circular adjacency)
     if (_segmentColors.length > 1) {
       final lastIndex = _segmentColors.length - 1;
-      if (_segmentColors[0] == _segmentColors[lastIndex]) {
-        // Force a different color for last segment
-        final firstColor = _segmentColors[0];
-        final secondToLastColor = _segmentColors[lastIndex - 1];
-        
-        for (int i = 0; i < basicColors.length; i++) {
-          final candidateColor = basicColors[i];
-          if (candidateColor != firstColor && candidateColor != secondToLastColor) {
-            _segmentColors[lastIndex] = candidateColor;
-            break;
+      // Only check if both are non-jackpot segments
+      if (!_segments[0].isJackpot && !_segments[lastIndex].isJackpot) {
+        if (_segmentColors[0] == _segmentColors[lastIndex]) {
+          // Find a different color for the last segment
+          final firstColor = _segmentColors[0];
+          final secondToLastColor = _segmentColors[lastIndex - 1];
+          
+          // Try to find a color that's different from both first and second-to-last
+          for (int i = 0; i < SpinnerColors.segmentColors.length; i++) {
+            final candidateColor = SpinnerColors.segmentColors[i];
+            if (candidateColor != firstColor && candidateColor != secondToLastColor) {
+              _segmentColors[lastIndex] = candidateColor;
+              break;
+            }
           }
         }
       }
@@ -984,7 +930,7 @@ class MultiplayerWheelPainter extends CustomPainter {
       final paint = Paint()
         ..color = segment.isJackpot 
             ? const Color(0xFFFFD700) // Gold for jackpot
-            : getSegmentColor(i % 10)
+            : getSegmentColor(i)
         ..style = PaintingStyle.fill;
 
       canvas.drawArc(

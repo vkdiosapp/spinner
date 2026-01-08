@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import 'sound_vibration_helper.dart';
 import 'ad_helper.dart';
+import 'spinner_colors.dart';
 
 class DicePage extends StatefulWidget {
   const DicePage({super.key});
@@ -104,15 +105,8 @@ class _DicePageState extends State<DicePage>
   }
 
   Color _getSegmentColor(int index) {
-    final colors = [
-      const Color(0xFFFF6B35), // Orange
-      const Color(0xFF6C5CE7), // Purple
-      const Color(0xFF74B9FF), // Light Blue
-      const Color(0xFF00D2D3), // Cyan
-      const Color(0xFFFFC312), // Yellow
-      const Color(0xFFEE5A6F), // Pink
-    ];
-    return colors[index % colors.length];
+    // Use colors from SpinnerColors file
+    return SpinnerColors.getColor(index);
   }
 
   void _calculateDiceValue1() {

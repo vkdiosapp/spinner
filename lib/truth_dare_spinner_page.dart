@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'dart:math' as math;
 import 'sound_vibration_helper.dart';
 import 'ad_helper.dart';
+import 'spinner_colors.dart';
 
 class TruthDareSpinnerPage extends StatefulWidget {
   final String level;
@@ -605,20 +606,20 @@ class _TruthDareSpinnerPageState extends State<TruthDareSpinnerPage>
                                             gradient: RadialGradient(
                                               colors: [
                                                 (_selectedType == 'truth'
-                                                        ? const Color(0xFF00B894)
-                                                        : const Color(0xFFFF6B35))
+                                                        ? SpinnerColors.segmentColors[6]
+                                                        : SpinnerColors.segmentColors[7])
                                                     .withOpacity(0.95),
                                                 (_selectedType == 'truth'
-                                                        ? const Color(0xFF00B894)
-                                                        : const Color(0xFFFF6B35))
+                                                        ? SpinnerColors.segmentColors[6]
+                                                        : SpinnerColors.segmentColors[7])
                                                     .withOpacity(0.8),
                                               ],
                                             ),
                                             boxShadow: [
                                               BoxShadow(
                                                 color: (_selectedType == 'truth'
-                                                        ? const Color(0xFF00B894)
-                                                        : const Color(0xFFFF6B35))
+                                                        ? SpinnerColors.segmentColors[6]
+                                                        : SpinnerColors.segmentColors[7])
                                                     .withOpacity(0.5),
                                                 blurRadius: 30,
                                                 spreadRadius: 10,
@@ -745,8 +746,8 @@ class _TruthDareSpinnerPageState extends State<TruthDareSpinnerPage>
                                                           'Close',
                                                           style: TextStyle(
                                                             color: _selectedType == 'truth'
-                                                                ? const Color(0xFF00B894)
-                                                                : const Color(0xFFFF6B35),
+                                                                ? SpinnerColors.segmentColors[6]
+                                                                : SpinnerColors.segmentColors[7],
                                                             fontSize: finalSize * 0.05,
                                                             fontWeight: FontWeight.bold,
                                                           ),
@@ -806,8 +807,8 @@ class TruthDareWheelPainter extends CustomPainter {
 
       final paint = Paint()
         ..color = segment == 'Truth'
-            ? const Color(0xFF00B894)
-            : const Color(0xFFFF6B35)
+            ? SpinnerColors.segmentColors[6]
+            : SpinnerColors.segmentColors[7]
         ..style = PaintingStyle.fill;
 
       canvas.drawArc(
@@ -861,6 +862,12 @@ class TruthDareWheelPainter extends CustomPainter {
         Offset(-textPainter.width / 2, -textPainter.height / 2),
       );
       canvas.restore();
+
+      // Draw stars on all segments
+      final starRadius = radius * 0.5;
+      final starX = center.dx + starRadius * math.cos(textAngle);
+      final starY = center.dy + starRadius * math.sin(textAngle);
+      _drawStar(canvas, Offset(starX, starY), 8, Colors.white.withOpacity(0.6));
     }
 
     // Outer circle border
@@ -870,6 +877,31 @@ class TruthDareWheelPainter extends CustomPainter {
       ..strokeWidth = 4;
 
     canvas.drawCircle(center, radius, circleBorderPaint);
+  }
+
+  void _drawStar(Canvas canvas, Offset center, double radius, Color color) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.fill;
+
+    final path = Path();
+    final numPoints = 5;
+    final angleStep = 2 * math.pi / numPoints;
+
+    for (int i = 0; i < numPoints * 2; i++) {
+      final angle = i * angleStep / 2 - math.pi / 2;
+      final r = i.isEven ? radius : radius * 0.4;
+      final x = center.dx + r * math.cos(angle);
+      final y = center.dy + r * math.sin(angle);
+
+      if (i == 0) {
+        path.moveTo(x, y);
+      } else {
+        path.lineTo(x, y);
+      }
+    }
+    path.close();
+    canvas.drawPath(path, paint);
   }
 
   @override

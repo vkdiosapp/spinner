@@ -40,6 +40,7 @@ dependencies:
   audioplayers: ^6.1.0
   vibration: ^1.8.4
   shared_preferences: ^2.3.3
+  onesignal_flutter: ^5.0.0
 
 dev_dependencies:
   flutter_test:

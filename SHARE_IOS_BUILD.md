@@ -90,7 +90,7 @@ Create a file `ios/ExportOptions.plist`:
 
 ## Current App Information:
 - **Bundle ID**: `com.vkd.spinner.game`
-- **App Name**: Spinner
+- **App Name**: PickSpiN
 - **Version**: 1.0.0 (Build 1)
 - **Team ID**: R6ZQ9273AZ
 

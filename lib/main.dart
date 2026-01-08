@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'home_page.dart';
 import 'sound_vibration_settings.dart';
+import 'onesignal_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SoundVibrationSettings.initialize();
+  
+  // Initialize OneSignal Push Notifications
+  await OneSignalService.initialize();
+  
   runApp(const MyApp());
 }
 

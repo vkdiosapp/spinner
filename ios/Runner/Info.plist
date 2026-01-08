@@ -54,5 +54,11 @@
 	<array>
 		<string>remote-notification</string>
 	</array>
+	<!-- AdMob App ID (replace with your actual App ID) -->
+	<key>GADApplicationIdentifier</key>
+	<string>ca-app-pub-3940256099942544~1458002511</string>
+	<!-- Location Permission (required by OneSignal SDK for location-based notifications) -->
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app uses location services to provide location-based push notifications and improve user experience.</string>
 </dict>
 </plist>

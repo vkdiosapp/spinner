@@ -17,6 +17,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   bool _soundEnabled = true;
   bool _vibrationEnabled = true;
+  bool _adsEnabled = true;
 
   @override
   void initState() {
@@ -29,6 +30,7 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       _soundEnabled = SoundVibrationSettings.soundEnabled;
       _vibrationEnabled = SoundVibrationSettings.vibrationEnabled;
+      _adsEnabled = SoundVibrationSettings.adsEnabled;
     });
   }
 
@@ -91,6 +93,20 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  Future<void> _toggleAds() async {
+    await SoundVibrationSettings.toggleAds();
+    setState(() {
+      _adsEnabled = SoundVibrationSettings.adsEnabled;
+    });
+    // Provide feedback when toggled
+    try {
+      SystemSound.play(SystemSoundType.click);
+      HapticFeedback.mediumImpact();
+    } catch (e) {
+      // Ignore errors
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final items = [
@@ -131,11 +147,12 @@ class _HomePageState extends State<HomePage> {
           children: [
             LayoutBuilder(
               builder: (context, constraints) {
-                final isLandscape = constraints.maxWidth > constraints.maxHeight;
+                final isLandscape =
+                    constraints.maxWidth > constraints.maxHeight;
                 final itemSize = isLandscape
                     ? constraints.maxWidth / 5
                     : constraints.maxWidth / 2.5;
-                
+
                 return Center(
                   child: SingleChildScrollView(
                     child: Padding(
@@ -153,75 +170,78 @@ class _HomePageState extends State<HomePage> {
                             ),
                           ),
                           const SizedBox(height: 30),
-                      Wrap(
-                        alignment: WrapAlignment.center,
-                        spacing: 12,
-                        runSpacing: 12,
-                        children: items.map((item) {
-                          return SizedBox(
-                            width: itemSize,
-                            height: itemSize,
-                            child: Card(
-                              color: const Color(0xFF3D3D5C),
-                              child: InkWell(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => item['route'] as Widget,
+                          Wrap(
+                            alignment: WrapAlignment.center,
+                            spacing: 12,
+                            runSpacing: 12,
+                            children: items.map((item) {
+                              return SizedBox(
+                                width: itemSize,
+                                height: itemSize,
+                                child: Card(
+                                  color: const Color(0xFF3D3D5C),
+                                  child: InkWell(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              item['route'] as Widget,
+                                        ),
+                                      );
+                                    },
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: Container(
+                                      padding: const EdgeInsets.all(12),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Container(
+                                            width: itemSize * 0.35,
+                                            height: itemSize * 0.35,
+                                            decoration: BoxDecoration(
+                                              color: item['color'] as Color,
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                            ),
+                                            child: Icon(
+                                              item['icon'] as IconData,
+                                              color: Colors.white,
+                                              size: itemSize * 0.2,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Text(
+                                            item['title'] as String,
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: itemSize * 0.08,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                            textAlign: TextAlign.center,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            item['description'] as String,
+                                            style: TextStyle(
+                                              color: Colors.white70,
+                                              fontSize: itemSize * 0.055,
+                                            ),
+                                            textAlign: TextAlign.center,
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                  );
-                                },
-                                borderRadius: BorderRadius.circular(12),
-                                child: Container(
-                                  padding: const EdgeInsets.all(12),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Container(
-                                        width: itemSize * 0.35,
-                                        height: itemSize * 0.35,
-                                        decoration: BoxDecoration(
-                                          color: item['color'] as Color,
-                                          borderRadius: BorderRadius.circular(12),
-                                        ),
-                                        child: Icon(
-                                          item['icon'] as IconData,
-                                          color: Colors.white,
-                                          size: itemSize * 0.2,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Text(
-                                        item['title'] as String,
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: itemSize * 0.08,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                        textAlign: TextAlign.center,
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        item['description'] as String,
-                                        style: TextStyle(
-                                          color: Colors.white70,
-                                          fontSize: itemSize * 0.055,
-                                        ),
-                                        textAlign: TextAlign.center,
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ],
                                   ),
                                 ),
-                              ),
-                            ),
-                          );
-                        }).toList(),
-                      ),
+                              );
+                            }).toList(),
+                          ),
                           const SizedBox(height: 20),
                         ],
                       ),
@@ -242,13 +262,13 @@ class _HomePageState extends State<HomePage> {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // Vibration toggle button
+                      // Ads toggle button
                       Container(
                         width: 48,
                         height: 48,
                         margin: const EdgeInsets.only(right: 12),
                         decoration: BoxDecoration(
-                          color: _vibrationEnabled 
+                          color: _adsEnabled
                               ? const Color(0xFF6C5CE7)
                               : const Color(0xFF3D3D5C),
                           shape: BoxShape.circle,
@@ -262,11 +282,44 @@ class _HomePageState extends State<HomePage> {
                         ),
                         child: IconButton(
                           icon: Icon(
-                            _vibrationEnabled ? Icons.vibration : Icons.vibration_outlined,
+                            _adsEnabled
+                                ? Icons.ads_click
+                                : Icons.ads_click_outlined,
+                            color: Colors.white,
+                          ),
+                          onPressed: _toggleAds,
+                          tooltip: _adsEnabled ? 'Ads On' : 'Ads Off',
+                        ),
+                      ),
+                      // Vibration toggle button
+                      Container(
+                        width: 48,
+                        height: 48,
+                        margin: const EdgeInsets.only(right: 12),
+                        decoration: BoxDecoration(
+                          color: _vibrationEnabled
+                              ? const Color(0xFF6C5CE7)
+                              : const Color(0xFF3D3D5C),
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.3),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: IconButton(
+                          icon: Icon(
+                            _vibrationEnabled
+                                ? Icons.vibration
+                                : Icons.vibration_outlined,
                             color: Colors.white,
                           ),
                           onPressed: _toggleVibration,
-                          tooltip: _vibrationEnabled ? 'Vibration On' : 'Vibration Off',
+                          tooltip: _vibrationEnabled
+                              ? 'Vibration On'
+                              : 'Vibration Off',
                         ),
                       ),
                       // Sound toggle button
@@ -274,7 +327,7 @@ class _HomePageState extends State<HomePage> {
                         width: 48,
                         height: 48,
                         decoration: BoxDecoration(
-                          color: _soundEnabled 
+                          color: _soundEnabled
                               ? const Color(0xFF6C5CE7)
                               : const Color(0xFF3D3D5C),
                           shape: BoxShape.circle,
@@ -306,4 +359,3 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
-

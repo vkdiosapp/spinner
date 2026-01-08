@@ -13,6 +13,7 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
   final List<FocusNode> _userFocusNodes = [];
   final List<String> _users = [];
   int _rounds = 3;
+  String _gameMode = 'single'; // 'single' or 'multiplayer'
 
   @override
   void initState() {
@@ -65,6 +66,18 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
   }
 
   void _startMultiplayer() {
+    // For single player mode, use a default user
+    if (_gameMode == 'single') {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) =>
+              MultiplayerSpinnerPage(users: ['Player'], rounds: _rounds),
+        ),
+      );
+      return;
+    }
+
+    // For multiplayer mode, validate users
     // Update users from controllers
     final updatedUsers = <String>[];
     for (var controller in _userControllers) {
@@ -170,6 +183,125 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    // Game Mode Selection Section
+                    Card(
+                      color: const Color(0xFF3D3D5C),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Game Mode',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            Row(
+                              children: [
+                                // Single Player Radio
+                                Expanded(
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        _gameMode = 'single';
+                                      });
+                                    },
+                                    child: Container(
+                                      height: 50,
+                                      decoration: BoxDecoration(
+                                        color: _gameMode == 'single'
+                                            ? const Color(0xFF6C5CE7)
+                                            : const Color(0xFF2D2D44),
+                                        borderRadius: BorderRadius.circular(12),
+                                        border: Border.all(
+                                          color: _gameMode == 'single'
+                                              ? Colors.white
+                                              : Colors.transparent,
+                                          width: 2,
+                                        ),
+                                      ),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            _gameMode == 'single'
+                                                ? Icons.radio_button_checked
+                                                : Icons.radio_button_unchecked,
+                                            color: Colors.white,
+                                            size: 24,
+                                          ),
+                                          const SizedBox(width: 8),
+                                          const Text(
+                                            'Single Player',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                // Multiplayer Radio
+                                Expanded(
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        _gameMode = 'multiplayer';
+                                      });
+                                    },
+                                    child: Container(
+                                      height: 50,
+                                      decoration: BoxDecoration(
+                                        color: _gameMode == 'multiplayer'
+                                            ? const Color(0xFF6C5CE7)
+                                            : const Color(0xFF2D2D44),
+                                        borderRadius: BorderRadius.circular(12),
+                                        border: Border.all(
+                                          color: _gameMode == 'multiplayer'
+                                              ? Colors.white
+                                              : Colors.transparent,
+                                          width: 2,
+                                        ),
+                                      ),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            _gameMode == 'multiplayer'
+                                                ? Icons.radio_button_checked
+                                                : Icons.radio_button_unchecked,
+                                            color: Colors.white,
+                                            size: 24,
+                                          ),
+                                          const SizedBox(width: 8),
+                                          const Text(
+                                            'Multiplayer',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
                     // Rounds Selection Section
                     Card(
                       color: const Color(0xFF3D3D5C),
@@ -242,8 +374,9 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
                     ),
                     const SizedBox(height: 24),
 
-                    // Users List Section
-                    Card(
+                    // Users List Section (only show if multiplayer mode)
+                    if (_gameMode == 'multiplayer')
+                      Card(
                       color: const Color(0xFF3D3D5C),
                       child: Padding(
                         padding: const EdgeInsets.all(16),
@@ -341,7 +474,8 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 32),
+                    if (_gameMode == 'multiplayer') const SizedBox(height: 24),
+                    if (_gameMode == 'single') const SizedBox(height: 32),
 
                     // Start Button
                     ElevatedButton(

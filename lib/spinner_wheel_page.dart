@@ -7,6 +7,7 @@ import 'package:path_provider/path_provider.dart';
 import 'spinner_edit_page.dart';
 import 'spinner_config_page.dart';
 import 'sound_vibration_helper.dart';
+import 'ad_helper.dart';
 
 class SpinnerWheelPage extends StatefulWidget {
   final List<String> items;
@@ -561,6 +562,8 @@ class _SpinnerWheelPageState extends State<SpinnerWheelPage>
                 },
               ),
             ),
+            // Banner Ad at bottom
+            const BannerAdWidget(),
           ],
         ),
       ),

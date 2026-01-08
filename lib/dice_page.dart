@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import 'sound_vibration_helper.dart';
+import 'ad_helper.dart';
 
 class DicePage extends StatefulWidget {
   const DicePage({super.key});
@@ -383,6 +384,8 @@ class _DicePageState extends State<DicePage>
                 ),
               ),
             ),
+            // Banner Ad at bottom
+            const BannerAdWidget(),
           ],
         ),
       ),

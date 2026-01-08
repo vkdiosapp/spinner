@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'home_page.dart';
 import 'sound_vibration_settings.dart';
 import 'onesignal_service.dart';
@@ -6,6 +7,9 @@ import 'onesignal_service.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SoundVibrationSettings.initialize();
+  
+  // Initialize AdMob
+  await MobileAds.instance.initialize();
   
   // Initialize OneSignal Push Notifications
   await OneSignalService.initialize();

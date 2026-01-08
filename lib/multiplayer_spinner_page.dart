@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
-import 'dart:io';
-import 'package:share_plus/share_plus.dart';
-import 'package:screenshot/screenshot.dart';
-import 'package:path_provider/path_provider.dart';
 import 'home_page.dart';
 import 'multiplayer_results_page.dart';
 import 'sound_vibration_helper.dart';
+import 'ad_helper.dart';
 
 class MultiplayerSpinnerPage extends StatefulWidget {
   final List<String> users;
@@ -33,7 +30,6 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
   late List<SegmentInfo> _segments; // Track segment info including jackpot
   late List<Color> _segmentColors; // Store assigned colors to avoid duplicates
   final math.Random _random = math.Random();
-  final ScreenshotController _screenshotController = ScreenshotController();
   
   // Reveal animation state
   bool _isRevealed = false;
@@ -45,17 +41,30 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
   int _currentUserIndex = 0;
   Map<String, int> _scores = {};
   Map<int, Map<String, int>> _roundScores = {}; // Track scores per round
+  late List<String> _displayUsers; // Users to display (may include Bot for single player)
+  bool _isSinglePlayer = false; // Track if this is single player mode
 
   @override
   void initState() {
     super.initState();
+    
+    // Check if single player mode (only "Player" in the list)
+    _isSinglePlayer = widget.users.length == 1 && widget.users[0] == 'Player';
+    
+    // For single player, change "Player" to "You" and add "Bot"
+    if (_isSinglePlayer) {
+      _displayUsers = ['You', 'Bot'];
+    } else {
+      _displayUsers = List.from(widget.users);
+    }
+    
     // Initialize scores
-    for (var user in widget.users) {
+    for (var user in _displayUsers) {
       _scores[user] = 0;
     }
     // Initialize round scores
     _roundScores[1] = {};
-    for (var user in widget.users) {
+    for (var user in _displayUsers) {
       _roundScores[1]![user] = 0;
     }
 
@@ -173,6 +182,11 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
         SoundVibrationHelper.stopContinuousSound();
       }
     });
+
+    // Preload interstitial ad for leave game
+    InterstitialAdHelper.loadInterstitialAd();
+    // Preload rewarded ad for game results
+    RewardedAdHelper.loadRewardedAd();
   }
 
   @override
@@ -248,7 +262,7 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
     // After reveal is closed, add points and move to next turn
     if (_earnedNumber != null && _earnedPoints != null) {
       final points = _earnedPoints!;
-      final currentUser = widget.users[_currentUserIndex];
+      final currentUser = _displayUsers[_currentUserIndex];
       _scores[currentUser] = (_scores[currentUser] ?? 0) + points;
       // Track round score
       _roundScores[_currentRound]![currentUser] = 
@@ -266,13 +280,22 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
       // Move to next user or next round
       if (!mounted) return;
       
-      if (_currentUserIndex < widget.users.length - 1) {
+      if (_currentUserIndex < _displayUsers.length - 1) {
         // Next user in same round - reset spinner first
         _resetSpinnerForNextTurn();
         setState(() {
           _currentUserIndex++;
           _isWaitingForNextTurn = false;
         });
+        
+        // If single player mode and it's Bot's turn, auto-spin after a short delay
+        if (_isSinglePlayer && _displayUsers[_currentUserIndex] == 'Bot') {
+          Future.delayed(const Duration(milliseconds: 500), () {
+            if (mounted && !_isSpinning && !_isWaitingForNextTurn) {
+              _spin();
+            }
+          });
+        }
       } else {
         // Round complete, move to next round
         if (_currentRound < widget.rounds) {
@@ -283,10 +306,19 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
             _isWaitingForNextTurn = false;
             // Initialize next round scores
             _roundScores[_currentRound] = {};
-            for (var user in widget.users) {
+            for (var user in _displayUsers) {
               _roundScores[_currentRound]![user] = 0;
             }
           });
+          
+          // If single player mode and it's Bot's turn at start of round, auto-spin
+          if (_isSinglePlayer && _displayUsers[_currentUserIndex] == 'Bot') {
+            Future.delayed(const Duration(milliseconds: 500), () {
+              if (mounted && !_isSpinning && !_isWaitingForNextTurn) {
+                _spin();
+              }
+            });
+          }
         } else {
           // Game complete - navigate to results page
           _navigateToResults();
@@ -303,16 +335,27 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
   }
   
 
-  void _navigateToResults() {
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (context) => MultiplayerResultsPage(
-          users: widget.users,
-          rounds: widget.rounds,
-          roundScores: _roundScores,
-          totalScores: Map<String, int>.from(_scores),
-        ),
-      ),
+  Future<void> _navigateToResults() async {
+    // Show rewarded ad before navigating to results page
+    await RewardedAdHelper.showRewardedAd(
+      onRewarded: () {
+        // User earned reward (ad was watched)
+        debugPrint('User earned reward - viewing results');
+      },
+      onAdClosed: () {
+        // Navigate after ad is closed
+        if (!mounted) return;
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => MultiplayerResultsPage(
+              users: _displayUsers,
+              rounds: widget.rounds,
+              roundScores: _roundScores,
+              totalScores: Map<String, int>.from(_scores),
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -414,41 +457,20 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
 
     // Only navigate if user confirmed
     if (shouldLeave == true) {
-      if (Navigator.of(context).canPop()) {
-        Navigator.of(context).pop();
-      } else {
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (context) => const HomePage()),
-      (route) => false,
-    );
-      }
-    }
-  }
-
-  Future<void> _shareSpinner() async {
-    try {
-      final image = await _screenshotController.capture();
-      if (image != null) {
-        final tempDir = await getTemporaryDirectory();
-        final file = File(
-          '${tempDir.path}/spinner_${DateTime.now().millisecondsSinceEpoch}.png',
-        );
-        await file.writeAsBytes(image);
-        final screenSize = MediaQuery.of(context).size;
-        await Share.shareXFiles(
-          [XFile(file.path)],
-          text: 'Check out my multiplayer spinner result!',
-          sharePositionOrigin: Rect.fromLTWH(
-            0,
-            0,
-            screenSize.width,
-            screenSize.height,
-          ),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error sharing: $e')),
+      // Show interstitial ad before leaving
+      await InterstitialAdHelper.showInterstitialAd(
+        onAdClosed: () {
+          // Navigate after ad is closed
+          if (!mounted) return;
+          if (Navigator.of(context).canPop()) {
+            Navigator.of(context).pop();
+          } else {
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => const HomePage()),
+              (route) => false,
+            );
+          }
+        },
       );
     }
   }
@@ -583,35 +605,35 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
       body: SafeArea(
           child: Column(
             children: [
-              // Fixed header with back button, title, and share button
+              // Fixed header with back button and title
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        child: Stack(
+                child: Stack(
                   alignment: Alignment.center,
-          children: [
+                  children: [
                     // Back button - left aligned
                     Align(
                       alignment: Alignment.centerLeft,
-              child: Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF6C5CE7),
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.3),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
+                      child: Container(
+                        width: 48,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF6C5CE7),
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.3),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: IconButton(
+                          icon: const Icon(Icons.arrow_back, color: Colors.white),
+                          onPressed: _goHome,
+                        ),
+                      ),
                     ),
-                  ],
-                ),
-                child: IconButton(
-                  icon: const Icon(Icons.arrow_back, color: Colors.white),
-                  onPressed: _goHome,
-                ),
-              ),
-            ),
                     // Title - centered on screen
                     Text(
                       'Round $_currentRound / ${widget.rounds}',
@@ -622,29 +644,6 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    // Share button - right aligned
-                    Align(
-                      alignment: Alignment.centerRight,
-              child: Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF6C5CE7),
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.3),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: IconButton(
-                          icon: const Icon(Icons.share, color: Colors.white, size: 24),
-                  onPressed: _shareSpinner,
-                ),
-              ),
-            ),
                   ],
                 ),
               ),
@@ -654,112 +653,103 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
               builder: (context, constraints) {
                 final maxWidth = constraints.maxWidth;
                 final maxHeight = constraints.maxHeight;
-                    // Calculate available space dynamically
-                    // Use more of the screen for larger devices
-                    final screenSize = math.min(maxWidth, maxHeight);
-                    final isLargeScreen = screenSize > 600; // iPad and larger devices
-                    final margin = isLargeScreen ? 20.0 : 12.0;
-                    final arrowHeight = isLargeScreen ? 40.0 : 28.0;
-                    
-                    // Calculate user section height dynamically
-                    final userRows = (widget.users.length / 3).ceil();
-                    final userSectionHeight = userRows * 70.0 + 40.0; // Approximate height per row
-                    final turnTextHeight = 40.0;
-                    final topPadding = 20.0; // Reduced padding
-                    final bottomPadding = 20.0;
+                final screenSize = math.min(maxWidth, maxHeight);
+                final isLargeScreen = screenSize > 600;
+                final margin = isLargeScreen ? 20.0 : 12.0;
+                final arrowHeight = isLargeScreen ? 40.0 : 28.0;
 
+                // Calculate available space
                 final availableWidth = maxWidth - (margin * 2);
-                    final availableHeight = maxHeight - topPadding - userSectionHeight - turnTextHeight - bottomPadding - arrowHeight;
+                final availableHeight = maxHeight - arrowHeight - (margin * 2);
 
-                    // Use more aggressive spinner size calculation for better screen coverage
-                    // Let mobile use a bit more of the available space than iPad
-                    final widthMultiplier = isLargeScreen ? 0.8 : 0.95;
-                    final heightMultiplier = isLargeScreen ? 0.8 : 0.95;
-                    
-                    final spinnerSize = math.min(availableWidth * widthMultiplier, availableHeight * heightMultiplier);
-                    // Ensure a reasonable minimum, allow dynamic growth
-                    final finalSize = math.max(230.0, spinnerSize);
+                // Use more of the screen for better coverage
+                final widthMultiplier = isLargeScreen ? 0.8 : 0.95;
+                final heightMultiplier = isLargeScreen ? 0.8 : 0.95;
+                
+                final spinnerSize = math.min(
+                  availableWidth * widthMultiplier,
+                  availableHeight * heightMultiplier,
+                );
+                final finalSize = math.max(230.0, spinnerSize);
 
                 final arrowWidth = finalSize * 0.22;
                 final arrowHeightSize = finalSize * 0.18;
                 final buttonSize = finalSize * 0.27;
 
-                return Screenshot(
-                  controller: _screenshotController,
-                      child: SingleChildScrollView(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: isLargeScreen ? 80 : 16,
-                        ),
+                return SingleChildScrollView(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: isLargeScreen ? 80 : 16,
+                  ),
                   child: Column(
                     children: [
-                            const SizedBox(height: 12),
-                    // Users and scores - Wrap to show all users at once
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Wrap(
-                        spacing: 12,
-                        runSpacing: 12,
-                        alignment: WrapAlignment.center,
-                        children: widget.users.asMap().entries.map((entry) {
-                          final index = entry.key;
-                          final user = entry.value;
-                          final isCurrentUser = index == _currentUserIndex;
-                          
-                          // Get current round score for this user
-                          final currentRoundScore = _roundScores[_currentRound]?[user] ?? 0;
-                          
-                          return Container(
-                            width: (maxWidth - 60) / (widget.users.length > 3 ? 3 : widget.users.length) - 8,
-                            constraints: const BoxConstraints(minWidth: 100, maxWidth: 150),
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: isCurrentUser
-                                  ? const Color(0xFF6C5CE7)
-                                  : const Color(0xFF3D3D5C),
-                              borderRadius: BorderRadius.circular(12),
-                              border: isCurrentUser
-                                  ? Border.all(color: Colors.white, width: 2)
-                                  : null,
-                            ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  user,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold,
+                      const SizedBox(height: 20),
+                      // Users list - similar to multiplayer
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Wrap(
+                          spacing: 12,
+                          runSpacing: 12,
+                          alignment: WrapAlignment.center,
+                          children: _displayUsers.asMap().entries.map((entry) {
+                            final index = entry.key;
+                            final user = entry.value;
+                            final isCurrentUser = index == _currentUserIndex;
+                            
+                            // Get current round score for this user
+                            final currentRoundScore = _roundScores[_currentRound]?[user] ?? 0;
+                            
+                            return Container(
+                              width: (maxWidth - 60) / (_displayUsers.length > 3 ? 3 : _displayUsers.length) - 8,
+                              constraints: const BoxConstraints(minWidth: 100, maxWidth: 150),
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: isCurrentUser
+                                    ? const Color(0xFF6C5CE7)
+                                    : const Color(0xFF3D3D5C),
+                                borderRadius: BorderRadius.circular(12),
+                                border: isCurrentUser
+                                    ? Border.all(color: Colors.white, width: 2)
+                                    : null,
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    user,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  'Score: $currentRoundScore',
-                                  style: const TextStyle(
-                                    color: Colors.white70,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    'Score: $currentRoundScore',
+                                    style: const TextStyle(
+                                      color: Colors.white70,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          );
-                        }).toList(),
+                                ],
+                              ),
+                            );
+                          }).toList(),
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 12),
-                    // Current user turn text below user grid
-                    Text(
-                      '${widget.users[_currentUserIndex]}' "'s Turn",
-                      style: const TextStyle(
-                        color: Colors.white70,
-                        fontSize: 18,
+                      const SizedBox(height: 12),
+                      // Current user turn text
+                      Text(
+                        '${_displayUsers[_currentUserIndex]}' "'s Turn",
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 18,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 20),
+                      const SizedBox(height: 20),
                     // Spinner Wheel
                     Center(
                         child: Container(
@@ -790,7 +780,7 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
                               ),
                               // Center Spin Button
                                 GestureDetector(
-                                  onTap: (_isWaitingForNextTurn || _isRevealed || _isSpinning) ? null : _spin,
+                                  onTap: (_isWaitingForNextTurn || _isRevealed || _isSpinning || (_isSinglePlayer && _displayUsers[_currentUserIndex] == 'Bot')) ? null : _spin,
                                   child: Container(
                                     width: buttonSize,
                                     height: buttonSize,
@@ -940,12 +930,13 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
                           ),
                       const SizedBox(height: 20),
                     ],
-                      ),
                   ),
                 );
               },
             ),
             ),
+            // Banner Ad at bottom
+            const BannerAdWidget(),
           ],
         ),
         ),

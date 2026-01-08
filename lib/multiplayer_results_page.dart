@@ -253,12 +253,20 @@ class _MultiplayerResultsPageState extends State<MultiplayerResultsPage> {
                       return Container(
                         margin: const EdgeInsets.only(bottom: 16),
                         decoration: BoxDecoration(
-                          gradient: medalGradient,
-                          color: medalGradient == null ? Colors.white : null, // White for ranks 4+
+                          gradient: medalGradient ?? LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              const Color(0xFF3D3D5C), // Dark purple-gray
+                              const Color(0xFF4A4A6A), // Slightly lighter
+                              const Color(0xFF3D3D5C), // Back to dark
+                            ],
+                            stops: const [0.0, 0.5, 1.0],
+                          ),
                           borderRadius: BorderRadius.circular(16),
                           border: rank <= 3
                               ? Border.all(color: Colors.white.withOpacity(0.8), width: 2.5)
-                              : null,
+                              : Border.all(color: Colors.white.withOpacity(0.2), width: 1.5),
                           boxShadow: [
                             BoxShadow(
                               color: rank <= 3 
@@ -267,7 +275,7 @@ class _MultiplayerResultsPageState extends State<MultiplayerResultsPage> {
                                       : rank == 2 
                                           ? const Color(0xFFC0C0C0).withOpacity(0.4) // Silver glow
                                           : const Color(0xFFCD7F32).withOpacity(0.4)) // Bronze glow
-                                  : Colors.black.withOpacity(0.2),
+                                  : Colors.black.withOpacity(0.3),
                               blurRadius: rank <= 3 ? 12 : 8,
                               spreadRadius: rank <= 3 ? 2 : 0,
                               offset: const Offset(0, 4),
@@ -289,7 +297,7 @@ class _MultiplayerResultsPageState extends State<MultiplayerResultsPage> {
                                     decoration: BoxDecoration(
                                       color: rank <= 3
                                           ? Colors.white.withOpacity(0.3)
-                                          : Colors.black.withOpacity(0.1),
+                                          : Colors.white.withOpacity(0.2),
                                       shape: BoxShape.circle,
                                     ),
                                     child: Center(
@@ -298,7 +306,7 @@ class _MultiplayerResultsPageState extends State<MultiplayerResultsPage> {
                                             ? medalEmoji
                                             : '$rank',
                                         style: TextStyle(
-                                          color: rank <= 3 ? Colors.white : Colors.black,
+                                          color: rank <= 3 ? Colors.white : Colors.white,
                                           fontSize: rank <= 3 ? 24 : 20,
                                           fontWeight: FontWeight.bold,
                                         ),
@@ -310,8 +318,8 @@ class _MultiplayerResultsPageState extends State<MultiplayerResultsPage> {
                                   Expanded(
                                     child: Text(
                                       user,
-                                      style: const TextStyle(
-                                        color: Colors.black,
+                                      style: TextStyle(
+                                        color: rank <= 3 ? Colors.black : Colors.white,
                                         fontSize: 22,
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -324,13 +332,15 @@ class _MultiplayerResultsPageState extends State<MultiplayerResultsPage> {
                                       vertical: 8,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: Colors.white.withOpacity(0.3),
+                                      color: rank <= 3 
+                                          ? Colors.white.withOpacity(0.3)
+                                          : Colors.white.withOpacity(0.2),
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                     child: Text(
                                       'Total: $totalScore',
-                                      style: const TextStyle(
-                                        color: Colors.black,
+                                      style: TextStyle(
+                                        color: rank <= 3 ? Colors.black : Colors.white,
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -346,8 +356,8 @@ class _MultiplayerResultsPageState extends State<MultiplayerResultsPage> {
                                   final roundScore = widget.roundScores[round]?[user] ?? 0;
                                   return 'R$round: $roundScore';
                                 }).join(' | ')}',
-                                style: const TextStyle(
-                                  color: Colors.black87,
+                                style: TextStyle(
+                                  color: rank <= 3 ? Colors.black87 : Colors.white70,
                                   fontSize: 14,
                                 ),
                               ),

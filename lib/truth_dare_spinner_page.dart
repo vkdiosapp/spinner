@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'dart:async';
 import 'dart:convert';
 import 'dart:math' as math;
 import 'sound_vibration_helper.dart';
+import 'ad_helper.dart';
 
 class TruthDareSpinnerPage extends StatefulWidget {
   final String level;
@@ -36,6 +38,11 @@ class _TruthDareSpinnerPageState extends State<TruthDareSpinnerPage>
   
   // User turn management
   int _currentUserIndex = 0;
+  
+  // Timer for reveal popup
+  Timer? _revealTimer;
+  int _timerSeconds = 60;
+  bool _isTimerExpired = false;
 
   @override
   void initState() {
@@ -70,6 +77,9 @@ class _TruthDareSpinnerPageState extends State<TruthDareSpinnerPage>
         SoundVibrationHelper.stopContinuousSound();
       }
     });
+
+    // Preload interstitial ad for leave game
+    InterstitialAdHelper.loadInterstitialAd();
   }
 
   Future<void> _loadTruthDareData() async {
@@ -103,6 +113,8 @@ class _TruthDareSpinnerPageState extends State<TruthDareSpinnerPage>
   void dispose() {
     // Stop continuous sound when disposing
     SoundVibrationHelper.stopContinuousSound();
+    // Cancel timer
+    _revealTimer?.cancel();
     _controller.dispose();
     _revealController.dispose();
     super.dispose();
@@ -233,15 +245,25 @@ class _TruthDareSpinnerPageState extends State<TruthDareSpinnerPage>
       _revealController.forward(from: 0);
       setState(() {
         _isRevealed = true;
+        _timerSeconds = 60;
+        _isTimerExpired = false;
       });
+      // Start 1-minute timer
+      _startRevealTimer();
     }
   }
 
   void _resetReveal() {
+    // Cancel timer
+    _revealTimer?.cancel();
+    _revealTimer = null;
+    
     setState(() {
       _isRevealed = false;
       _selectedType = null;
       _selectedMessage = null;
+      _timerSeconds = 60;
+      _isTimerExpired = false;
     });
     _revealController.reset();
     
@@ -249,10 +271,95 @@ class _TruthDareSpinnerPageState extends State<TruthDareSpinnerPage>
     _moveToNextUser();
   }
   
+  void _startRevealTimer() {
+    _revealTimer?.cancel();
+    _revealTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+      
+      setState(() {
+        if (_timerSeconds > 0) {
+          _timerSeconds--;
+        } else {
+          _isTimerExpired = true;
+          timer.cancel();
+          _revealTimer = null;
+        }
+      });
+    });
+  }
+  
   void _moveToNextUser() {
     setState(() {
       _currentUserIndex = (_currentUserIndex + 1) % widget.users.length;
     });
+  }
+
+  Future<void> _goHome() async {
+    // Show confirmation dialog before leaving
+    final shouldLeave = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: const Color(0xFF3D3D5C),
+          title: const Text(
+            'Leave Game?',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          content: const Text(
+            'Are you sure you want to leave the game?',
+            style: TextStyle(
+              color: Colors.white70,
+              fontSize: 16,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text(
+                'Cancel',
+                style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFEE5A6F),
+                foregroundColor: Colors.white,
+              ),
+              child: const Text(
+                'Leave',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+
+    // Only navigate if user confirmed
+    if (shouldLeave == true) {
+      // Show interstitial ad before leaving
+      await InterstitialAdHelper.showInterstitialAd(
+        onAdClosed: () {
+          // Navigate after ad is closed
+          if (!mounted) return;
+          Navigator.of(context).pop();
+        },
+      );
+    }
   }
 
   @override
@@ -295,7 +402,7 @@ class _TruthDareSpinnerPageState extends State<TruthDareSpinnerPage>
                       ),
                       child: IconButton(
                         icon: const Icon(Icons.arrow_back, color: Colors.white),
-                        onPressed: () => Navigator.of(context).pop(),
+                        onPressed: _goHome,
                       ),
                     ),
                   ),
@@ -585,6 +692,36 @@ class _TruthDareSpinnerPageState extends State<TruthDareSpinnerPage>
                                                   ),
                                                 ),
                                                 const SizedBox(height: 16),
+                                                // Timer or "You Lost!!" text
+                                                FadeTransition(
+                                                  opacity: Tween<double>(begin: 0.0, end: 1.0).animate(
+                                                    CurvedAnimation(
+                                                      parent: _revealController,
+                                                      curve: const Interval(0.7, 1.0, curve: Curves.easeIn),
+                                                    ),
+                                                  ),
+                                                  child: Text(
+                                                    _isTimerExpired
+                                                        ? 'You Lost!!'
+                                                        : '${_timerSeconds}s',
+                                                    style: TextStyle(
+                                                      color: _isTimerExpired
+                                                          ? const Color(0xFFFF4444) // Red color when timer expires
+                                                          : Colors.white,
+                                                      fontSize: finalSize * 0.08,
+                                                      fontWeight: FontWeight.bold,
+                                                      shadows: [
+                                                        Shadow(
+                                                          color: _isTimerExpired
+                                                              ? Colors.black.withOpacity(0.7)
+                                                              : Colors.black.withOpacity(0.5),
+                                                          blurRadius: 10,
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 12),
                                                 // Close button
                                                 FadeTransition(
                                                   opacity: Tween<double>(begin: 0.0, end: 1.0).animate(
@@ -637,6 +774,8 @@ class _TruthDareSpinnerPageState extends State<TruthDareSpinnerPage>
                 },
               ),
             ),
+            // Banner Ad at bottom
+            const BannerAdWidget(),
           ],
         ),
       ),

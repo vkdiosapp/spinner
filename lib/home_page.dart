@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:vibration/vibration.dart';
 import 'spinner_config_page.dart';
 import 'multiplayer_config_page.dart';
-import 'dice_page.dart';
+import 'dice_level_page.dart';
 import 'truth_dare_config_page.dart';
 import 'sound_vibration_settings.dart';
 
@@ -129,7 +129,7 @@ class _HomePageState extends State<HomePage> {
         'description': 'Roll two dice and see the total',
         'icon': Icons.casino,
         'color': const Color(0xFF00D2FF),
-        'route': const DicePage(),
+        'route': const DiceLevelPage(),
       },
       {
         'title': 'Truth & Dare',

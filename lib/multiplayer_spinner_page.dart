@@ -31,34 +31,35 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
   late List<SegmentInfo> _segments; // Track segment info including jackpot
   late List<Color> _segmentColors; // Store assigned colors to avoid duplicates
   final math.Random _random = math.Random();
-  
+
   // Reveal animation state
   bool _isRevealed = false;
   int? _earnedPoints;
   String? _earnedNumber;
-  
+
   // Game state
   int _currentRound = 1;
   int _currentUserIndex = 0;
   Map<String, int> _scores = {};
   Map<int, Map<String, int>> _roundScores = {}; // Track scores per round
-  late List<String> _displayUsers; // Users to display (may include Bot for single player)
+  late List<String>
+  _displayUsers; // Users to display (may include Bot for single player)
   bool _isSinglePlayer = false; // Track if this is single player mode
 
   @override
   void initState() {
     super.initState();
-    
+
     // Check if single player mode (only "Player" in the list)
     _isSinglePlayer = widget.users.length == 1 && widget.users[0] == 'Player';
-    
+
     // For single player, change "Player" to "You" and add "Bot"
     if (_isSinglePlayer) {
-      _displayUsers = ['You', 'Bot'];
+      _displayUsers = ['You', 'Computer'];
     } else {
       _displayUsers = List.from(widget.users);
     }
-    
+
     // Initialize scores
     for (var user in _displayUsers) {
       _scores[user] = 0;
@@ -71,84 +72,88 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
 
     // Generate random two-digit numbers from specific ranges
     final twoDigitNumbers = <String>[];
-    
+
     // First: 1-9 (formatted as 01-09)
     final firstNumber = _random.nextInt(9) + 1; // 1-9
     twoDigitNumbers.add(firstNumber.toString().padLeft(2, '0'));
-    
+
     // Second: 11-19
     final secondNumber = _random.nextInt(9) + 11; // 11-19
     twoDigitNumbers.add(secondNumber.toString());
-    
+
     // Third: 21-29
     final thirdNumber = _random.nextInt(9) + 21; // 21-29
     twoDigitNumbers.add(thirdNumber.toString());
-    
+
     // Fourth: 31-39
     final fourthNumber = _random.nextInt(9) + 31; // 31-39
     twoDigitNumbers.add(fourthNumber.toString());
-    
+
     // Fifth: 41-49
     final fifthNumber = _random.nextInt(9) + 41; // 41-49
     twoDigitNumbers.add(fifthNumber.toString());
-    
+
     // Sixth: 51-59
     final sixthNumber = _random.nextInt(9) + 51; // 51-59
     twoDigitNumbers.add(sixthNumber.toString());
-    
+
     // Seventh: 61-69
     final seventhNumber = _random.nextInt(9) + 61; // 61-69
     twoDigitNumbers.add(seventhNumber.toString());
-    
+
     // Eighth: 71-79
     final eighthNumber = _random.nextInt(9) + 71; // 71-79
     twoDigitNumbers.add(eighthNumber.toString());
-    
+
     // Ninth: 81-89
     final ninthNumber = _random.nextInt(9) + 81; // 81-89
     twoDigitNumbers.add(ninthNumber.toString());
-    
+
     // Tenth: 91-99
     final tenthNumber = _random.nextInt(9) + 91; // 91-99
     twoDigitNumbers.add(tenthNumber.toString());
-    
+
     // Shuffle the two-digit numbers
     twoDigitNumbers.shuffle(_random);
-    
+
     // Create segments with jackpot (10 degrees width - 1/3 of previous 30 degrees)
     // Regular segment angle: (360 - 10) / 10 = 35 degrees each
     final jackpotAngle = 10.0; // Fixed 10 degrees (1/3 of 30)
     final regularAngle = (360.0 - jackpotAngle) / 10; // 35 degrees each
-    
+
     _segments = [];
     double currentAngle = 0;
-    
+
     // Add jackpot at a random position
     final jackpotPosition = _random.nextInt(11); // Position 0-10
-    
+
     for (int i = 0; i < 11; i++) {
       if (i == jackpotPosition) {
         // Add jackpot segment (10 degrees - very thin!) - worth 100 points
-        _segments.add(SegmentInfo(
-          value: '100',
-          isJackpot: true,
-          startAngle: currentAngle,
-          endAngle: currentAngle + jackpotAngle,
-        ));
+        _segments.add(
+          SegmentInfo(
+            value: '100',
+            isJackpot: true,
+            startAngle: currentAngle,
+            endAngle: currentAngle + jackpotAngle,
+          ),
+        );
         currentAngle += jackpotAngle;
       } else {
         // Add regular segment (35 degrees) with two-digit number
         final itemIndex = i > jackpotPosition ? i - 1 : i;
-        _segments.add(SegmentInfo(
-          value: twoDigitNumbers[itemIndex],
-          isJackpot: false,
-          startAngle: currentAngle,
-          endAngle: currentAngle + regularAngle,
-        ));
+        _segments.add(
+          SegmentInfo(
+            value: twoDigitNumbers[itemIndex],
+            isJackpot: false,
+            startAngle: currentAngle,
+            endAngle: currentAngle + regularAngle,
+          ),
+        );
         currentAngle += regularAngle;
       }
     }
-    
+
     // Initialize colors without duplicates (11 segments: 10 regular + 1 jackpot)
     _initializeColors();
 
@@ -166,7 +171,7 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
       setState(() {
         final curvedValue = Curves.decelerate.transform(_controller.value);
         _rotation = (curvedValue * 360 * 6) + _randomOffset;
-        
+
         // Calculate speed based on curve derivative (rate of change)
         final speed = _calculateSpeed(_controller.value);
         SoundVibrationHelper.updateSpeed(speed);
@@ -208,21 +213,21 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
     //   - After rotation, it's drawn at (A - 90 + R) degrees (canvas)
     // The pointer is fixed at -90 degrees (canvas)
     // We need: A - 90 + R = -90, so A + R = 0, so A = -R (mod 360) = 360 - R
-    
+
     // Normalize rotation to 0-360 range
     final normalizedRotation = _rotation % 360;
-    
+
     // Find which segment's start angle equals (360 - normalizedRotation) mod 360
     // This is the segment that is now at the top after rotation
     final targetStartAngle = (360 - normalizedRotation) % 360;
-    
+
     // Find the segment that contains this start angle
     int segmentIndex = 0;
     for (int i = 0; i < _segments.length; i++) {
       final segment = _segments[i];
       final startAngle = segment.startAngle % 360;
       final endAngle = segment.endAngle % 360;
-      
+
       // Check if targetStartAngle falls within this segment's range
       if (startAngle <= endAngle) {
         // Normal case: segment doesn't cross 0
@@ -238,7 +243,7 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
         }
       }
     }
-    
+
     final points = int.parse(_segments[segmentIndex].value);
     final selectedNumber = _segments[segmentIndex].value;
 
@@ -248,7 +253,7 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
       _earnedNumber = selectedNumber;
       _isRevealed = true;
     });
-    
+
     // Start reveal animation
     _revealController.forward(from: 0).then((_) {
       // After reveal animation completes, wait a bit then automatically show flying animation
@@ -258,7 +263,7 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
       });
     });
   }
-  
+
   void _autoHideRevealAndFly() {
     // After reveal is closed, add points and move to next turn
     if (_earnedNumber != null && _earnedPoints != null) {
@@ -266,9 +271,9 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
       final currentUser = _displayUsers[_currentUserIndex];
       _scores[currentUser] = (_scores[currentUser] ?? 0) + points;
       // Track round score
-      _roundScores[_currentRound]![currentUser] = 
+      _roundScores[_currentRound]![currentUser] =
           (_roundScores[_currentRound]![currentUser] ?? 0) + points;
-      
+
       // Move to next turn
       setState(() {
         _isRevealed = false;
@@ -277,10 +282,10 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
         _isWaitingForNextTurn = true;
       });
       _revealController.reset();
-      
+
       // Move to next user or next round
       if (!mounted) return;
-      
+
       if (_currentUserIndex < _displayUsers.length - 1) {
         // Next user in same round - reset spinner first
         _resetSpinnerForNextTurn();
@@ -288,9 +293,9 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
           _currentUserIndex++;
           _isWaitingForNextTurn = false;
         });
-        
+
         // If single player mode and it's Bot's turn, auto-spin after a short delay
-        if (_isSinglePlayer && _displayUsers[_currentUserIndex] == 'Bot') {
+        if (_isSinglePlayer && _displayUsers[_currentUserIndex] == 'Computer') {
           Future.delayed(const Duration(milliseconds: 500), () {
             if (mounted && !_isSpinning && !_isWaitingForNextTurn) {
               _spin();
@@ -311,9 +316,10 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
               _roundScores[_currentRound]![user] = 0;
             }
           });
-          
+
           // If single player mode and it's Bot's turn at start of round, auto-spin
-          if (_isSinglePlayer && _displayUsers[_currentUserIndex] == 'Bot') {
+          if (_isSinglePlayer &&
+              _displayUsers[_currentUserIndex] == 'Computer') {
             Future.delayed(const Duration(milliseconds: 500), () {
               if (mounted && !_isSpinning && !_isWaitingForNextTurn) {
                 _spin();
@@ -334,7 +340,6 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
       _revealController.reset();
     }
   }
-  
 
   Future<void> _navigateToResults() async {
     // Show rewarded ad before navigating to results page
@@ -375,7 +380,7 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
       });
       _revealController.reset();
     }
-    
+
     // Reset spinner rotation and offset for next turn
     setState(() {
       _rotation = 0;
@@ -421,20 +426,14 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
           ),
           content: const Text(
             'Are you sure you want to leave the game?',
-            style: TextStyle(
-              color: Colors.white70,
-              fontSize: 16,
-            ),
+            style: TextStyle(color: Colors.white70, fontSize: 16),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
               child: const Text(
                 'Cancel',
-                style: TextStyle(
-                  color: Colors.white70,
-                  fontSize: 16,
-                ),
+                style: TextStyle(color: Colors.white70, fontSize: 16),
               ),
             ),
             ElevatedButton(
@@ -445,10 +444,7 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
               ),
               child: const Text(
                 'Leave',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ),
           ],
@@ -478,17 +474,17 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
 
   void _initializeColors() {
     _segmentColors = [];
-    
+
     // Assign colors sequentially (line-wise) from SpinnerColors
     // Skip jackpot segments (they use gold color in the painter)
     int colorIndex = 0;
-    
+
     for (int i = 0; i < _segments.length; i++) {
       // Jackpot segments use gold color (handled in painter), so skip them here
       // For regular segments, assign colors sequentially
       if (!_segments[i].isJackpot) {
         Color assignedColor = SpinnerColors.getColor(colorIndex);
-        
+
         // Ensure no adjacent duplicates
         if (i > 0 && _segmentColors.isNotEmpty) {
           final prevColor = _segmentColors[i - 1];
@@ -498,16 +494,18 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
             assignedColor = SpinnerColors.getColor(colorIndex);
           }
         }
-        
+
         _segmentColors.add(assignedColor);
         colorIndex++;
       } else {
         // For jackpot, we still add a color to maintain index alignment
         // but it won't be used (painter uses gold for jackpot)
-        _segmentColors.add(const Color(0xFFFFD700)); // Gold (not used, but maintains alignment)
+        _segmentColors.add(
+          const Color(0xFFFFD700),
+        ); // Gold (not used, but maintains alignment)
       }
     }
-    
+
     // Ensure last segment doesn't match first (circular adjacency)
     if (_segmentColors.length > 1) {
       final lastIndex = _segmentColors.length - 1;
@@ -517,11 +515,12 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
           // Find a different color for the last segment
           final firstColor = _segmentColors[0];
           final secondToLastColor = _segmentColors[lastIndex - 1];
-          
+
           // Try to find a color that's different from both first and second-to-last
           for (int i = 0; i < SpinnerColors.segmentColors.length; i++) {
             final candidateColor = SpinnerColors.segmentColors[i];
-            if (candidateColor != firstColor && candidateColor != secondToLastColor) {
+            if (candidateColor != firstColor &&
+                candidateColor != secondToLastColor) {
               _segmentColors[lastIndex] = candidateColor;
               break;
             }
@@ -547,13 +546,16 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
         }
       },
       child: Scaffold(
-      backgroundColor: const Color(0xFF2D2D44),
-      body: SafeArea(
+        backgroundColor: const Color(0xFF2D2D44),
+        body: SafeArea(
           child: Column(
             children: [
               // Fixed header with back button and title
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 16,
+                ),
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
@@ -575,7 +577,10 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
                           ],
                         ),
                         child: IconButton(
-                          icon: const Icon(Icons.arrow_back, color: Colors.white),
+                          icon: const Icon(
+                            Icons.arrow_back,
+                            color: Colors.white,
+                          ),
                           onPressed: _goHome,
                         ),
                       ),
@@ -596,295 +601,385 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
               // Scrollable content
               Expanded(
                 child: LayoutBuilder(
-              builder: (context, constraints) {
-                final maxWidth = constraints.maxWidth;
-                final maxHeight = constraints.maxHeight;
-                final screenSize = math.min(maxWidth, maxHeight);
-                final isLargeScreen = screenSize > 600;
-                final margin = isLargeScreen ? 20.0 : 12.0;
-                final arrowHeight = isLargeScreen ? 40.0 : 28.0;
+                  builder: (context, constraints) {
+                    final maxWidth = constraints.maxWidth;
+                    final maxHeight = constraints.maxHeight;
+                    final screenSize = math.min(maxWidth, maxHeight);
+                    final isLargeScreen = screenSize > 600;
+                    final margin = isLargeScreen ? 20.0 : 12.0;
+                    final arrowHeight = isLargeScreen ? 40.0 : 28.0;
 
-                // Calculate available space
-                final availableWidth = maxWidth - (margin * 2);
-                final availableHeight = maxHeight - arrowHeight - (margin * 2);
+                    // Calculate available space
+                    final availableWidth = maxWidth - (margin * 2);
+                    final availableHeight =
+                        maxHeight - arrowHeight - (margin * 2);
 
-                // Use more of the screen for better coverage
-                final widthMultiplier = isLargeScreen ? 0.8 : 0.95;
-                final heightMultiplier = isLargeScreen ? 0.8 : 0.95;
-                
-                final spinnerSize = math.min(
-                  availableWidth * widthMultiplier,
-                  availableHeight * heightMultiplier,
-                );
-                final finalSize = math.max(230.0, spinnerSize);
+                    // Use more of the screen for better coverage
+                    final widthMultiplier = isLargeScreen ? 0.8 : 0.95;
+                    final heightMultiplier = isLargeScreen ? 0.8 : 0.95;
 
-                final arrowWidth = finalSize * 0.22;
-                final arrowHeightSize = finalSize * 0.18;
-                final buttonSize = finalSize * 0.27;
+                    final spinnerSize = math.min(
+                      availableWidth * widthMultiplier,
+                      availableHeight * heightMultiplier,
+                    );
+                    final finalSize = math.max(230.0, spinnerSize);
 
-                return SingleChildScrollView(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: isLargeScreen ? 80 : 16,
-                  ),
-                  child: Column(
-                    children: [
-                      const SizedBox(height: 20),
-                      // Users list - similar to multiplayer
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: Wrap(
-                          spacing: 12,
-                          runSpacing: 12,
-                          alignment: WrapAlignment.center,
-                          children: _displayUsers.asMap().entries.map((entry) {
-                            final index = entry.key;
-                            final user = entry.value;
-                            final isCurrentUser = index == _currentUserIndex;
-                            
-                            // Get current round score for this user
-                            final currentRoundScore = _roundScores[_currentRound]?[user] ?? 0;
-                            
-                            return Container(
-                              width: (maxWidth - 60) / (_displayUsers.length > 3 ? 3 : _displayUsers.length) - 8,
-                              constraints: const BoxConstraints(minWidth: 100, maxWidth: 150),
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: isCurrentUser
-                                    ? const Color(0xFF6C5CE7)
-                                    : const Color(0xFF3D3D5C),
-                                borderRadius: BorderRadius.circular(12),
-                                border: isCurrentUser
-                                    ? Border.all(color: Colors.white, width: 2)
-                                    : null,
-                              ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    user,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    'Score: $currentRoundScore',
-                                    style: const TextStyle(
-                                      color: Colors.white70,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }).toList(),
-                        ),
+                    final arrowWidth = finalSize * 0.22;
+                    final arrowHeightSize = finalSize * 0.18;
+                    final buttonSize = finalSize * 0.27;
+
+                    return SingleChildScrollView(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: isLargeScreen ? 80 : 16,
                       ),
-                      const SizedBox(height: 12),
-                      // Current user turn text
-                      Text(
-                        '${_displayUsers[_currentUserIndex]}' "'s Turn",
-                        style: const TextStyle(
-                          color: Colors.white70,
-                          fontSize: 18,
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                    // Spinner Wheel
-                    Center(
-                        child: Container(
-                        height: finalSize + 50, // Fixed height to prevent cropping
-                        width: finalSize,
-                          margin: const EdgeInsets.all(20),
-                          child: Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              // Wheel
-                              Transform.rotate(
-                                angle: _rotation * math.pi / 180,
-                                child: CustomPaint(
-                                  size: Size(finalSize, finalSize),
-                                painter: MultiplayerWheelPainter(
-                                  segments: _segments,
-                                    getSegmentColor: _getSegmentColor,
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 20),
+                          // Users list - similar to multiplayer
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            child: Wrap(
+                              spacing: 12,
+                              runSpacing: 12,
+                              alignment: WrapAlignment.center,
+                              children: _displayUsers.asMap().entries.map((
+                                entry,
+                              ) {
+                                final index = entry.key;
+                                final user = entry.value;
+                                final isCurrentUser =
+                                    index == _currentUserIndex;
+
+                                // Get current round score for this user
+                                final currentRoundScore =
+                                    _roundScores[_currentRound]?[user] ?? 0;
+
+                                return Container(
+                                  width:
+                                      (maxWidth - 60) /
+                                          (_displayUsers.length > 3
+                                              ? 3
+                                              : _displayUsers.length) -
+                                      8,
+                                  constraints: const BoxConstraints(
+                                    minWidth: 100,
+                                    maxWidth: 150,
                                   ),
-                                ),
-                              ),
-                              // Pointer
-                              Positioned(
-                              top: 10,
-                              child: CustomPaint(
-                                        size: Size(arrowWidth, arrowHeightSize),
-                                        painter: PointerPainter(),
-                                ),
-                              ),
-                              // Center Spin Button
-                                GestureDetector(
-                                  onTap: (_isWaitingForNextTurn || _isRevealed || _isSpinning || (_isSinglePlayer && _displayUsers[_currentUserIndex] == 'Bot')) ? null : _spin,
-                                  child: Container(
-                                    width: buttonSize,
-                                    height: buttonSize,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      gradient: const LinearGradient(
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight,
-                                        colors: [
-                                          Color(0xFF6C5CE7),
-                                          Color(0xFF5A4FCF),
-                                        ],
-                                      ),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black.withOpacity(0.3),
-                                          blurRadius: 10,
-                                          offset: const Offset(0, 5),
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: isCurrentUser
+                                        ? const Color(0xFF6C5CE7)
+                                        : const Color(0xFF3D3D5C),
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: isCurrentUser
+                                        ? Border.all(
+                                            color: Colors.white,
+                                            width: 2,
+                                          )
+                                        : null,
+                                  ),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        user,
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
                                         ),
-                                      ],
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        'Score: $currentRoundScore',
+                                        style: const TextStyle(
+                                          color: Colors.white70,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }).toList(),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          // Current user turn text
+                          Text(
+                            '${_displayUsers[_currentUserIndex]}'
+                            "'s Turn",
+                            style: const TextStyle(
+                              color: Colors.white70,
+                              fontSize: 18,
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          // Spinner Wheel
+                          Center(
+                            child: Container(
+                              height:
+                                  finalSize +
+                                  50, // Fixed height to prevent cropping
+                              width: finalSize,
+                              margin: const EdgeInsets.all(20),
+                              child: Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  // Wheel
+                                  Transform.rotate(
+                                    angle: _rotation * math.pi / 180,
+                                    child: CustomPaint(
+                                      size: Size(finalSize, finalSize),
+                                      painter: MultiplayerWheelPainter(
+                                        segments: _segments,
+                                        getSegmentColor: _getSegmentColor,
+                                      ),
                                     ),
+                                  ),
+                                  // Pointer
+                                  Positioned(
+                                    top: 10,
+                                    child: CustomPaint(
+                                      size: Size(arrowWidth, arrowHeightSize),
+                                      painter: PointerPainter(),
+                                    ),
+                                  ),
+                                  // Center Spin Button
+                                  GestureDetector(
+                                    onTap:
+                                        (_isWaitingForNextTurn ||
+                                            _isRevealed ||
+                                            _isSpinning ||
+                                            (_isSinglePlayer &&
+                                                _displayUsers[_currentUserIndex] ==
+                                                    'Computer'))
+                                        ? null
+                                        : _spin,
                                     child: Container(
-                                      margin: EdgeInsets.all(buttonSize * 0.1),
+                                      width: buttonSize,
+                                      height: buttonSize,
                                       decoration: BoxDecoration(
                                         shape: BoxShape.circle,
-                                        border: Border.all(
-                                          color: const Color(0xFF8B7ED8),
-                                          width: 2,
-                                        ),
-                                      ),
-                                      child: Icon(
-                                        Icons.refresh,
-                                        color: Colors.white,
-                                        size: buttonSize * 0.44,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                            // Reveal animation overlay on spinner
-                            if (_isRevealed && _earnedPoints != null && _earnedNumber != null)
-                              AnimatedBuilder(
-                                animation: _revealController,
-                                builder: (context, child) {
-                                  return FadeTransition(
-                                    opacity: _revealController,
-                                    child: ScaleTransition(
-                                      scale: Tween<double>(begin: 0.0, end: 1.0).animate(
-                                        CurvedAnimation(
-                                          parent: _revealController,
-                                          curve: Curves.elasticOut,
-                                        ),
-                                      ),
-                                      child: Container(
-                                        width: finalSize * 1.2,
-                                        height: finalSize * 1.2,
-                              decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          gradient: RadialGradient(
-                                            colors: [
-                                              const Color(0xFFFFF9C4).withOpacity(0.95), // Light yellow
-                                              const Color(0xFFFFF59D).withOpacity(0.9), // Slightly darker yellow
-                                            ],
-                                          ),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: const Color(0xFFFFF59D).withOpacity(0.5),
-                                              blurRadius: 30,
-                                              spreadRadius: 10,
-                                            ),
+                                        gradient: const LinearGradient(
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight,
+                                          colors: [
+                                            Color(0xFF6C5CE7),
+                                            Color(0xFF5A4FCF),
                                           ],
                                         ),
-                                        child: Center(
-                              child: Column(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                              // Points label with animation
-                                              FadeTransition(
-                                                opacity: Tween<double>(begin: 0.0, end: 1.0).animate(
-                                                  CurvedAnimation(
-                                                    parent: _revealController,
-                                                    curve: const Interval(0.0, 0.5, curve: Curves.easeIn),
-                                                  ),
-                                                ),
-                                                child: Text(
-                                                  'EARNED',
-                                    style: TextStyle(
-                                                    color: Colors.black87,
-                                                    fontSize: finalSize * 0.08,
-                                      fontWeight: FontWeight.bold,
-                                                    letterSpacing: 3,
-                                                  ),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black.withOpacity(
+                                              0.3,
+                                            ),
+                                            blurRadius: 10,
+                                            offset: const Offset(0, 5),
+                                          ),
+                                        ],
+                                      ),
+                                      child: Container(
+                                        margin: EdgeInsets.all(
+                                          buttonSize * 0.1,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          border: Border.all(
+                                            color: const Color(0xFF8B7ED8),
+                                            width: 2,
+                                          ),
+                                        ),
+                                        child: Icon(
+                                          Icons.refresh,
+                                          color: Colors.white,
+                                          size: buttonSize * 0.44,
+                                        ),
+                                      ),
                                     ),
                                   ),
-                                  const SizedBox(height: 12),
-                                              // Number with animation
-                                              ScaleTransition(
-                                                scale: Tween<double>(begin: 0.0, end: 1.0).animate(
+                                  // Reveal animation overlay on spinner
+                                  if (_isRevealed &&
+                                      _earnedPoints != null &&
+                                      _earnedNumber != null)
+                                    AnimatedBuilder(
+                                      animation: _revealController,
+                                      builder: (context, child) {
+                                        return FadeTransition(
+                                          opacity: _revealController,
+                                          child: ScaleTransition(
+                                            scale:
+                                                Tween<double>(
+                                                  begin: 0.0,
+                                                  end: 1.0,
+                                                ).animate(
                                                   CurvedAnimation(
                                                     parent: _revealController,
-                                                    curve: const Interval(0.2, 0.7, curve: Curves.elasticOut),
+                                                    curve: Curves.elasticOut,
                                                   ),
                                                 ),
-                                                child: Text(
-                                                  _earnedNumber!,
-                                                  style: TextStyle(
-                                                    color: Colors.black,
-                                                    fontSize: finalSize * 0.25,
-                                      fontWeight: FontWeight.bold,
-                                                    shadows: [
-                                                      Shadow(
-                                                        color: Colors.black.withOpacity(0.2),
-                                                        blurRadius: 10,
-                                  ),
+                                            child: Container(
+                                              width: finalSize * 1.2,
+                                              height: finalSize * 1.2,
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                gradient: RadialGradient(
+                                                  colors: [
+                                                    const Color(
+                                                      0xFFFFF9C4,
+                                                    ).withOpacity(
+                                                      0.95,
+                                                    ), // Light yellow
+                                                    const Color(
+                                                      0xFFFFF59D,
+                                                    ).withOpacity(
+                                                      0.9,
+                                                    ), // Slightly darker yellow
+                                                  ],
+                                                ),
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: const Color(
+                                                      0xFFFFF59D,
+                                                    ).withOpacity(0.5),
+                                                    blurRadius: 30,
+                                                    spreadRadius: 10,
+                                                  ),
+                                                ],
+                                              ),
+                                              child: Center(
+                                                child: Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    // Points label with animation
+                                                    FadeTransition(
+                                                      opacity:
+                                                          Tween<double>(
+                                                            begin: 0.0,
+                                                            end: 1.0,
+                                                          ).animate(
+                                                            CurvedAnimation(
+                                                              parent:
+                                                                  _revealController,
+                                                              curve:
+                                                                  const Interval(
+                                                                    0.0,
+                                                                    0.5,
+                                                                    curve: Curves
+                                                                        .easeIn,
+                                                                  ),
+                                                            ),
+                                                          ),
+                                                      child: Text(
+                                                        'EARNED',
+                                                        style: TextStyle(
+                                                          color: Colors.black87,
+                                                          fontSize:
+                                                              finalSize * 0.08,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          letterSpacing: 3,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    const SizedBox(height: 12),
+                                                    // Number with animation
+                                                    ScaleTransition(
+                                                      scale:
+                                                          Tween<double>(
+                                                            begin: 0.0,
+                                                            end: 1.0,
+                                                          ).animate(
+                                                            CurvedAnimation(
+                                                              parent:
+                                                                  _revealController,
+                                                              curve: const Interval(
+                                                                0.2,
+                                                                0.7,
+                                                                curve: Curves
+                                                                    .elasticOut,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                      child: Text(
+                                                        _earnedNumber!,
+                                                        style: TextStyle(
+                                                          color: Colors.black,
+                                                          fontSize:
+                                                              finalSize * 0.25,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          shadows: [
+                                                            Shadow(
+                                                              color: Colors
+                                                                  .black
+                                                                  .withOpacity(
+                                                                    0.2,
+                                                                  ),
+                                                              blurRadius: 10,
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    const SizedBox(height: 8),
+                                                    // Points text with animation
+                                                    FadeTransition(
+                                                      opacity:
+                                                          Tween<double>(
+                                                            begin: 0.0,
+                                                            end: 1.0,
+                                                          ).animate(
+                                                            CurvedAnimation(
+                                                              parent:
+                                                                  _revealController,
+                                                              curve:
+                                                                  const Interval(
+                                                                    0.5,
+                                                                    0.8,
+                                                                    curve: Curves
+                                                                        .easeIn,
+                                                                  ),
+                                                            ),
+                                                          ),
+                                                      child: Text(
+                                                        '${_earnedPoints} Points',
+                                                        style: TextStyle(
+                                                          color: Colors.black87,
+                                                          fontSize:
+                                                              finalSize * 0.07,
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    ),
                                 ],
                               ),
                             ),
-                                              ),
-                                              const SizedBox(height: 8),
-                                              // Points text with animation
-                                              FadeTransition(
-                                                opacity: Tween<double>(begin: 0.0, end: 1.0).animate(
-                                                  CurvedAnimation(
-                                                    parent: _revealController,
-                                                    curve: const Interval(0.5, 0.8, curve: Curves.easeIn),
-                                      ),
-                                    ),
-                                                child: Text(
-                                                  '${_earnedPoints} Points',
-                                      style: TextStyle(
-                                                    color: Colors.black87,
-                                                    fontSize: finalSize * 0.07,
-                                                    fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ),
-                                            ],
-                                      ),
-                                    ),
-                                  ),
-                                    ),
-                                  );
-                                },
-                                ),
-                              ],
-                            ),
-                        ),
                           ),
-                      const SizedBox(height: 20),
-                    ],
-                  ),
-                );
-              },
-            ),
-            ),
-            // Banner Ad at bottom
-            const BannerAdWidget(),
-          ],
-        ),
+                          const SizedBox(height: 20),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+              // Banner Ad at bottom
+              const BannerAdWidget(),
+            ],
+          ),
         ),
       ),
     );
@@ -911,7 +1006,10 @@ class MultiplayerWheelPainter extends CustomPainter {
   final List<SegmentInfo> segments;
   final Color Function(int) getSegmentColor;
 
-  MultiplayerWheelPainter({required this.segments, required this.getSegmentColor});
+  MultiplayerWheelPainter({
+    required this.segments,
+    required this.getSegmentColor,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -928,7 +1026,7 @@ class MultiplayerWheelPainter extends CustomPainter {
 
       // Use gold color for jackpot, regular color for others
       final paint = Paint()
-        ..color = segment.isJackpot 
+        ..color = segment.isJackpot
             ? const Color(0xFFFFD700) // Gold for jackpot
             : getSegmentColor(i)
         ..style = PaintingStyle.fill;
@@ -943,8 +1041,8 @@ class MultiplayerWheelPainter extends CustomPainter {
 
       // Draw border - thicker for jackpot
       final borderPaint = Paint()
-        ..color = segment.isJackpot 
-            ? Colors.white 
+        ..color = segment.isJackpot
+            ? Colors.white
             : Colors.white.withOpacity(0.3)
         ..style = PaintingStyle.stroke
         ..strokeWidth = segment.isJackpot ? 3 : 2;
@@ -989,22 +1087,37 @@ class MultiplayerWheelPainter extends CustomPainter {
 
       // Draw stars - more prominent for jackpot
       if (!segment.isJackpot) {
-      final starRadius = radius * 0.5;
-      final starX = center.dx + starRadius * math.cos(textAngle);
-      final starY = center.dy + starRadius * math.sin(textAngle);
-      _drawStar(canvas, Offset(starX, starY), 8, Colors.white.withOpacity(0.6));
+        final starRadius = radius * 0.5;
+        final starX = center.dx + starRadius * math.cos(textAngle);
+        final starY = center.dy + starRadius * math.sin(textAngle);
+        _drawStar(
+          canvas,
+          Offset(starX, starY),
+          8,
+          Colors.white.withOpacity(0.6),
+        );
       } else {
         // Draw sparkle effect for jackpot
         final sparkleRadius = radius * 0.5;
         final sparkleX = center.dx + sparkleRadius * math.cos(textAngle);
         final sparkleY = center.dy + sparkleRadius * math.sin(textAngle);
-        _drawStar(canvas, Offset(sparkleX, sparkleY), 12, Colors.yellow.withOpacity(0.8));
+        _drawStar(
+          canvas,
+          Offset(sparkleX, sparkleY),
+          12,
+          Colors.yellow.withOpacity(0.8),
+        );
         // Draw additional sparkles around jackpot
         for (int j = 0; j < 3; j++) {
           final offsetAngle = textAngle + (j - 1) * segmentAngle * 0.3;
           final offsetX = center.dx + sparkleRadius * math.cos(offsetAngle);
           final offsetY = center.dy + sparkleRadius * math.sin(offsetAngle);
-          _drawStar(canvas, Offset(offsetX, offsetY), 6, Colors.yellow.withOpacity(0.6));
+          _drawStar(
+            canvas,
+            Offset(offsetX, offsetY),
+            6,
+            Colors.yellow.withOpacity(0.6),
+          );
         }
       }
     }
@@ -1075,10 +1188,7 @@ class PointerPainter extends CustomPainter {
       ..shader = LinearGradient(
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
-        colors: [
-          const Color(0xFFFF69B4),
-          const Color(0xFFFF1493),
-        ],
+        colors: [const Color(0xFFFF69B4), const Color(0xFFFF1493)],
       ).createShader(Rect.fromLTWH(0, 0, size.width, size.height))
       ..style = PaintingStyle.fill;
 
@@ -1095,4 +1205,3 @@ class PointerPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
-

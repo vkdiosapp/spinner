@@ -12,20 +12,34 @@ class _TruthDareConfigPageState extends State<TruthDareConfigPage> {
   final List<TextEditingController> _userControllers = [];
   final List<FocusNode> _userFocusNodes = [];
   final List<String> _users = [];
+  int _playerCount = 2; // Default to 2P
 
   @override
   void initState() {
     super.initState();
-    // Add one default user so it doesn't look empty
-    _users.add('');
-    _userControllers.add(TextEditingController());
-    _userFocusNodes.add(FocusNode());
-    // Focus on the first field after the widget builds
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_userFocusNodes.isNotEmpty) {
-        _userFocusNodes.first.requestFocus();
-      }
-    });
+    // Initialize with default 2 players
+    _initializeUsers();
+  }
+
+  void _initializeUsers() {
+    // Clear existing controllers and focus nodes
+    for (var controller in _userControllers) {
+      controller.dispose();
+    }
+    for (var focusNode in _userFocusNodes) {
+      focusNode.dispose();
+    }
+    _userControllers.clear();
+    _userFocusNodes.clear();
+    _users.clear();
+
+    // Populate based on player count
+    for (int i = 0; i < _playerCount; i++) {
+      final playerName = 'Player ${i + 1}';
+      _users.add(playerName);
+      _userControllers.add(TextEditingController(text: playerName));
+      _userFocusNodes.add(FocusNode());
+    }
   }
 
   @override
@@ -39,27 +53,10 @@ class _TruthDareConfigPageState extends State<TruthDareConfigPage> {
     super.dispose();
   }
 
-  void _addNewUser() {
+  void _updatePlayerCount(int count) {
     setState(() {
-      _users.add('');
-      _userControllers.add(TextEditingController());
-      _userFocusNodes.add(FocusNode());
-    });
-    // Focus on the newly added field after the widget rebuilds
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_userFocusNodes.isNotEmpty) {
-        _userFocusNodes.last.requestFocus();
-      }
-    });
-  }
-
-  void _removeUser(int index) {
-    setState(() {
-      _userControllers[index].dispose();
-      _userFocusNodes[index].dispose();
-      _userControllers.removeAt(index);
-      _userFocusNodes.removeAt(index);
-      _users.removeAt(index);
+      _playerCount = count;
+      _initializeUsers();
     });
   }
 
@@ -168,7 +165,7 @@ class _TruthDareConfigPageState extends State<TruthDareConfigPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // Users List Section
+                    // Users Section (with Player Count Selection)
                     Card(
                       color: const Color(0xFF3D3D5C),
                       child: Padding(
@@ -185,84 +182,81 @@ class _TruthDareConfigPageState extends State<TruthDareConfigPage> {
                               ),
                             ),
                             const SizedBox(height: 12),
+                            // Player Count Selection
+                            Row(
+                              children: List.generate(5, (index) {
+                                final playerCount = index + 2; // 2P, 3P, 4P, 5P, 6P
+                                final isSelected = _playerCount == playerCount;
+                                return Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 4,
+                                    ),
+                                    child: GestureDetector(
+                                      onTap: () => _updatePlayerCount(playerCount),
+                                      child: Container(
+                                        height: 50,
+                                        decoration: BoxDecoration(
+                                          color: isSelected
+                                              ? const Color(0xFFFF1493)
+                                              : const Color(0xFF2D2D44),
+                                          borderRadius: BorderRadius.circular(12),
+                                          border: Border.all(
+                                            color: isSelected
+                                                ? Colors.white
+                                                : Colors.transparent,
+                                            width: 2,
+                                          ),
+                                        ),
+                                        child: Center(
+                                          child: Text(
+                                            '${playerCount}P',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                              fontWeight: isSelected
+                                                  ? FontWeight.bold
+                                                  : FontWeight.normal,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              }),
+                            ),
+                            const SizedBox(height: 20),
+                            // Users List
                             ...List.generate(_users.length, (index) {
                               return Container(
                                 margin: const EdgeInsets.only(bottom: 12),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: TextField(
-                                        controller: _userControllers[index],
-                                        focusNode: _userFocusNodes[index],
-                                        textCapitalization:
-                                            TextCapitalization.words,
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                        ),
-                                        decoration: InputDecoration(
-                                          hintText: 'Enter user name',
-                                          hintStyle: TextStyle(
-                                            color: Colors.white.withOpacity(
-                                              0.5,
-                                            ),
-                                          ),
-                                          filled: true,
-                                          fillColor: const Color(0xFF2D2D44),
-                                          border: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              12,
-                                            ),
-                                            borderSide: BorderSide.none,
-                                          ),
-                                          contentPadding:
-                                              const EdgeInsets.symmetric(
-                                                horizontal: 16,
-                                                vertical: 14,
-                                              ),
-                                        ),
-                                      ),
+                                child: TextField(
+                                  controller: _userControllers[index],
+                                  focusNode: _userFocusNodes[index],
+                                  textCapitalization: TextCapitalization.words,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                  ),
+                                  decoration: InputDecoration(
+                                    hintText: 'Enter user name',
+                                    hintStyle: TextStyle(
+                                      color: Colors.white.withOpacity(0.5),
                                     ),
-                                    const SizedBox(width: 12),
-                                    IconButton(
-                                      onPressed: () => _removeUser(index),
-                                      icon: const Icon(
-                                        Icons.delete_outline,
-                                        color: Colors.red,
-                                        size: 28,
-                                      ),
+                                    filled: true,
+                                    fillColor: const Color(0xFF2D2D44),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                      borderSide: BorderSide.none,
                                     ),
-                                  ],
-                                ),
-                              );
-                            }),
-                            if (_users.isEmpty)
-                              Padding(
-                                padding: const EdgeInsets.all(24),
-                                child: Center(
-                                  child: Text(
-                                    'No users. Click "User" to add users.',
-                                    style: TextStyle(
-                                      color: Colors.white.withOpacity(0.6),
-                                      fontSize: 14,
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 14,
                                     ),
                                   ),
                                 ),
-                              ),
-                            const SizedBox(height: 12),
-                            // Add User button at bottom
-                            TextButton.icon(
-                              onPressed: _addNewUser,
-                              icon: const Icon(Icons.add, color: Colors.white),
-                              label: const Text(
-                                'User',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              style: TextButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 12,
-                                ),
-                              ),
-                            ),
+                              );
+                            }),
                           ],
                         ),
                       ),

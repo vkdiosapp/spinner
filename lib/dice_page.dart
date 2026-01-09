@@ -1027,9 +1027,9 @@ class _DicePageState extends State<DicePage> with TickerProviderStateMixin {
                   ),
                 ),
               ),
-              // Pointer (same as Truth & Dare spinner)
+              // Pointer (same as main spinner wheel)
               Positioned(
-                top: 10,
+                top: 0,
                 child: CustomPaint(
                   size: Size(arrowWidth, arrowHeight),
                   painter: DicePointerPainter(),

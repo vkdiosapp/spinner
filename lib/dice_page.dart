@@ -423,28 +423,38 @@ class _DicePageState extends State<DicePage> with TickerProviderStateMixin {
                                 flex: 2,
                                 child: LayoutBuilder(
                                   builder: (context, constraints) {
-                                    // Calculate spinner size based on actual available height
+                                    // Calculate spinner size based on actual available height and width
                                     final availableHeight =
                                         constraints.maxHeight;
+                                    final availableWidth = constraints.maxWidth;
                                     double dynamicSpinnerSize;
+
                                     if (widget.mode == 'oneDice') {
-                                      // Use 75% of available height for spinner - conservative to prevent overflow
+                                      // Use 75% of available height for spinner
+                                      final heightBased =
+                                          availableHeight * 0.75;
+                                      // Also ensure it fits in width (90% to leave some margin)
+                                      final widthBased = availableWidth * 0.9;
                                       dynamicSpinnerSize = math.min(
                                         maxSpinnerSize,
-                                        availableHeight * 0.75,
+                                        math.min(heightBased, widthBased),
                                       );
                                       dynamicSpinnerSize = math.max(
                                         100.0,
                                         dynamicSpinnerSize,
                                       );
                                     } else {
-                                      // Use 70% of available height for two dice - conservative to prevent overflow
+                                      // For two dice, must account for width: two spinners + 20px spacing
+                                      final heightBased = availableHeight * 0.7;
+                                      // Each spinner can be at most (availableWidth - 20) / 2
+                                      final widthBased =
+                                          (availableWidth - 20) / 2;
                                       dynamicSpinnerSize = math.min(
                                         maxSpinnerSize,
-                                        availableHeight * 0.7,
+                                        math.min(heightBased, widthBased),
                                       );
                                       dynamicSpinnerSize = math.max(
-                                        80.0,
+                                        60.0, // Lower minimum for landscape
                                         dynamicSpinnerSize,
                                       );
                                     }
@@ -471,6 +481,7 @@ class _DicePageState extends State<DicePage> with TickerProviderStateMixin {
                                         : Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.center,
+                                            mainAxisSize: MainAxisSize.min,
                                             children: [
                                               _buildDiceSpinner(
                                                 size: dynamicSpinnerSize,
@@ -512,28 +523,38 @@ class _DicePageState extends State<DicePage> with TickerProviderStateMixin {
                                 flex: 2,
                                 child: LayoutBuilder(
                                   builder: (context, constraints) {
-                                    // Calculate spinner size based on actual available height
+                                    // Calculate spinner size based on actual available height and width
                                     final availableHeight =
                                         constraints.maxHeight;
+                                    final availableWidth = constraints.maxWidth;
                                     double dynamicSpinnerSize;
+
                                     if (widget.mode == 'oneDice') {
-                                      // Use 75% of available height for spinner - conservative to prevent overflow
+                                      // Use 95% of available height for spinner - fill the space
+                                      final heightBased =
+                                          availableHeight * 0.95;
+                                      // Also ensure it fits in width (90% to leave some margin)
+                                      final widthBased = availableWidth * 0.9;
                                       dynamicSpinnerSize = math.min(
                                         maxSpinnerSize,
-                                        availableHeight * 0.75,
+                                        math.min(heightBased, widthBased),
                                       );
                                       dynamicSpinnerSize = math.max(
-                                        120.0,
+                                        150.0,
                                         dynamicSpinnerSize,
                                       );
                                     } else {
-                                      // Use 70% of available height for two dice - conservative to prevent overflow
+                                      // For two dice, must account for width: two spinners + 20px spacing
+                                      final heightBased = availableHeight * 0.9;
+                                      // Each spinner can be at most (availableWidth - 20) / 2
+                                      final widthBased =
+                                          (availableWidth - 20) / 2;
                                       dynamicSpinnerSize = math.min(
                                         maxSpinnerSize,
-                                        availableHeight * 0.7,
+                                        math.min(heightBased, widthBased),
                                       );
                                       dynamicSpinnerSize = math.max(
-                                        100.0,
+                                        120.0,
                                         dynamicSpinnerSize,
                                       );
                                     }
@@ -560,6 +581,7 @@ class _DicePageState extends State<DicePage> with TickerProviderStateMixin {
                                         : Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.center,
+                                            mainAxisSize: MainAxisSize.min,
                                             children: [
                                               _buildDiceSpinner(
                                                 size: dynamicSpinnerSize,

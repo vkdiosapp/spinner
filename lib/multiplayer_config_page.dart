@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'multiplayer_spinner_page.dart';
+import 'ad_helper.dart';
 
 class MultiplayerConfigPage extends StatefulWidget {
   const MultiplayerConfigPage({super.key});
@@ -160,7 +161,10 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
                       ),
                       child: IconButton(
                         icon: const Icon(Icons.arrow_back, color: Colors.white),
-                        onPressed: () => Navigator.of(context).pop(),
+                        onPressed: () => BackArrowAd.handleBackButton(
+                          context: context,
+                          onBack: () => Navigator.of(context).pop(),
+                        ),
                       ),
                     ),
                   ),

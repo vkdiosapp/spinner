@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'truth_dare_level_page.dart';
+import 'ad_helper.dart';
 
 class TruthDareConfigPage extends StatefulWidget {
   const TruthDareConfigPage({super.key});
@@ -138,7 +139,10 @@ class _TruthDareConfigPageState extends State<TruthDareConfigPage> {
                       ),
                       child: IconButton(
                         icon: const Icon(Icons.arrow_back, color: Colors.white),
-                        onPressed: () => Navigator.of(context).pop(),
+                        onPressed: () => BackArrowAd.handleBackButton(
+                          context: context,
+                          onBack: () => Navigator.of(context).pop(),
+                        ),
                       ),
                     ),
                   ),

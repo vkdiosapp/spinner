@@ -206,6 +206,49 @@ class InterstitialAdHelper {
   }
 }
 
+/// Back Arrow Ad Counter
+/// 
+/// Tracks back button presses on config/level pages and shows interstitial ad every 3 presses
+class BackArrowAd {
+  static int _count = 0;
+
+  /// Increment the counter and show ad if needed
+  /// Returns true if ad was shown, false otherwise
+  static Future<bool> handleBackButton({
+    required BuildContext context,
+    required VoidCallback onBack,
+  }) async {
+    _count++;
+    
+    // If count reaches 3, show interstitial ad and reset counter
+    if (_count >= 3) {
+      _count = 0;
+      
+      // Show interstitial ad, then navigate back
+      await InterstitialAdHelper.showInterstitialAd(
+        onAdClosed: () {
+          if (context.mounted) {
+            onBack();
+          }
+        },
+      );
+      return true;
+    } else {
+      // Just go back without ad
+      onBack();
+      return false;
+    }
+  }
+
+  /// Reset the counter (optional, for testing)
+  static void reset() {
+    _count = 0;
+  }
+
+  /// Get current count (for debugging)
+  static int get count => _count;
+}
+
 /// Rewarded Ad Helper
 /// 
 /// Manages loading and showing rewarded ads

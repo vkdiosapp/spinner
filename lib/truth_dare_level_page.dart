@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'truth_dare_spinner_page.dart';
+import 'ad_helper.dart';
 
 class TruthDareLevelPage extends StatelessWidget {
   final List<String> users;
@@ -49,7 +50,10 @@ class TruthDareLevelPage extends StatelessWidget {
                       ),
                       child: IconButton(
                         icon: const Icon(Icons.arrow_back, color: Colors.white),
-                        onPressed: () => Navigator.of(context).pop(),
+                        onPressed: () => BackArrowAd.handleBackButton(
+                          context: context,
+                          onBack: () => Navigator.of(context).pop(),
+                        ),
                       ),
                     ),
                   ),

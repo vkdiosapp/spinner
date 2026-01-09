@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dice_page.dart';
+import 'ad_helper.dart';
 
 class DiceLevelPage extends StatelessWidget {
   const DiceLevelPage({super.key});
@@ -42,7 +43,10 @@ class DiceLevelPage extends StatelessWidget {
                       ),
                       child: IconButton(
                         icon: const Icon(Icons.arrow_back, color: Colors.white),
-                        onPressed: () => Navigator.of(context).pop(),
+                        onPressed: () => BackArrowAd.handleBackButton(
+                          context: context,
+                          onBack: () => Navigator.of(context).pop(),
+                        ),
                       ),
                     ),
                   ),

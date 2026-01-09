@@ -325,99 +325,60 @@ class _DicePageState extends State<DicePage> with TickerProviderStateMixin {
                         2; // Account for padding and 20px spacing
                   }
 
-                  return Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: isLargeScreen ? 20 : 16,
+                  // Calculate spinner size based on orientation
+                  double spinnerSize;
+                  if (isLandscape) {
+                    // Landscape: spinner on left, button and results on right
+                    // Account for padding (16px) - no label space needed since we removed it
+                    final availableHeight = maxHeight - 16;
+                    if (widget.mode == 'oneDice') {
+                      // Use more space for one dice - up to 75% of available height
+                      spinnerSize = math.min(
+                        maxSpinnerSize,
+                        availableHeight * 0.75,
+                      );
+                      spinnerSize = math.max(120.0, spinnerSize);
+                    } else {
+                      // Two dice modes - use more space, up to 70% of available height
+                      spinnerSize = math.min(
+                        maxSpinnerSize,
+                        availableHeight * 0.7,
+                      );
+                      spinnerSize = math.max(100.0, spinnerSize);
+                    }
+                  } else {
+                    // Portrait: vertical layout - use more aggressive sizing
+                    // Account for button (50px) and results section, spinner gets ~75% of remaining
+                    final availableForSpinner = maxHeight * 0.75;
+                    if (widget.mode == 'oneDice') {
+                      // Use up to 70% of available height for spinner
+                      spinnerSize = math.min(
+                        maxSpinnerSize,
+                        availableForSpinner * 0.7,
+                      );
+                      spinnerSize = math.max(200.0, spinnerSize);
+                    } else {
+                      // Two dice modes - use up to 65% of available height
+                      spinnerSize = math.min(
+                        maxSpinnerSize,
+                        availableForSpinner * 0.65,
+                      );
+                      spinnerSize = math.max(170.0, spinnerSize);
+                    }
+                  }
+
+                  Widget resultsAndButton = Container(
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF3D3D5C),
+                      borderRadius: BorderRadius.circular(12),
                     ),
+                    padding: const EdgeInsets.all(12),
                     child: Column(
+                      mainAxisSize: MainAxisSize.max,
                       children: [
-                        // Dice spinners - flexible, adjusts to available space
-                        Flexible(
-                          child: LayoutBuilder(
-                            builder: (context, spinnerConstraints) {
-                              // Calculate available height for spinner
-                              final availableHeight =
-                                  spinnerConstraints.maxHeight;
-
-                              // Calculate spinner size based on available space
-                              // Use more conservative multipliers in landscape
-                              double spinnerSize;
-                              if (widget.mode == 'oneDice') {
-                                final multiplier = isLandscape ? 0.5 : 0.7;
-                                final heightBased =
-                                    availableHeight * multiplier;
-                                spinnerSize = math.min(
-                                  maxSpinnerSize,
-                                  heightBased,
-                                );
-                                spinnerSize = math.max(
-                                  isLandscape ? 100.0 : 150.0,
-                                  spinnerSize,
-                                );
-                              } else {
-                                final multiplier = isLandscape ? 0.45 : 0.65;
-                                final heightBased =
-                                    availableHeight * multiplier;
-                                spinnerSize = math.min(
-                                  maxSpinnerSize,
-                                  heightBased,
-                                );
-                                spinnerSize = math.max(
-                                  isLandscape ? 80.0 : 120.0,
-                                  spinnerSize,
-                                );
-                              }
-
-                              final buttonSize = spinnerSize * 0.25;
-                              final arrowWidth = spinnerSize * 0.22;
-                              final arrowHeight = spinnerSize * 0.18;
-
-                              return Center(
-                                child: widget.mode == 'oneDice'
-                                    ? _buildDiceSpinner(
-                                        size: spinnerSize,
-                                        rotation: _rotation1,
-                                        segments: _segments1,
-                                        value: _diceValue1,
-                                        label: 'Dice',
-                                        buttonSize: buttonSize,
-                                        arrowWidth: arrowWidth,
-                                        arrowHeight: arrowHeight,
-                                      )
-                                    : Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          _buildDiceSpinner(
-                                            size: spinnerSize,
-                                            rotation: _rotation1,
-                                            segments: _segments1,
-                                            value: _diceValue1,
-                                            label: 'Dice 1',
-                                            buttonSize: buttonSize,
-                                            arrowWidth: arrowWidth,
-                                            arrowHeight: arrowHeight,
-                                          ),
-                                          const SizedBox(
-                                            width: 20,
-                                          ), // 20px spacing between spinners
-                                          _buildDiceSpinner(
-                                            size: spinnerSize,
-                                            rotation: _rotation2,
-                                            segments: _segments2,
-                                            value: _diceValue2,
-                                            label: 'Dice 2',
-                                            buttonSize: buttonSize,
-                                            arrowWidth: arrowWidth,
-                                            arrowHeight: arrowHeight,
-                                          ),
-                                        ],
-                                      ),
-                              );
-                            },
-                          ),
-                        ),
-                        // Spin Button - fixed height
+                        // Results section first - takes most of the space
+                        Expanded(child: _buildCompactResults()),
+                        // Spin Button at bottom - fixed height
                         SizedBox(
                           height: spinButtonHeight,
                           child: Padding(
@@ -445,10 +406,193 @@ class _DicePageState extends State<DicePage> with TickerProviderStateMixin {
                             ),
                           ),
                         ),
-                        // Compact Results display - takes all remaining space
-                        Expanded(child: _buildCompactResults()),
                       ],
                     ),
+                  );
+
+                  return Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: isLargeScreen ? 20 : 16,
+                      vertical: isLandscape ? 8 : 0,
+                    ),
+                    child: isLandscape
+                        ? Row(
+                            children: [
+                              // Spinner on left - calculate size based on actual available space
+                              Expanded(
+                                flex: 2,
+                                child: LayoutBuilder(
+                                  builder: (context, constraints) {
+                                    // Calculate spinner size based on actual available height
+                                    final availableHeight =
+                                        constraints.maxHeight;
+                                    double dynamicSpinnerSize;
+                                    if (widget.mode == 'oneDice') {
+                                      // Use 75% of available height for spinner - conservative to prevent overflow
+                                      dynamicSpinnerSize = math.min(
+                                        maxSpinnerSize,
+                                        availableHeight * 0.75,
+                                      );
+                                      dynamicSpinnerSize = math.max(
+                                        100.0,
+                                        dynamicSpinnerSize,
+                                      );
+                                    } else {
+                                      // Use 70% of available height for two dice - conservative to prevent overflow
+                                      dynamicSpinnerSize = math.min(
+                                        maxSpinnerSize,
+                                        availableHeight * 0.7,
+                                      );
+                                      dynamicSpinnerSize = math.max(
+                                        80.0,
+                                        dynamicSpinnerSize,
+                                      );
+                                    }
+
+                                    final dynamicButtonSize =
+                                        dynamicSpinnerSize * 0.25;
+                                    final dynamicArrowWidth =
+                                        dynamicSpinnerSize * 0.22;
+                                    final dynamicArrowHeight =
+                                        dynamicSpinnerSize * 0.18;
+
+                                    Widget dynamicSpinnerWidget =
+                                        widget.mode == 'oneDice'
+                                        ? _buildDiceSpinner(
+                                            size: dynamicSpinnerSize,
+                                            rotation: _rotation1,
+                                            segments: _segments1,
+                                            value: _diceValue1,
+                                            label: 'Dice',
+                                            buttonSize: dynamicButtonSize,
+                                            arrowWidth: dynamicArrowWidth,
+                                            arrowHeight: dynamicArrowHeight,
+                                          )
+                                        : Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              _buildDiceSpinner(
+                                                size: dynamicSpinnerSize,
+                                                rotation: _rotation1,
+                                                segments: _segments1,
+                                                value: _diceValue1,
+                                                label: 'Dice 1',
+                                                buttonSize: dynamicButtonSize,
+                                                arrowWidth: dynamicArrowWidth,
+                                                arrowHeight: dynamicArrowHeight,
+                                              ),
+                                              const SizedBox(width: 20),
+                                              _buildDiceSpinner(
+                                                size: dynamicSpinnerSize,
+                                                rotation: _rotation2,
+                                                segments: _segments2,
+                                                value: _diceValue2,
+                                                label: 'Dice 2',
+                                                buttonSize: dynamicButtonSize,
+                                                arrowWidth: dynamicArrowWidth,
+                                                arrowHeight: dynamicArrowHeight,
+                                              ),
+                                            ],
+                                          );
+
+                                    return Center(child: dynamicSpinnerWidget);
+                                  },
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              // Results and button on right (results first, button at bottom)
+                              Expanded(flex: 1, child: resultsAndButton),
+                            ],
+                          )
+                        : Column(
+                            children: [
+                              // Spinner on top - calculate size based on actual available space
+                              Expanded(
+                                flex: 2,
+                                child: LayoutBuilder(
+                                  builder: (context, constraints) {
+                                    // Calculate spinner size based on actual available height
+                                    final availableHeight =
+                                        constraints.maxHeight;
+                                    double dynamicSpinnerSize;
+                                    if (widget.mode == 'oneDice') {
+                                      // Use 75% of available height for spinner - conservative to prevent overflow
+                                      dynamicSpinnerSize = math.min(
+                                        maxSpinnerSize,
+                                        availableHeight * 0.75,
+                                      );
+                                      dynamicSpinnerSize = math.max(
+                                        120.0,
+                                        dynamicSpinnerSize,
+                                      );
+                                    } else {
+                                      // Use 70% of available height for two dice - conservative to prevent overflow
+                                      dynamicSpinnerSize = math.min(
+                                        maxSpinnerSize,
+                                        availableHeight * 0.7,
+                                      );
+                                      dynamicSpinnerSize = math.max(
+                                        100.0,
+                                        dynamicSpinnerSize,
+                                      );
+                                    }
+
+                                    final dynamicButtonSize =
+                                        dynamicSpinnerSize * 0.25;
+                                    final dynamicArrowWidth =
+                                        dynamicSpinnerSize * 0.22;
+                                    final dynamicArrowHeight =
+                                        dynamicSpinnerSize * 0.18;
+
+                                    Widget dynamicSpinnerWidget =
+                                        widget.mode == 'oneDice'
+                                        ? _buildDiceSpinner(
+                                            size: dynamicSpinnerSize,
+                                            rotation: _rotation1,
+                                            segments: _segments1,
+                                            value: _diceValue1,
+                                            label: 'Dice',
+                                            buttonSize: dynamicButtonSize,
+                                            arrowWidth: dynamicArrowWidth,
+                                            arrowHeight: dynamicArrowHeight,
+                                          )
+                                        : Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              _buildDiceSpinner(
+                                                size: dynamicSpinnerSize,
+                                                rotation: _rotation1,
+                                                segments: _segments1,
+                                                value: _diceValue1,
+                                                label: 'Dice 1',
+                                                buttonSize: dynamicButtonSize,
+                                                arrowWidth: dynamicArrowWidth,
+                                                arrowHeight: dynamicArrowHeight,
+                                              ),
+                                              const SizedBox(width: 20),
+                                              _buildDiceSpinner(
+                                                size: dynamicSpinnerSize,
+                                                rotation: _rotation2,
+                                                segments: _segments2,
+                                                value: _diceValue2,
+                                                label: 'Dice 2',
+                                                buttonSize: dynamicButtonSize,
+                                                arrowWidth: dynamicArrowWidth,
+                                                arrowHeight: dynamicArrowHeight,
+                                              ),
+                                            ],
+                                          );
+
+                                    return Center(child: dynamicSpinnerWidget);
+                                  },
+                                ),
+                              ),
+                              // Results and button below (results first, button at bottom) - give more space
+                              Expanded(flex: 2, child: resultsAndButton),
+                            ],
+                          ),
                   );
                 },
               ),
@@ -462,78 +606,79 @@ class _DicePageState extends State<DicePage> with TickerProviderStateMixin {
   }
 
   Widget _buildCompactResults() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: const Color(0xFF3D3D5C),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: widget.mode == 'oneDice'
-          ? Center(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Result: ',
-                    style: const TextStyle(color: Colors.white70, fontSize: 16),
-                  ),
-                  if (_diceValue1 != null)
-                    _buildCompactDiceFace(_diceValue1!)
-                  else
-                    const Text(
-                      '?',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+        child: widget.mode == 'oneDice'
+            ? Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Result: ',
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 16,
                       ),
                     ),
-                ],
-              ),
-            )
-          : Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Expanded(
-                      child: _buildCompactDiceResult('Dice 1', _diceValue1),
-                    ),
-                    Expanded(
-                      child: _buildCompactDiceResult('Dice 2', _diceValue2),
-                    ),
+                    if (_diceValue1 != null)
+                      _buildCompactDiceFace(_diceValue1!)
+                    else
+                      const Text(
+                        '?',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                   ],
                 ),
-                const SizedBox(height: 6),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 6,
+              )
+            : Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Expanded(
+                        child: _buildCompactDiceResult('Dice 1', _diceValue1),
+                      ),
+                      Expanded(
+                        child: _buildCompactDiceResult('Dice 2', _diceValue2),
+                      ),
+                    ],
                   ),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF6C5CE7),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    widget.mode == 'multiplication'
-                        ? (_diceValue1 != null && _diceValue2 != null
-                              ? '${_diceValue1!} × ${_diceValue2!} = ${_diceValue1! * _diceValue2!}'
-                              : 'Multiplication: ?')
-                        : (_diceValue1 != null && _diceValue2 != null
-                              ? '${_diceValue1!} + ${_diceValue2!} = ${_diceValue1! + _diceValue2!}'
-                              : 'Total: ?'),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                  const SizedBox(height: 6),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 6,
                     ),
-                    textAlign: TextAlign.center,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF6C5CE7),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      widget.mode == 'multiplication'
+                          ? (_diceValue1 != null && _diceValue2 != null
+                                ? '${_diceValue1!} × ${_diceValue2!} = ${_diceValue1! * _diceValue2!}'
+                                : 'Multiplication: ?')
+                          : (_diceValue1 != null && _diceValue2 != null
+                                ? '${_diceValue1!} + ${_diceValue2!} = ${_diceValue1! + _diceValue2!}'
+                                : 'Total: ?'),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
+      ),
     );
   }
 
@@ -863,9 +1008,10 @@ class _DicePageState extends State<DicePage> with TickerProviderStateMixin {
     required double arrowHeight,
   }) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          height: size + 50,
+          height: size,
           width: size,
           child: Stack(
             alignment: Alignment.center,
@@ -929,15 +1075,7 @@ class _DicePageState extends State<DicePage> with TickerProviderStateMixin {
             ],
           ),
         ),
-        const SizedBox(height: 12),
-        Text(
-          label,
-          style: const TextStyle(
-            color: Colors.white70,
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
+        // Labels removed - no text below spinners
       ],
     );
   }

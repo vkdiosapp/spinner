@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'multiplayer_spinner_page.dart';
+import 'who_first_spinner_page.dart';
 import 'ad_helper.dart';
 
 class MultiplayerConfigPage extends StatefulWidget {
-  const MultiplayerConfigPage({super.key});
+  final bool isWhoFirst;
+
+  const MultiplayerConfigPage({super.key, this.isWhoFirst = false});
 
   @override
   State<MultiplayerConfigPage> createState() => _MultiplayerConfigPageState();
@@ -75,8 +78,9 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
     if (_gameMode == 'single') {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-          builder: (context) =>
-              MultiplayerSpinnerPage(users: ['Player'], rounds: _rounds),
+          builder: (context) => widget.isWhoFirst
+              ? WhoFirstSpinnerPage(users: ['Player'], rounds: 10)
+              : MultiplayerSpinnerPage(users: ['Player'], rounds: _rounds),
         ),
       );
       return;
@@ -123,8 +127,9 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
 
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
-        builder: (context) =>
-            MultiplayerSpinnerPage(users: updatedUsers, rounds: _rounds),
+        builder: (context) => widget.isWhoFirst
+            ? WhoFirstSpinnerPage(users: updatedUsers, rounds: 10)
+            : MultiplayerSpinnerPage(users: updatedUsers, rounds: _rounds),
       ),
     );
   }
@@ -169,8 +174,8 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
                     ),
                   ),
                   // Title - centered on screen
-                  const Text(
-                    'Multiplayer',
+                  Text(
+                    widget.isWhoFirst ? 'Who First' : 'Multiplayer',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: Colors.white,
@@ -233,7 +238,8 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
                                         ),
                                       ),
                                       child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
                                         children: [
                                           Icon(
                                             _gameMode == 'single'
@@ -281,7 +287,8 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
                                         ),
                                       ),
                                       child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
                                         children: [
                                           Icon(
                                             _gameMode == 'multiplayer'
@@ -311,77 +318,78 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    // Rounds Selection Section
-                    Card(
-                      color: const Color(0xFF3D3D5C),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'How Many Rounds',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
+                    // Rounds Selection Section (hide for WhoFirst)
+                    if (!widget.isWhoFirst)
+                      Card(
+                        color: const Color(0xFF3D3D5C),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'How Many Rounds',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 12),
-                            Row(
-                              children: List.generate(10, (index) {
-                                final roundNumber = index + 1;
-                                final isSelected = _rounds == roundNumber;
-                                return Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 4,
-                                    ),
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          _rounds = roundNumber;
-                                        });
-                                      },
-                                      child: Container(
-                                        height: 50,
-                                        decoration: BoxDecoration(
-                                          color: isSelected
-                                              ? const Color(0xFF6C5CE7)
-                                              : const Color(0xFF2D2D44),
-                                          borderRadius: BorderRadius.circular(
-                                            12,
-                                          ),
-                                          border: Border.all(
+                              const SizedBox(height: 12),
+                              Row(
+                                children: List.generate(10, (index) {
+                                  final roundNumber = index + 1;
+                                  final isSelected = _rounds == roundNumber;
+                                  return Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 4,
+                                      ),
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            _rounds = roundNumber;
+                                          });
+                                        },
+                                        child: Container(
+                                          height: 50,
+                                          decoration: BoxDecoration(
                                             color: isSelected
-                                                ? Colors.white
-                                                : Colors.transparent,
-                                            width: 2,
+                                                ? const Color(0xFF6C5CE7)
+                                                : const Color(0xFF2D2D44),
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                            border: Border.all(
+                                              color: isSelected
+                                                  ? Colors.white
+                                                  : Colors.transparent,
+                                              width: 2,
+                                            ),
                                           ),
-                                        ),
-                                        child: Center(
-                                          child: Text(
-                                            '$roundNumber',
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 18,
-                                              fontWeight: isSelected
-                                                  ? FontWeight.bold
-                                                  : FontWeight.normal,
+                                          child: Center(
+                                            child: Text(
+                                              '$roundNumber',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 18,
+                                                fontWeight: isSelected
+                                                    ? FontWeight.bold
+                                                    : FontWeight.normal,
+                                              ),
                                             ),
                                           ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                );
-                              }),
-                            ),
-                          ],
+                                  );
+                                }),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 24),
+                    if (!widget.isWhoFirst) const SizedBox(height: 24),
 
                     // Users List Section (only show if multiplayer mode)
                     if (_gameMode == 'multiplayer')
@@ -404,22 +412,27 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
                               // Player Count Selection
                               Row(
                                 children: List.generate(5, (index) {
-                                  final playerCount = index + 2; // 2P, 3P, 4P, 5P, 6P
-                                  final isSelected = _playerCount == playerCount;
+                                  final playerCount =
+                                      index + 2; // 2P, 3P, 4P, 5P, 6P
+                                  final isSelected =
+                                      _playerCount == playerCount;
                                   return Expanded(
                                     child: Padding(
                                       padding: const EdgeInsets.symmetric(
                                         horizontal: 4,
                                       ),
                                       child: GestureDetector(
-                                        onTap: () => _updatePlayerCount(playerCount),
+                                        onTap: () =>
+                                            _updatePlayerCount(playerCount),
                                         child: Container(
                                           height: 50,
                                           decoration: BoxDecoration(
                                             color: isSelected
                                                 ? const Color(0xFF6C5CE7)
                                                 : const Color(0xFF2D2D44),
-                                            borderRadius: BorderRadius.circular(12),
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
                                             border: Border.all(
                                               color: isSelected
                                                   ? Colors.white
@@ -453,10 +466,9 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
                                   child: TextField(
                                     controller: _userControllers[index],
                                     focusNode: _userFocusNodes[index],
-                                    textCapitalization: TextCapitalization.words,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                    ),
+                                    textCapitalization:
+                                        TextCapitalization.words,
+                                    style: const TextStyle(color: Colors.white),
                                     decoration: InputDecoration(
                                       hintText: 'Enter user name',
                                       hintStyle: TextStyle(
@@ -468,10 +480,11 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
                                         borderRadius: BorderRadius.circular(12),
                                         borderSide: BorderSide.none,
                                       ),
-                                      contentPadding: const EdgeInsets.symmetric(
-                                        horizontal: 16,
-                                        vertical: 14,
-                                      ),
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                            horizontal: 16,
+                                            vertical: 14,
+                                          ),
                                     ),
                                   ),
                                 );

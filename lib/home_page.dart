@@ -4,7 +4,6 @@ import 'package:vibration/vibration.dart';
 import 'spinner_config_page.dart';
 import 'multiplayer_config_page.dart';
 import 'dice_level_page.dart';
-import 'truth_dare_config_page.dart';
 import 'sound_vibration_settings.dart';
 
 class HomePage extends StatefulWidget {
@@ -132,11 +131,11 @@ class _HomePageState extends State<HomePage> {
         'route': const DiceLevelPage(),
       },
       {
-        'title': 'Truth & Dare',
-        'description': 'Play truth and dare with friends',
-        'icon': Icons.celebration,
-        'color': const Color(0xFFFF1493),
-        'route': const TruthDareConfigPage(),
+        'title': 'Who First',
+        'description': 'Play with friends and compete in rounds',
+        'icon': Icons.timer,
+        'color': const Color(0xFF00B894),
+        'route': const MultiplayerConfigPage(isWhoFirst: true),
       },
     ];
 

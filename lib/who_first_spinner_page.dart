@@ -637,15 +637,15 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
                                                                     color: isHighlighting
                                                                         ? highlightColor
                                                                         : isDisabled
-                                                                        ? Colors.grey.withOpacity(0.3)
-                                                                        : const Color(0xFF3D3D5C),
+                                                                        ? Colors.red.withOpacity(0.7)
+                                                                        : Colors.green.withOpacity(0.7),
                                                                     borderRadius: BorderRadius.circular(8),
                                                                     border: Border.all(
                                                                       color: isHighlighting
                                                                           ? Colors.white
                                                                           : isDisabled
-                                                                          ? Colors.grey
-                                                                          : Colors.transparent,
+                                                                          ? Colors.red
+                                                                          : Colors.green,
                                                                       width: isHighlighting ? 3 : 2,
                                                                     ),
                                                                     boxShadow: isHighlighting
@@ -666,7 +666,7 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
                                                                         color: isHighlighting
                                                                             ? Colors.white
                                                                             : isDisabled
-                                                                            ? Colors.grey
+                                                                            ? Colors.white
                                                                             : Colors.white,
                                                                         fontSize: tileFontSize,
                                                                         fontWeight: FontWeight.bold,
@@ -1055,15 +1055,15 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
                                                                     color: isHighlighting
                                                                         ? highlightColor
                                                                         : isDisabled
-                                                                        ? Colors.grey.withOpacity(0.3)
-                                                                        : const Color(0xFF3D3D5C),
+                                                                        ? Colors.red.withOpacity(0.7)
+                                                                        : Colors.green.withOpacity(0.7),
                                                                     borderRadius: BorderRadius.circular(8),
                                                                     border: Border.all(
                                                                       color: isHighlighting
                                                                           ? Colors.white
                                                                           : isDisabled
-                                                                          ? Colors.grey
-                                                                          : Colors.transparent,
+                                                                          ? Colors.red
+                                                                          : Colors.green,
                                                                       width: isHighlighting ? 3 : 2,
                                                                     ),
                                                                     boxShadow: isHighlighting
@@ -1084,7 +1084,7 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
                                                                         color: isHighlighting
                                                                             ? Colors.white
                                                                             : isDisabled
-                                                                            ? Colors.grey
+                                                                            ? Colors.white
                                                                             : Colors.white,
                                                                         fontSize: tileFontSize,
                                                                         fontWeight: FontWeight.bold,

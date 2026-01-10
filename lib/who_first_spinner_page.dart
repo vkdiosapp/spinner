@@ -6,6 +6,7 @@ import 'ad_helper.dart';
 import 'spinner_colors.dart';
 import 'sound_vibration_helper.dart';
 import 'multiplayer_results_page.dart';
+import 'app_localizations_helper.dart';
 
 class WhoFirstSpinnerPage extends StatefulWidget {
   final List<String> users;
@@ -399,26 +400,27 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
     final shouldLeave = await showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
+        final dialogL10n = AppLocalizationsHelper.of(context);
         return AlertDialog(
           backgroundColor: const Color(0xFF3D3D5C),
-          title: const Text(
-            'Leave Game?',
-            style: TextStyle(
+          title: Text(
+            dialogL10n.leaveGame,
+            style: const TextStyle(
               color: Colors.white,
               fontSize: 20,
               fontWeight: FontWeight.bold,
             ),
           ),
-          content: const Text(
-            'Are you sure you want to leave the game?',
-            style: TextStyle(color: Colors.white70, fontSize: 16),
+          content: Text(
+            dialogL10n.leaveGameMessage,
+            style: const TextStyle(color: Colors.white70, fontSize: 16),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: const Text(
-                'Cancel',
-                style: TextStyle(color: Colors.white70, fontSize: 16),
+              child: Text(
+                dialogL10n.cancel,
+                style: const TextStyle(color: Colors.white70, fontSize: 16),
               ),
             ),
             ElevatedButton(
@@ -427,9 +429,12 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
                 backgroundColor: const Color(0xFFEE5A6F),
                 foregroundColor: Colors.white,
               ),
-              child: const Text(
-                'Leave',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              child: Text(
+                dialogL10n.leave,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ],

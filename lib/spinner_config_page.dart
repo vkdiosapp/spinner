@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'spinner_wheel_page.dart';
+import 'ad_helper.dart';
+import 'app_localizations_helper.dart';
 
 class SpinnerConfigPage extends StatefulWidget {
   final String? initialTitle;
@@ -20,8 +22,8 @@ class _SpinnerConfigPageState extends State<SpinnerConfigPage> {
   @override
   void initState() {
     super.initState();
-    // Set initial values if provided, otherwise use defaults
-    _titleController.text = widget.initialTitle ?? 'Random Picker';
+    // Set initial values if provided, otherwise use empty
+    _titleController.text = widget.initialTitle ?? '';
     if (widget.initialItems != null && widget.initialItems!.isNotEmpty) {
       _items.addAll(widget.initialItems!);
       // Create controllers and focus nodes for each item
@@ -34,12 +36,7 @@ class _SpinnerConfigPageState extends State<SpinnerConfigPage> {
       _items.add('');
       _itemControllers.add(TextEditingController());
       _itemFocusNodes.add(FocusNode());
-      // Focus on the first field after the widget builds
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (_itemFocusNodes.isNotEmpty) {
-          _itemFocusNodes.first.requestFocus();
-        }
-      });
+      // Don't auto-focus - keyboard should not open automatically
     }
   }
 
@@ -89,10 +86,12 @@ class _SpinnerConfigPageState extends State<SpinnerConfigPage> {
       }
     }
 
+    final l10n = AppLocalizationsHelper.of(context);
+    
     if (updatedItems.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please add at least one item'),
+        SnackBar(
+          content: Text(l10n.pleaseAddAtLeastOneItem),
           backgroundColor: Colors.red,
         ),
       );
@@ -107,7 +106,7 @@ class _SpinnerConfigPageState extends State<SpinnerConfigPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Duplicate item name: "$item". Please use unique names.',
+              l10n.duplicateItemName(item),
             ),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 3),
@@ -122,7 +121,7 @@ class _SpinnerConfigPageState extends State<SpinnerConfigPage> {
       MaterialPageRoute(
         builder: (context) => SpinnerWheelPage(
           title: _titleController.text.trim().isEmpty
-              ? 'Random Picker'
+              ? l10n.randomPickerTitle
               : _titleController.text.trim(),
           items: updatedItems,
         ),
@@ -132,6 +131,8 @@ class _SpinnerConfigPageState extends State<SpinnerConfigPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizationsHelper.of(context);
+    
     return Scaffold(
       backgroundColor: const Color(0xFF2D2D44),
       body: SafeArea(
@@ -162,18 +163,56 @@ class _SpinnerConfigPageState extends State<SpinnerConfigPage> {
                       ),
                       child: IconButton(
                         icon: const Icon(Icons.arrow_back, color: Colors.white),
-                        onPressed: () => Navigator.of(context).pop(),
+                        onPressed: () => BackArrowAd.handleBackButton(
+                          context: context,
+                          onBack: () => Navigator.of(context).pop(),
+                        ),
                       ),
                     ),
                   ),
                   // Title - centered on screen
-                  const Text(
-                    'Spinner',
+                  Text(
+                    l10n.spinner,
                     textAlign: TextAlign.center,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  // Start button - right aligned
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF6C5CE7),
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: _startSpinner,
+                          borderRadius: BorderRadius.circular(12),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                            child: Text(
+                              l10n.start,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -197,9 +236,9 @@ class _SpinnerConfigPageState extends State<SpinnerConfigPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
-                              'Spinner Title',
-                              style: TextStyle(
+                            Text(
+                              l10n.spinnerTitle,
+                              style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -211,7 +250,7 @@ class _SpinnerConfigPageState extends State<SpinnerConfigPage> {
                               textCapitalization: TextCapitalization.words,
                               style: const TextStyle(color: Colors.white),
                               decoration: InputDecoration(
-                                hintText: 'Enter spinner title',
+                                hintText: l10n.enterSpinnerTitle,
                                 hintStyle: TextStyle(
                                   color: Colors.white.withOpacity(0.5),
                                 ),
@@ -241,9 +280,9 @@ class _SpinnerConfigPageState extends State<SpinnerConfigPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
-                              'Spinner Items',
-                              style: TextStyle(
+                            Text(
+                              l10n.spinnerItems,
+                              style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -265,7 +304,7 @@ class _SpinnerConfigPageState extends State<SpinnerConfigPage> {
                                           color: Colors.white,
                                         ),
                                         decoration: InputDecoration(
-                                          hintText: 'Enter item name',
+                                          hintText: l10n.enterItemName,
                                           hintStyle: TextStyle(
                                             color: Colors.white.withOpacity(
                                               0.5,
@@ -305,7 +344,7 @@ class _SpinnerConfigPageState extends State<SpinnerConfigPage> {
                                 padding: const EdgeInsets.all(24),
                                 child: Center(
                                   child: Text(
-                                    'No items. Click "Add Item" to add items.',
+                                    l10n.noItems,
                                     style: TextStyle(
                                       color: Colors.white.withOpacity(0.6),
                                       fontSize: 14,
@@ -318,9 +357,9 @@ class _SpinnerConfigPageState extends State<SpinnerConfigPage> {
                             TextButton.icon(
                               onPressed: _addNewItem,
                               icon: const Icon(Icons.add, color: Colors.white),
-                              label: const Text(
-                                'Add Item',
-                                style: TextStyle(color: Colors.white),
+                              label: Text(
+                                l10n.addItem,
+                                style: const TextStyle(color: Colors.white),
                               ),
                               style: TextButton.styleFrom(
                                 padding: const EdgeInsets.symmetric(
@@ -333,29 +372,6 @@ class _SpinnerConfigPageState extends State<SpinnerConfigPage> {
                       ),
                     ),
                     const SizedBox(height: 24),
-
-                    const SizedBox(height: 32),
-
-                    // Start Spinner Button
-                    ElevatedButton(
-                      onPressed: _startSpinner,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF6C5CE7),
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 18),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        elevation: 4,
-                      ),
-                      child: const Text(
-                        'Start Spinner',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
                   ],
                 ),
               ),

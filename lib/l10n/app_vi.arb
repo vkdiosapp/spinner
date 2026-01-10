@@ -1,0 +1,157 @@
+{
+  "@@locale": "vi",
+  "appTitle": "Spinner",
+  "languages": "Ngôn ngữ",
+  "continueButton": "Tiếp tục",
+  "save": "Lưu",
+  "changeLanguage": "Đổi Ngôn ngữ",
+  "randomPicker": "Bộ Chọn Ngẫu Nhiên",
+  "randomPickerDescription": "Tạo spinner tùy chỉnh với các mục của riêng bạn",
+  "multiplayer": "Nhiều Người Chơi",
+  "multiplayerDescription": "Chơi với bạn bè và thi đấu trong các vòng",
+  "dice": "Xúc Xắc",
+  "diceDescription": "Gieo hai xúc xắc và xem tổng",
+  "whoFirst": "Ai Trước",
+  "whoFirstDescription": "Chơi với bạn bè và thi đấu trong các vòng",
+  "adsOn": "Quảng Cáo Bật",
+  "adsOff": "Quảng Cáo Tắt",
+  "vibrationOn": "Rung Bật",
+  "vibrationOff": "Rung Tắt",
+  "soundOn": "Âm Thanh Bật",
+  "soundOff": "Âm Thanh Tắt",
+  "spinnerTitle": "Tiêu Đề Spinner",
+  "enterSpinnerTitle": "Nhập tiêu đề spinner",
+  "start": "Bắt Đầu",
+  "addItem": "Thêm Mục",
+  "gameMode": "Chế Độ Chơi",
+  "singlePlayer": "Một Người Chơi",
+  "multiplayerMode": "Nhiều Người Chơi",
+  "howManyRounds": "Bao Nhiêu Vòng?",
+  "players": "Người Chơi",
+  "addPlayer": "Thêm Người Chơi",
+  "enterPlayerName": "Nhập tên người chơi",
+  "truthDare": "Thật hoặc Thách Thức",
+  "close": "Đóng",
+  "edit": "Chỉnh Sửa",
+  "reset": "Đặt Lại",
+  "share": "Chia Sẻ",
+  "truth": "Thật",
+  "dare": "Thách Thức",
+  "earned": "KIẾM ĐƯỢC",
+  "selected": "ĐÃ CHỌN",
+  "you": "Bạn",
+  "computer": "Máy Tính",
+  "round": "Vòng",
+  "leave": "Rời",
+  "leaveGame": "Rời Khỏi Trò Chơi?",
+  "leaveGameMessage": "Bạn có chắc chắn muốn rời khỏi trò chơi?",
+  "cancel": "Hủy",
+  "gameResults": "Kết Quả Trò Chơi",
+  "gold": "Vàng",
+  "silver": "Bạc",
+  "bronze": "Đồng",
+  "watchAd": "Xem Quảng Cáo",
+  "toUnlock": "để mở khóa",
+  "twoDice": "Hai Xúc Xắc",
+  "multiplication": "Phép Nhân",
+  "result": "Kết Quả",
+  "spin": "Quay",
+  "randomPickerTitle": "Bộ Chọn Ngẫu Nhiên",
+  "spinner": "Spinner",
+  "level": "Cấp Độ",
+  "easy": "Dễ",
+  "medium": "Trung Bình",
+  "hard": "Khó",
+  "selectLevel": "Chọn Cấp Độ",
+  "mathSpinner": "Spinner Toán Học",
+  "mathSpinnerDescription": "Luyện tập toán học với các thử thách spinner thú vị",
+  "spinnerItems": "Mục Spinner",
+  "enterItemName": "Nhập tên mục",
+  "noItems": "Không có mục nào. Nhấp vào \"Thêm Mục\" để thêm mục.",
+  "pleaseAddAtLeastOneItem": "Vui lòng thêm ít nhất một mục",
+  "duplicateItemName": "Tên mục trùng lặp: \"{item}\". Vui lòng sử dụng tên duy nhất.",
+  "@duplicateItemName": {
+    "placeholders": {
+      "item": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseAddAtLeastOneUser": "Vui lòng thêm ít nhất một người dùng",
+  "duplicateUserName": "Tên người dùng trùng lặp: \"{user}\". Vui lòng sử dụng tên duy nhất.",
+  "@duplicateUserName": {
+    "placeholders": {
+      "user": {
+        "type": "String"
+      }
+    }
+  },
+  "mathSpinnerComingSoon": "Trang Spinner Toán Học sắp ra mắt!",
+  "errorSharing": "Lỗi khi chia sẻ: {error}",
+  "@errorSharing": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "playerCount": "Số Người Chơi",
+  "users": "Người Dùng",
+  "enterUserName": "Nhập tên người dùng",
+  "total": "Tổng: {score}",
+  "@total": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "rounds": "Vòng: {roundsList}",
+  "@rounds": {
+    "placeholders": {
+      "roundsList": {
+        "type": "String"
+      }
+    }
+  },
+  "roundScore": "V{round}: {score}",
+  "@roundScore": {
+    "placeholders": {
+      "round": {
+        "type": "String"
+      },
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "checkOutResults": "Xem kết quả trò chơi spinner nhiều người chơi của chúng tôi!",
+  "allItemsUsed": "Tất cả các mục sự thật và thử thách đã được sử dụng!",
+  "errorLoadingData": "Lỗi khi tải dữ liệu: {error}",
+  "@errorLoadingData": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "dice1": "Xúc Xắc 1",
+  "dice2": "Xúc Xắc 2",
+  "resultUppercase": "KẾT QUẢ",
+  "score": "Điểm: {score}",
+  "@score": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "turn": "Lượt của {user}",
+  "@turn": {
+    "placeholders": {
+      "user": {
+        "type": "String"
+      }
+    }
+  }
+}

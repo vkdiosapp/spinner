@@ -1,0 +1,157 @@
+{
+  "@@locale": "hi",
+  "appTitle": "स्पिनर",
+  "languages": "भाषाएं",
+  "continueButton": "जारी रखें",
+  "save": "सहेजें",
+  "changeLanguage": "भाषा बदलें",
+  "randomPicker": "यादृच्छिक पिकर",
+  "randomPickerDescription": "अपने स्वयं के आइटम के साथ एक कस्टम स्पिनर बनाएं",
+  "multiplayer": "मल्टीप्लेयर",
+  "multiplayerDescription": "दोस्तों के साथ खेलें और राउंड में प्रतिस्पर्धा करें",
+  "dice": "पासा",
+  "diceDescription": "दो पासे फेंकें और कुल देखें",
+  "whoFirst": "कौन पहले",
+  "whoFirstDescription": "दोस्तों के साथ खेलें और राउंड में प्रतिस्पर्धा करें",
+  "adsOn": "विज्ञापन चालू",
+  "adsOff": "विज्ञापन बंद",
+  "vibrationOn": "कंपन चालू",
+  "vibrationOff": "कंपन बंद",
+  "soundOn": "ध्वनि चालू",
+  "soundOff": "ध्वनि बंद",
+  "spinnerTitle": "स्पिनर शीर्षक",
+  "enterSpinnerTitle": "स्पिनर शीर्षक दर्ज करें",
+  "start": "शुरू करें",
+  "addItem": "आइटम जोड़ें",
+  "gameMode": "गेम मोड",
+  "singlePlayer": "सिंगल प्लेयर",
+  "multiplayerMode": "मल्टीप्लेयर",
+  "howManyRounds": "कितने राउंड?",
+  "players": "खिलाड़ी",
+  "addPlayer": "खिलाड़ी जोड़ें",
+  "enterPlayerName": "खिलाड़ी का नाम दर्ज करें",
+  "truthDare": "सच या चुनौती",
+  "close": "बंद करें",
+  "edit": "संपादित करें",
+  "reset": "रीसेट करें",
+  "share": "साझा करें",
+  "truth": "सच",
+  "dare": "चुनौती",
+  "earned": "अर्जित",
+  "selected": "चयनित",
+  "you": "आप",
+  "computer": "कंप्यूटर",
+  "round": "राउंड",
+  "leave": "छोड़ें",
+  "leaveGame": "गेम छोड़ें?",
+  "leaveGameMessage": "क्या आप वाकई गेम छोड़ना चाहते हैं?",
+  "cancel": "रद्द करें",
+  "gameResults": "गेम परिणाम",
+  "gold": "सोना",
+  "silver": "चांदी",
+  "bronze": "कांस्य",
+  "watchAd": "विज्ञापन देखें",
+  "toUnlock": "अनलॉक करने के लिए",
+  "twoDice": "दो पासे",
+  "multiplication": "गुणा",
+  "result": "परिणाम",
+  "spin": "घुमाएं",
+  "randomPickerTitle": "यादृच्छिक पिकर",
+  "spinner": "स्पिनर",
+  "level": "स्तर",
+  "easy": "आसान",
+  "medium": "मध्यम",
+  "hard": "कठिन",
+  "selectLevel": "स्तर चुनें",
+  "mathSpinner": "गणित स्पिनर",
+  "mathSpinnerDescription": "मजेदार स्पिनर चुनौतियों के साथ गणित का अभ्यास करें",
+  "spinnerItems": "स्पिनर आइटम",
+  "enterItemName": "आइटम का नाम दर्ज करें",
+  "noItems": "कोई आइटम नहीं। आइटम जोड़ने के लिए \"आइटम जोड़ें\" पर क्लिक करें।",
+  "pleaseAddAtLeastOneItem": "कृपया कम से कम एक आइटम जोड़ें",
+  "duplicateItemName": "डुप्लिकेट आइटम नाम: \"{item}\"। कृपया अद्वितीय नामों का उपयोग करें।",
+  "@duplicateItemName": {
+    "placeholders": {
+      "item": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseAddAtLeastOneUser": "कृपया कम से कम एक उपयोगकर्ता जोड़ें",
+  "duplicateUserName": "डुप्लिकेट उपयोगकर्ता नाम: \"{user}\"। कृपया अद्वितीय नामों का उपयोग करें।",
+  "@duplicateUserName": {
+    "placeholders": {
+      "user": {
+        "type": "String"
+      }
+    }
+  },
+  "mathSpinnerComingSoon": "गणित स्पिनर पेज जल्द ही आ रहा है!",
+  "errorSharing": "साझा करने में त्रुटि: {error}",
+  "@errorSharing": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "playerCount": "खिलाड़ी संख्या",
+  "users": "उपयोगकर्ता",
+  "enterUserName": "उपयोगकर्ता नाम दर्ज करें",
+  "total": "कुल: {score}",
+  "@total": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "rounds": "राउंड: {roundsList}",
+  "@rounds": {
+    "placeholders": {
+      "roundsList": {
+        "type": "String"
+      }
+    }
+  },
+  "roundScore": "आर{round}: {score}",
+  "@roundScore": {
+    "placeholders": {
+      "round": {
+        "type": "String"
+      },
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "checkOutResults": "हमारे मल्टीप्लेयर स्पिनर गेम परिणाम देखें!",
+  "allItemsUsed": "सभी सत्य और साहस आइटम का उपयोग किया जा चुका है!",
+  "errorLoadingData": "डेटा लोड करने में त्रुटि: {error}",
+  "@errorLoadingData": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "dice1": "पासा 1",
+  "dice2": "पासा 2",
+  "resultUppercase": "परिणाम",
+  "score": "स्कोर: {score}",
+  "@score": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "turn": "{user} का मोड़",
+  "@turn": {
+    "placeholders": {
+      "user": {
+        "type": "String"
+      }
+    }
+  }
+}

@@ -1,0 +1,157 @@
+{
+  "@@locale": "de",
+  "appTitle": "Spinner",
+  "languages": "Sprachen",
+  "continueButton": "Weiter",
+  "save": "Speichern",
+  "changeLanguage": "Sprache ändern",
+  "randomPicker": "Zufallsauswahl",
+  "randomPickerDescription": "Erstellen Sie einen benutzerdefinierten Spinner mit Ihren eigenen Elementen",
+  "multiplayer": "Mehrspieler",
+  "multiplayerDescription": "Spielen Sie mit Freunden und konkurrieren Sie in Runden",
+  "dice": "Würfel",
+  "diceDescription": "Werfen Sie zwei Würfel und sehen Sie die Summe",
+  "whoFirst": "Wer zuerst",
+  "whoFirstDescription": "Spielen Sie mit Freunden und konkurrieren Sie in Runden",
+  "adsOn": "Werbung Ein",
+  "adsOff": "Werbung Aus",
+  "vibrationOn": "Vibration Ein",
+  "vibrationOff": "Vibration Aus",
+  "soundOn": "Ton Ein",
+  "soundOff": "Ton Aus",
+  "spinnerTitle": "Spinner Titel",
+  "enterSpinnerTitle": "Spinner Titel eingeben",
+  "start": "Starten",
+  "addItem": "Element Hinzufügen",
+  "gameMode": "Spielmodus",
+  "singlePlayer": "Einzelspieler",
+  "multiplayerMode": "Mehrspieler",
+  "howManyRounds": "Wie Viele Runden?",
+  "players": "Spieler",
+  "addPlayer": "Spieler Hinzufügen",
+  "enterPlayerName": "Spielernamen eingeben",
+  "truthDare": "Wahrheit oder Pflicht",
+  "close": "Schließen",
+  "edit": "Bearbeiten",
+  "reset": "Zurücksetzen",
+  "share": "Teilen",
+  "truth": "Wahrheit",
+  "dare": "Pflicht",
+  "earned": "VERDIENT",
+  "selected": "AUSGEWÄHLT",
+  "you": "Du",
+  "computer": "Computer",
+  "round": "Runde",
+  "leave": "Verlassen",
+  "leaveGame": "Spiel Verlassen?",
+  "leaveGameMessage": "Sind Sie sicher, dass Sie das Spiel verlassen möchten?",
+  "cancel": "Abbrechen",
+  "gameResults": "Spielergebnisse",
+  "gold": "Gold",
+  "silver": "Silber",
+  "bronze": "Bronze",
+  "watchAd": "Werbung Ansehen",
+  "toUnlock": "zum Entsperren",
+  "twoDice": "Zwei Würfel",
+  "multiplication": "Multiplikation",
+  "result": "Ergebnis",
+  "spin": "Drehen",
+  "randomPickerTitle": "Zufallsauswahl",
+  "spinner": "Spinner",
+  "level": "Level",
+  "easy": "Einfach",
+  "medium": "Mittel",
+  "hard": "Schwer",
+  "selectLevel": "Level Auswählen",
+  "mathSpinner": "Mathe-Spinner",
+  "mathSpinnerDescription": "Mathe üben mit lustigen Spinner-Herausforderungen",
+  "spinnerItems": "Spinner-Elemente",
+  "enterItemName": "Elementname eingeben",
+  "noItems": "Keine Elemente. Klicken Sie auf \"Element hinzufügen\", um Elemente hinzuzufügen.",
+  "pleaseAddAtLeastOneItem": "Bitte fügen Sie mindestens ein Element hinzu",
+  "duplicateItemName": "Doppelter Elementname: \"{item}\". Bitte verwenden Sie eindeutige Namen.",
+  "@duplicateItemName": {
+    "placeholders": {
+      "item": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseAddAtLeastOneUser": "Bitte fügen Sie mindestens einen Benutzer hinzu",
+  "duplicateUserName": "Doppelter Benutzername: \"{user}\". Bitte verwenden Sie eindeutige Namen.",
+  "@duplicateUserName": {
+    "placeholders": {
+      "user": {
+        "type": "String"
+      }
+    }
+  },
+  "mathSpinnerComingSoon": "Mathe-Spinner-Seite kommt bald!",
+  "errorSharing": "Fehler beim Teilen: {error}",
+  "@errorSharing": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "playerCount": "Spieleranzahl",
+  "users": "Benutzer",
+  "enterUserName": "Benutzername eingeben",
+  "total": "Gesamt: {score}",
+  "@total": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "rounds": "Runden: {roundsList}",
+  "@rounds": {
+    "placeholders": {
+      "roundsList": {
+        "type": "String"
+      }
+    }
+  },
+  "roundScore": "R{round}: {score}",
+  "@roundScore": {
+    "placeholders": {
+      "round": {
+        "type": "String"
+      },
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "checkOutResults": "Schauen Sie sich unsere Multiplayer-Spinner-Spielergebnisse an!",
+  "allItemsUsed": "Alle Wahrheit- und Mutproben-Elemente wurden verwendet!",
+  "errorLoadingData": "Fehler beim Laden der Daten: {error}",
+  "@errorLoadingData": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "dice1": "Würfel 1",
+  "dice2": "Würfel 2",
+  "resultUppercase": "ERGEBNIS",
+  "score": "Punkte: {score}",
+  "@score": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "turn": "{user} ist dran",
+  "@turn": {
+    "placeholders": {
+      "user": {
+        "type": "String"
+      }
+    }
+  }
+}

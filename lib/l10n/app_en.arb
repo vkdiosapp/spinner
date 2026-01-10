@@ -1,0 +1,158 @@
+{
+  "@@locale": "en",
+  "appTitle": "Spinner",
+  "languages": "Languages",
+  "continueButton": "Continue",
+  "save": "Save",
+  "changeLanguage": "Change Language",
+  "randomPicker": "Random Picker",
+  "randomPickerDescription": "Create a custom spinner with your own items",
+  "multiplayer": "Multiplayer",
+  "multiplayerDescription": "Play with friends and compete in rounds",
+  "dice": "Dice",
+  "diceDescription": "Roll two dice and see the total",
+  "whoFirst": "Who First",
+  "whoFirstDescription": "Play with friends and compete in rounds",
+  "adsOn": "Ads On",
+  "adsOff": "Ads Off",
+  "vibrationOn": "Vibration On",
+  "vibrationOff": "Vibration Off",
+  "soundOn": "Sound On",
+  "soundOff": "Sound Off",
+  "spinnerTitle": "Spinner Title",
+  "enterSpinnerTitle": "Enter spinner title",
+  "start": "Start",
+  "addItem": "Add Item",
+  "gameMode": "Game Mode",
+  "singlePlayer": "Single Player",
+  "multiplayerMode": "Multiplayer",
+  "howManyRounds": "How Many Rounds?",
+  "players": "Players",
+  "addPlayer": "Add Player",
+  "enterPlayerName": "Enter player name",
+  "truthDare": "Truth & Dare",
+  "close": "Close",
+  "edit": "Edit",
+  "reset": "Reset",
+  "share": "Share",
+  "truth": "Truth",
+  "dare": "Dare",
+  "earned": "EARNED",
+  "selected": "SELECTED",
+  "you": "You",
+  "computer": "Computer",
+  "round": "Round",
+  "leave": "Leave",
+  "leaveGame": "Leave Game?",
+  "leaveGameMessage": "Are you sure you want to leave the game?",
+  "cancel": "Cancel",
+  "gameResults": "Game Results",
+  "gold": "Gold",
+  "silver": "Silver",
+  "bronze": "Bronze",
+  "watchAd": "Watch Ad",
+  "toUnlock": "to unlock",
+  "twoDice": "Two Dice",
+  "multiplication": "Multiplication",
+  "result": "Result",
+  "spin": "Spin",
+  "randomPickerTitle": "Random Picker",
+  "spinner": "Spinner",
+  "level": "Level",
+  "easy": "Easy",
+  "medium": "Medium",
+  "hard": "Hard",
+  "selectLevel": "Select Level",
+  "mathSpinner": "Math Spinner",
+  "mathSpinnerDescription": "Practice math with fun spinner challenges",
+  "spinnerItems": "Spinner Items",
+  "enterItemName": "Enter item name",
+  "noItems": "No items. Click \"Add Item\" to add items.",
+  "pleaseAddAtLeastOneItem": "Please add at least one item",
+  "duplicateItemName": "Duplicate item name: \"{item}\". Please use unique names.",
+  "@duplicateItemName": {
+    "placeholders": {
+      "item": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseAddAtLeastOneUser": "Please add at least one user",
+  "duplicateUserName": "Duplicate user name: \"{user}\". Please use unique names.",
+  "@duplicateUserName": {
+    "placeholders": {
+      "user": {
+        "type": "String"
+      }
+    }
+  },
+  "mathSpinnerComingSoon": "Math Spinner page coming soon!",
+  "errorSharing": "Error sharing: {error}",
+  "@errorSharing": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "playerCount": "Player Count",
+  "users": "Users",
+  "howManyRounds": "How Many Rounds?",
+  "enterUserName": "Enter user name",
+  "total": "Total: {score}",
+  "@total": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "rounds": "Rounds: {roundsList}",
+  "@rounds": {
+    "placeholders": {
+      "roundsList": {
+        "type": "String"
+      }
+    }
+  },
+  "roundScore": "R{round}: {score}",
+  "@roundScore": {
+    "placeholders": {
+      "round": {
+        "type": "String"
+      },
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "checkOutResults": "Check out our multiplayer spinner game results!",
+  "allItemsUsed": "All truth and dare items have been used!",
+  "errorLoadingData": "Error loading data: {error}",
+  "@errorLoadingData": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "dice1": "Dice 1",
+  "dice2": "Dice 2",
+  "resultUppercase": "RESULT",
+  "score": "Score: {score}",
+  "@score": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "turn": "{user}'s Turn",
+  "@turn": {
+    "placeholders": {
+      "user": {
+        "type": "String"
+      }
+    }
+  }
+}

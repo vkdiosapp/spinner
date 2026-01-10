@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'l10n/app_localizations.dart';
 import 'home_page.dart';
 import 'sound_vibration_settings.dart';
 import 'onesignal_service.dart';
+import 'language_settings.dart';
+import 'language_selection_page.dart';
+import 'app_localizations_helper.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SoundVibrationSettings.initialize();
+  await LanguageSettings.initialize();
   
   // Initialize AdMob
   await MobileAds.instance.initialize();
@@ -17,33 +23,60 @@ void main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    // Listen for language changes
+    LanguageSettings.initialize();
+    // Listen to locale changes and rebuild app
+    LanguageSettings.localeNotifier.addListener(_onLocaleChanged);
+  }
+  
+  @override
+  void dispose() {
+    LanguageSettings.localeNotifier.removeListener(_onLocaleChanged);
+    super.dispose();
+  }
+  
+  void _onLocaleChanged() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    // Show language selection page on first launch, otherwise show home page
+    final initialRoute = LanguageSettings.isFirstLaunch
+        ? const LanguageSelectionPage()
+        : const HomePage();
+    
+    // Get current locale from notifier
+    final currentLocale = LanguageSettings.localeNotifier.value;
+    
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Spinner',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const HomePage(),
+      // Localization configuration
+      localizationsDelegates: [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: AppLocalizationsHelper.getSupportedLocales(),
+      locale: currentLocale,
+      home: initialRoute,
     );
   }
 }

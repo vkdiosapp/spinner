@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
 import 'multiplayer_spinner_page.dart';
 import 'who_first_spinner_page.dart';
+import 'math_spinner_page.dart';
 import 'ad_helper.dart';
+import 'app_localizations_helper.dart';
 
 class MultiplayerConfigPage extends StatefulWidget {
   final bool isWhoFirst;
+  final bool isMathSpinner;
 
-  const MultiplayerConfigPage({super.key, this.isWhoFirst = false});
+  const MultiplayerConfigPage({
+    super.key,
+    this.isWhoFirst = false,
+    this.isMathSpinner = false,
+  });
 
   @override
   State<MultiplayerConfigPage> createState() => _MultiplayerConfigPageState();
@@ -74,6 +81,65 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
   }
 
   void _startMultiplayer() {
+    final l10n = AppLocalizationsHelper.of(context);
+
+    // For Math Spinner
+    if (widget.isMathSpinner) {
+      // For single player mode, use a default user
+      if (_gameMode == 'single') {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => const MathSpinnerPage(users: ['Player']),
+          ),
+        );
+        return;
+      }
+
+      // For multiplayer mode, validate users
+      // Update users from controllers
+      final updatedUsers = <String>[];
+      for (var controller in _userControllers) {
+        final text = controller.text.trim();
+        if (text.isNotEmpty) {
+          updatedUsers.add(text);
+        }
+      }
+
+      if (updatedUsers.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.pleaseAddAtLeastOneUser),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+
+      // Check for duplicate names (case-insensitive)
+      final seenNames = <String>{};
+      for (var user in updatedUsers) {
+        final lowerUser = user.toLowerCase();
+        if (seenNames.contains(lowerUser)) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(l10n.duplicateUserName(user)),
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 3),
+            ),
+          );
+          return;
+        }
+        seenNames.add(lowerUser);
+      }
+
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => MathSpinnerPage(users: updatedUsers),
+        ),
+      );
+      return;
+    }
+
     // For single player mode, use a default user
     if (_gameMode == 'single') {
       Navigator.of(context).pushReplacement(
@@ -98,8 +164,8 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
 
     if (updatedUsers.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please add at least one user'),
+        SnackBar(
+          content: Text(l10n.pleaseAddAtLeastOneUser),
           backgroundColor: Colors.red,
         ),
       );
@@ -113,9 +179,7 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
       if (seenNames.contains(lowerUser)) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              'Duplicate user name: "$user". Please use unique names.',
-            ),
+            content: Text(l10n.duplicateUserName(user)),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 3),
           ),
@@ -136,6 +200,8 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizationsHelper.of(context);
+
     return Scaffold(
       backgroundColor: const Color(0xFF2D2D44),
       body: SafeArea(
@@ -175,12 +241,54 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
                   ),
                   // Title - centered on screen
                   Text(
-                    widget.isWhoFirst ? 'Who First' : 'Multiplayer',
+                    widget.isMathSpinner
+                        ? l10n.mathSpinner
+                        : (widget.isWhoFirst
+                              ? l10n.whoFirst
+                              : l10n.multiplayer),
                     textAlign: TextAlign.center,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  // Start button - right aligned
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF6C5CE7),
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: _startMultiplayer,
+                          borderRadius: BorderRadius.circular(12),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 10,
+                            ),
+                            child: Text(
+                              l10n.start,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -204,9 +312,9 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
-                              'Game Mode',
-                              style: TextStyle(
+                            Text(
+                              l10n.gameMode,
+                              style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -249,9 +357,9 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
                                             size: 24,
                                           ),
                                           const SizedBox(width: 8),
-                                          const Text(
-                                            'Single Player',
-                                            style: TextStyle(
+                                          Text(
+                                            l10n.singlePlayer,
+                                            style: const TextStyle(
                                               color: Colors.white,
                                               fontSize: 16,
                                               fontWeight: FontWeight.w500,
@@ -298,9 +406,9 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
                                             size: 24,
                                           ),
                                           const SizedBox(width: 8),
-                                          const Text(
-                                            'Multiplayer',
-                                            style: TextStyle(
+                                          Text(
+                                            l10n.multiplayerMode,
+                                            style: const TextStyle(
                                               color: Colors.white,
                                               fontSize: 16,
                                               fontWeight: FontWeight.w500,
@@ -318,8 +426,8 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    // Rounds Selection Section (hide for WhoFirst)
-                    if (!widget.isWhoFirst)
+                    // Rounds Selection Section (hide for WhoFirst and Math Spinner)
+                    if (!widget.isWhoFirst && !widget.isMathSpinner)
                       Card(
                         color: const Color(0xFF3D3D5C),
                         child: Padding(
@@ -327,9 +435,9 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
-                                'How Many Rounds',
-                                style: TextStyle(
+                              Text(
+                                l10n.howManyRounds,
+                                style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
@@ -400,9 +508,9 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
-                                'Users',
-                                style: TextStyle(
+                              Text(
+                                l10n.users,
+                                style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
@@ -470,7 +578,7 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
                                         TextCapitalization.words,
                                     style: const TextStyle(color: Colors.white),
                                     decoration: InputDecoration(
-                                      hintText: 'Enter user name',
+                                      hintText: l10n.enterUserName,
                                       hintStyle: TextStyle(
                                         color: Colors.white.withOpacity(0.5),
                                       ),
@@ -495,27 +603,6 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
                       ),
                     if (_gameMode == 'multiplayer') const SizedBox(height: 24),
                     if (_gameMode == 'single') const SizedBox(height: 32),
-
-                    // Start Button
-                    ElevatedButton(
-                      onPressed: _startMultiplayer,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF6C5CE7),
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 18),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        elevation: 4,
-                      ),
-                      child: const Text(
-                        'Start',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
                   ],
                 ),
               ),

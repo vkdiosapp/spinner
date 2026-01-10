@@ -5,6 +5,7 @@ import 'multiplayer_results_page.dart';
 import 'sound_vibration_helper.dart';
 import 'ad_helper.dart';
 import 'spinner_colors.dart';
+import 'app_localizations_helper.dart';
 
 class MultiplayerSpinnerPage extends StatefulWidget {
   final List<String> users;
@@ -53,7 +54,8 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
     // Check if single player mode (only "Player" in the list)
     _isSinglePlayer = widget.users.length == 1 && widget.users[0] == 'Player';
 
-    // For single player, change "Player" to "You" and add "Bot"
+    // For single player, change "Player" to "You" and add "Computer"
+    // Note: We'll use localized strings when displaying, but keep English keys for logic
     if (_isSinglePlayer) {
       _displayUsers = ['You', 'Computer'];
     } else {
@@ -414,26 +416,27 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
     final shouldLeave = await showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
+        final dialogL10n = AppLocalizationsHelper.of(context);
         return AlertDialog(
           backgroundColor: const Color(0xFF3D3D5C),
-          title: const Text(
-            'Leave Game?',
-            style: TextStyle(
+          title: Text(
+            dialogL10n.leaveGame,
+            style: const TextStyle(
               color: Colors.white,
               fontSize: 20,
               fontWeight: FontWeight.bold,
             ),
           ),
-          content: const Text(
-            'Are you sure you want to leave the game?',
-            style: TextStyle(color: Colors.white70, fontSize: 16),
+          content: Text(
+            dialogL10n.leaveGameMessage,
+            style: const TextStyle(color: Colors.white70, fontSize: 16),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: const Text(
-                'Cancel',
-                style: TextStyle(color: Colors.white70, fontSize: 16),
+              child: Text(
+                dialogL10n.cancel,
+                style: const TextStyle(color: Colors.white70, fontSize: 16),
               ),
             ),
             ElevatedButton(
@@ -442,9 +445,9 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
                 backgroundColor: const Color(0xFFEE5A6F),
                 foregroundColor: Colors.white,
               ),
-              child: const Text(
-                'Leave',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              child: Text(
+                dialogL10n.leave,
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ),
           ],
@@ -537,6 +540,7 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizationsHelper.of(context);
     return PopScope(
       canPop: false,
       onPopInvoked: (didPop) {
@@ -681,7 +685,7 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       Text(
-                                        user,
+                                        user == 'You' ? l10n.you : (user == 'Computer' ? l10n.computer : user),
                                         style: const TextStyle(
                                           color: Colors.white,
                                           fontSize: 14,
@@ -692,7 +696,7 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
                                       ),
                                       const SizedBox(height: 4),
                                       Text(
-                                        'Score: $currentRoundScore',
+                                        l10n.score(currentRoundScore.toString()),
                                         style: const TextStyle(
                                           color: Colors.white70,
                                           fontSize: 16,
@@ -708,8 +712,11 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
                           const SizedBox(height: 12),
                           // Current user turn text
                           Text(
-                            '${_displayUsers[_currentUserIndex]}'
-                            "'s Turn",
+                            l10n.turn(
+                              _displayUsers[_currentUserIndex] == 'You' 
+                                ? l10n.you 
+                                : (_displayUsers[_currentUserIndex] == 'Computer' ? l10n.computer : _displayUsers[_currentUserIndex])
+                            ),
                             style: const TextStyle(
                               color: Colors.white70,
                               fontSize: 18,
@@ -841,7 +848,7 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
                                                             ),
                                                           ),
                                                       child: Text(
-                                                        'EARNED',
+                                                        l10n.earned,
                                                         style: TextStyle(
                                                           color: Colors.black87,
                                                           fontSize:

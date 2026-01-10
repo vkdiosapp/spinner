@@ -1,0 +1,157 @@
+{
+  "@@locale": "ru",
+  "appTitle": "Спиннер",
+  "languages": "Языки",
+  "continueButton": "Продолжить",
+  "save": "Сохранить",
+  "changeLanguage": "Изменить Язык",
+  "randomPicker": "Случайный Выбор",
+  "randomPickerDescription": "Создайте пользовательский спиннер со своими элементами",
+  "multiplayer": "Мультиплеер",
+  "multiplayerDescription": "Играйте с друзьями и соревнуйтесь в раундах",
+  "dice": "Кости",
+  "diceDescription": "Бросьте две кости и посмотрите сумму",
+  "whoFirst": "Кто Первый",
+  "whoFirstDescription": "Играйте с друзьями и соревнуйтесь в раундах",
+  "adsOn": "Реклама Включена",
+  "adsOff": "Реклама Выключена",
+  "vibrationOn": "Вибрация Включена",
+  "vibrationOff": "Вибрация Выключена",
+  "soundOn": "Звук Включен",
+  "soundOff": "Звук Выключен",
+  "spinnerTitle": "Название Спиннера",
+  "enterSpinnerTitle": "Введите название спиннера",
+  "start": "Начать",
+  "addItem": "Добавить Элемент",
+  "gameMode": "Режим Игры",
+  "singlePlayer": "Одиночная Игра",
+  "multiplayerMode": "Мультиплеер",
+  "howManyRounds": "Сколько Раундов?",
+  "players": "Игроки",
+  "addPlayer": "Добавить Игрока",
+  "enterPlayerName": "Введите имя игрока",
+  "truthDare": "Правда или Действие",
+  "close": "Закрыть",
+  "edit": "Редактировать",
+  "reset": "Сбросить",
+  "share": "Поделиться",
+  "truth": "Правда",
+  "dare": "Действие",
+  "earned": "ЗАРАБОТАНО",
+  "selected": "ВЫБРАНО",
+  "you": "Вы",
+  "computer": "Компьютер",
+  "round": "Раунд",
+  "leave": "Выйти",
+  "leaveGame": "Выйти из Игры?",
+  "leaveGameMessage": "Вы уверены, что хотите выйти из игры?",
+  "cancel": "Отмена",
+  "gameResults": "Результаты Игры",
+  "gold": "Золото",
+  "silver": "Серебро",
+  "bronze": "Бронза",
+  "watchAd": "Смотреть Рекламу",
+  "toUnlock": "чтобы разблокировать",
+  "twoDice": "Две Кости",
+  "multiplication": "Умножение",
+  "result": "Результат",
+  "spin": "Крутить",
+  "randomPickerTitle": "Случайный Выбор",
+  "spinner": "Спиннер",
+  "level": "Уровень",
+  "easy": "Легкий",
+  "medium": "Средний",
+  "hard": "Сложный",
+  "selectLevel": "Выбрать Уровень",
+  "mathSpinner": "Математический Спиннер",
+  "mathSpinnerDescription": "Практикуйте математику с веселыми заданиями спиннера",
+  "spinnerItems": "Элементы Спиннера",
+  "enterItemName": "Введите название элемента",
+  "noItems": "Нет элементов. Нажмите \"Добавить элемент\", чтобы добавить элементы.",
+  "pleaseAddAtLeastOneItem": "Пожалуйста, добавьте хотя бы один элемент",
+  "duplicateItemName": "Дублирующееся название элемента: \"{item}\". Пожалуйста, используйте уникальные имена.",
+  "@duplicateItemName": {
+    "placeholders": {
+      "item": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseAddAtLeastOneUser": "Пожалуйста, добавьте хотя бы одного пользователя",
+  "duplicateUserName": "Дублирующееся имя пользователя: \"{user}\". Пожалуйста, используйте уникальные имена.",
+  "@duplicateUserName": {
+    "placeholders": {
+      "user": {
+        "type": "String"
+      }
+    }
+  },
+  "mathSpinnerComingSoon": "Страница Математического Спиннера скоро появится!",
+  "errorSharing": "Ошибка при обмене: {error}",
+  "@errorSharing": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "playerCount": "Количество Игроков",
+  "users": "Пользователи",
+  "enterUserName": "Введите имя пользователя",
+  "total": "Всего: {score}",
+  "@total": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "rounds": "Раунды: {roundsList}",
+  "@rounds": {
+    "placeholders": {
+      "roundsList": {
+        "type": "String"
+      }
+    }
+  },
+  "roundScore": "Р{round}: {score}",
+  "@roundScore": {
+    "placeholders": {
+      "round": {
+        "type": "String"
+      },
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "checkOutResults": "Посмотрите результаты нашей многопользовательской игры со спиннером!",
+  "allItemsUsed": "Все элементы правды и вызова были использованы!",
+  "errorLoadingData": "Ошибка при загрузке данных: {error}",
+  "@errorLoadingData": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "dice1": "Кость 1",
+  "dice2": "Кость 2",
+  "resultUppercase": "РЕЗУЛЬТАТ",
+  "score": "Счет: {score}",
+  "@score": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "turn": "Ход {user}",
+  "@turn": {
+    "placeholders": {
+      "user": {
+        "type": "String"
+      }
+    }
+  }
+}

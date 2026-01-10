@@ -1,0 +1,157 @@
+{
+  "@@locale": "it",
+  "appTitle": "Spinner",
+  "languages": "Lingue",
+  "continueButton": "Continua",
+  "save": "Salva",
+  "changeLanguage": "Cambia Lingua",
+  "randomPicker": "Selettore Casuale",
+  "randomPickerDescription": "Crea uno spinner personalizzato con i tuoi elementi",
+  "multiplayer": "Multigiocatore",
+  "multiplayerDescription": "Gioca con gli amici e competi in round",
+  "dice": "Dadi",
+  "diceDescription": "Lancia due dadi e vedi il totale",
+  "whoFirst": "Chi per Primo",
+  "whoFirstDescription": "Gioca con gli amici e competi in round",
+  "adsOn": "Pubblicità Attive",
+  "adsOff": "Pubblicità Disattivate",
+  "vibrationOn": "Vibrazione Attiva",
+  "vibrationOff": "Vibrazione Disattivata",
+  "soundOn": "Suono Attivo",
+  "soundOff": "Suono Disattivato",
+  "spinnerTitle": "Titolo Spinner",
+  "enterSpinnerTitle": "Inserisci il titolo dello spinner",
+  "start": "Inizia",
+  "addItem": "Aggiungi Elemento",
+  "gameMode": "Modalità di Gioco",
+  "singlePlayer": "Giocatore Singolo",
+  "multiplayerMode": "Multigiocatore",
+  "howManyRounds": "Quanti Round?",
+  "players": "Giocatori",
+  "addPlayer": "Aggiungi Giocatore",
+  "enterPlayerName": "Inserisci il nome del giocatore",
+  "truthDare": "Verità o Coraggio",
+  "close": "Chiudi",
+  "edit": "Modifica",
+  "reset": "Reimposta",
+  "share": "Condividi",
+  "truth": "Verità",
+  "dare": "Coraggio",
+  "earned": "GUADAGNATO",
+  "selected": "SELEZIONATO",
+  "you": "Tu",
+  "computer": "Computer",
+  "round": "Round",
+  "leave": "Esci",
+  "leaveGame": "Uscire dal Gioco?",
+  "leaveGameMessage": "Sei sicuro di voler uscire dal gioco?",
+  "cancel": "Annulla",
+  "gameResults": "Risultati del Gioco",
+  "gold": "Oro",
+  "silver": "Argento",
+  "bronze": "Bronzo",
+  "watchAd": "Guarda la Pubblicità",
+  "toUnlock": "per sbloccare",
+  "twoDice": "Due Dadi",
+  "multiplication": "Moltiplicazione",
+  "result": "Risultato",
+  "spin": "Gira",
+  "randomPickerTitle": "Selettore Casuale",
+  "spinner": "Spinner",
+  "level": "Livello",
+  "easy": "Facile",
+  "medium": "Medio",
+  "hard": "Difficile",
+  "selectLevel": "Seleziona Livello",
+  "mathSpinner": "Spinner Matematico",
+  "mathSpinnerDescription": "Pratica la matematica con sfide spinner divertenti",
+  "spinnerItems": "Elementi dello Spinner",
+  "enterItemName": "Inserisci il nome dell'elemento",
+  "noItems": "Nessun elemento. Fai clic su \"Add Item\" per aggiungere elementi.",
+  "pleaseAddAtLeastOneItem": "Aggiungi almeno un elemento",
+  "duplicateItemName": "Nome elemento duplicato: \"{item}\". Usa nomi univoci.",
+  "@duplicateItemName": {
+    "placeholders": {
+      "item": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseAddAtLeastOneUser": "Aggiungi almeno un utente",
+  "duplicateUserName": "Nome utente duplicato: \"{user}\". Usa nomi univoci.",
+  "@duplicateUserName": {
+    "placeholders": {
+      "user": {
+        "type": "String"
+      }
+    }
+  },
+  "mathSpinnerComingSoon": "Pagina Spinner Matematico in arrivo!",
+  "errorSharing": "Errore nella condivisione: {error}",
+  "@errorSharing": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "playerCount": "Numero di Giocatori",
+  "users": "Utenti",
+  "enterUserName": "Inserisci il nome utente",
+  "total": "Totale: {score}",
+  "@total": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "rounds": "Round: {roundsList}",
+  "@rounds": {
+    "placeholders": {
+      "roundsList": {
+        "type": "String"
+      }
+    }
+  },
+  "roundScore": "R{round}: {score}",
+  "@roundScore": {
+    "placeholders": {
+      "round": {
+        "type": "String"
+      },
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "checkOutResults": "Guarda i risultati del nostro gioco spinner multiplayer!",
+  "allItemsUsed": "Tutti gli elementi verità e sfida sono stati usati!",
+  "errorLoadingData": "Errore nel caricamento dei dati: {error}",
+  "@errorLoadingData": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "dice1": "Dado 1",
+  "dice2": "Dado 2",
+  "resultUppercase": "RISULTATO",
+  "score": "Punteggio: {score}",
+  "@score": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "turn": "Turno di {user}",
+  "@turn": {
+    "placeholders": {
+      "user": {
+        "type": "String"
+      }
+    }
+  }
+}

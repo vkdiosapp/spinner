@@ -1,0 +1,157 @@
+{
+  "@@locale": "tr",
+  "appTitle": "Spinner",
+  "languages": "Diller",
+  "continueButton": "Devam Et",
+  "save": "Kaydet",
+  "changeLanguage": "Dili Değiştir",
+  "randomPicker": "Rastgele Seçici",
+  "randomPickerDescription": "Kendi öğelerinizle özel bir spinner oluşturun",
+  "multiplayer": "Çok Oyunculu",
+  "multiplayerDescription": "Arkadaşlarınızla oynayın ve raundlarda yarışın",
+  "dice": "Zar",
+  "diceDescription": "İki zar atın ve toplamı görün",
+  "whoFirst": "Kim Önce",
+  "whoFirstDescription": "Arkadaşlarınızla oynayın ve raundlarda yarışın",
+  "adsOn": "Reklamlar Açık",
+  "adsOff": "Reklamlar Kapalı",
+  "vibrationOn": "Titreşim Açık",
+  "vibrationOff": "Titreşim Kapalı",
+  "soundOn": "Ses Açık",
+  "soundOff": "Ses Kapalı",
+  "spinnerTitle": "Spinner Başlığı",
+  "enterSpinnerTitle": "Spinner başlığını girin",
+  "start": "Başlat",
+  "addItem": "Öğe Ekle",
+  "gameMode": "Oyun Modu",
+  "singlePlayer": "Tek Oyunculu",
+  "multiplayerMode": "Çok Oyunculu",
+  "howManyRounds": "Kaç Raund?",
+  "players": "Oyuncular",
+  "addPlayer": "Oyuncu Ekle",
+  "enterPlayerName": "Oyuncu adını girin",
+  "truthDare": "Doğruluk mu Cesaret mi",
+  "close": "Kapat",
+  "edit": "Düzenle",
+  "reset": "Sıfırla",
+  "share": "Paylaş",
+  "truth": "Doğruluk",
+  "dare": "Cesaret",
+  "earned": "KAZANILDI",
+  "selected": "SEÇİLDİ",
+  "you": "Sen",
+  "computer": "Bilgisayar",
+  "round": "Raund",
+  "leave": "Ayrıl",
+  "leaveGame": "Oyundan Ayrıl?",
+  "leaveGameMessage": "Oyundan ayrılmak istediğinizden emin misiniz?",
+  "cancel": "İptal",
+  "gameResults": "Oyun Sonuçları",
+  "gold": "Altın",
+  "silver": "Gümüş",
+  "bronze": "Bronz",
+  "watchAd": "Reklam İzle",
+  "toUnlock": "kilidini açmak için",
+  "twoDice": "İki Zar",
+  "multiplication": "Çarpma",
+  "result": "Sonuç",
+  "spin": "Döndür",
+  "randomPickerTitle": "Rastgele Seçici",
+  "spinner": "Spinner",
+  "level": "Seviye",
+  "easy": "Kolay",
+  "medium": "Orta",
+  "hard": "Zor",
+  "selectLevel": "Seviye Seç",
+  "mathSpinner": "Matematik Spinner",
+  "mathSpinnerDescription": "Eğlenceli spinner zorluklarıyla matematik pratiği yapın",
+  "spinnerItems": "Spinner Öğeleri",
+  "enterItemName": "Öğe adını girin",
+  "noItems": "Öğe yok. Öğe eklemek için \"Öğe Ekle\"ye tıklayın.",
+  "pleaseAddAtLeastOneItem": "Lütfen en az bir öğe ekleyin",
+  "duplicateItemName": "Yinelenen öğe adı: \"{item}\". Lütfen benzersiz adlar kullanın.",
+  "@duplicateItemName": {
+    "placeholders": {
+      "item": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseAddAtLeastOneUser": "Lütfen en az bir kullanıcı ekleyin",
+  "duplicateUserName": "Yinelenen kullanıcı adı: \"{user}\". Lütfen benzersiz adlar kullanın.",
+  "@duplicateUserName": {
+    "placeholders": {
+      "user": {
+        "type": "String"
+      }
+    }
+  },
+  "mathSpinnerComingSoon": "Matematik Spinner sayfası yakında!",
+  "errorSharing": "Paylaşma hatası: {error}",
+  "@errorSharing": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "playerCount": "Oyuncu Sayısı",
+  "users": "Kullanıcılar",
+  "enterUserName": "Kullanıcı adını girin",
+  "total": "Toplam: {score}",
+  "@total": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "rounds": "Rauntlar: {roundsList}",
+  "@rounds": {
+    "placeholders": {
+      "roundsList": {
+        "type": "String"
+      }
+    }
+  },
+  "roundScore": "R{round}: {score}",
+  "@roundScore": {
+    "placeholders": {
+      "round": {
+        "type": "String"
+      },
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "checkOutResults": "Çok oyunculu spinner oyunu sonuçlarımıza bakın!",
+  "allItemsUsed": "Tüm doğruluk ve cesaret öğeleri kullanıldı!",
+  "errorLoadingData": "Veri yükleme hatası: {error}",
+  "@errorLoadingData": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "dice1": "Zar 1",
+  "dice2": "Zar 2",
+  "resultUppercase": "SONUÇ",
+  "score": "Skor: {score}",
+  "@score": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "turn": "{user} Sırası",
+  "@turn": {
+    "placeholders": {
+      "user": {
+        "type": "String"
+      }
+    }
+  }
+}

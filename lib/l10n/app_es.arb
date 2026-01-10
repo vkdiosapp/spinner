@@ -1,0 +1,157 @@
+{
+  "@@locale": "es",
+  "appTitle": "Spinner",
+  "languages": "Idiomas",
+  "continueButton": "Continuar",
+  "save": "Guardar",
+  "changeLanguage": "Cambiar Idioma",
+  "randomPicker": "Selector Aleatorio",
+  "randomPickerDescription": "Crea un spinner personalizado con tus propios elementos",
+  "multiplayer": "Multijugador",
+  "multiplayerDescription": "Juega con amigos y compite en rondas",
+  "dice": "Dados",
+  "diceDescription": "Tira dos dados y ve el total",
+  "whoFirst": "Quién Primero",
+  "whoFirstDescription": "Juega con amigos y compite en rondas",
+  "adsOn": "Anuncios Activados",
+  "adsOff": "Anuncios Desactivados",
+  "vibrationOn": "Vibración Activada",
+  "vibrationOff": "Vibración Desactivada",
+  "soundOn": "Sonido Activado",
+  "soundOff": "Sonido Desactivado",
+  "spinnerTitle": "Título del Spinner",
+  "enterSpinnerTitle": "Ingresa el título del spinner",
+  "start": "Iniciar",
+  "addItem": "Agregar Elemento",
+  "gameMode": "Modo de Juego",
+  "singlePlayer": "Un Jugador",
+  "multiplayerMode": "Multijugador",
+  "howManyRounds": "¿Cuántas Rondas?",
+  "players": "Jugadores",
+  "addPlayer": "Agregar Jugador",
+  "enterPlayerName": "Ingresa el nombre del jugador",
+  "truthDare": "Verdad o Reto",
+  "close": "Cerrar",
+  "edit": "Editar",
+  "reset": "Reiniciar",
+  "share": "Compartir",
+  "truth": "Verdad",
+  "dare": "Reto",
+  "earned": "GANADO",
+  "selected": "SELECCIONADO",
+  "you": "Tú",
+  "computer": "Computadora",
+  "round": "Ronda",
+  "leave": "Salir",
+  "leaveGame": "¿Salir del Juego?",
+  "leaveGameMessage": "¿Estás seguro de que quieres salir del juego?",
+  "cancel": "Cancelar",
+  "gameResults": "Resultados del Juego",
+  "gold": "Oro",
+  "silver": "Plata",
+  "bronze": "Bronce",
+  "watchAd": "Ver Anuncio",
+  "toUnlock": "para desbloquear",
+  "twoDice": "Dos Dados",
+  "multiplication": "Multiplicación",
+  "result": "Resultado",
+  "spin": "Girar",
+  "randomPickerTitle": "Selector Aleatorio",
+  "spinner": "Spinner",
+  "level": "Nivel",
+  "easy": "Fácil",
+  "medium": "Medio",
+  "hard": "Difícil",
+  "selectLevel": "Seleccionar Nivel",
+  "mathSpinner": "Spinner de Matemáticas",
+  "mathSpinnerDescription": "Practica matemáticas con desafíos divertidos de spinner",
+  "spinnerItems": "Elementos del Spinner",
+  "enterItemName": "Ingresa el nombre del elemento",
+  "noItems": "No hay elementos. Haz clic en \"Agregar Elemento\" para agregar elementos.",
+  "pleaseAddAtLeastOneItem": "Por favor agrega al menos un elemento",
+  "duplicateItemName": "Nombre de elemento duplicado: \"{item}\". Por favor usa nombres únicos.",
+  "@duplicateItemName": {
+    "placeholders": {
+      "item": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseAddAtLeastOneUser": "Por favor agrega al menos un usuario",
+  "duplicateUserName": "Nombre de usuario duplicado: \"{user}\". Por favor usa nombres únicos.",
+  "@duplicateUserName": {
+    "placeholders": {
+      "user": {
+        "type": "String"
+      }
+    }
+  },
+  "mathSpinnerComingSoon": "¡La página del Spinner de Matemáticas llegará pronto!",
+  "errorSharing": "Error al compartir: {error}",
+  "@errorSharing": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "playerCount": "Número de Jugadores",
+  "users": "Usuarios",
+  "enterUserName": "Ingresa el nombre de usuario",
+  "total": "Total: {score}",
+  "@total": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "rounds": "Rondas: {roundsList}",
+  "@rounds": {
+    "placeholders": {
+      "roundsList": {
+        "type": "String"
+      }
+    }
+  },
+  "roundScore": "R{round}: {score}",
+  "@roundScore": {
+    "placeholders": {
+      "round": {
+        "type": "String"
+      },
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "checkOutResults": "¡Mira los resultados de nuestro juego de spinner multijugador!",
+  "allItemsUsed": "¡Todos los elementos de verdad o reto han sido usados!",
+  "errorLoadingData": "Error al cargar datos: {error}",
+  "@errorLoadingData": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "dice1": "Dado 1",
+  "dice2": "Dado 2",
+  "resultUppercase": "RESULTADO",
+  "score": "Puntuación: {score}",
+  "@score": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "turn": "Turno de {user}",
+  "@turn": {
+    "placeholders": {
+      "user": {
+        "type": "String"
+      }
+    }
+  }
+}

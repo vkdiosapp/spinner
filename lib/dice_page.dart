@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'sound_vibration_helper.dart';
 import 'ad_helper.dart';
 import 'spinner_colors.dart';
+import 'app_localizations_helper.dart';
 
 class DicePage extends StatefulWidget {
   final String mode; // 'oneDice', 'twoDice', or 'multiplication'
@@ -306,6 +307,7 @@ class _DicePageState extends State<DicePage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizationsHelper.of(context);
     return Scaffold(
       backgroundColor: const Color(0xFF2D2D44),
       body: Stack(
@@ -349,10 +351,10 @@ class _DicePageState extends State<DicePage> with TickerProviderStateMixin {
                         ),
                       ),
                       // Title - centered on screen
-                      const Text(
-                        'Dice',
+                      Text(
+                        l10n.dice,
                         textAlign: TextAlign.center,
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -479,7 +481,7 @@ class _DicePageState extends State<DicePage> with TickerProviderStateMixin {
                                       rotation: _rotation1,
                                       segments: _segments1,
                                       value: _diceValue1,
-                                      label: 'Dice',
+                                      label: l10n.dice,
                                       buttonSize: dynamicButtonSize,
                                       arrowWidth: 0,
                                       arrowHeight: 0,
@@ -495,7 +497,7 @@ class _DicePageState extends State<DicePage> with TickerProviderStateMixin {
                                           rotation: _rotation1,
                                           segments: _segments1,
                                           value: _diceValue1,
-                                          label: 'Dice 1',
+                                          label: l10n.dice1,
                                           buttonSize: dynamicButtonSize,
                                           arrowWidth: 0,
                                           arrowHeight: 0,
@@ -506,7 +508,7 @@ class _DicePageState extends State<DicePage> with TickerProviderStateMixin {
                                           rotation: _rotation2,
                                           segments: _segments2,
                                           value: _diceValue2,
-                                          label: 'Dice 2',
+                                          label: l10n.dice2,
                                           buttonSize: dynamicButtonSize,
                                           arrowWidth: 0,
                                           arrowHeight: 0,
@@ -530,7 +532,7 @@ class _DicePageState extends State<DicePage> with TickerProviderStateMixin {
                                               rotation: _rotation1,
                                               segments: _segments1,
                                               value: _diceValue1,
-                                              label: 'Dice 1',
+                                              label: l10n.dice1,
                                               buttonSize: dynamicButtonSize,
                                               arrowWidth: 0,
                                               arrowHeight: 0,
@@ -546,7 +548,7 @@ class _DicePageState extends State<DicePage> with TickerProviderStateMixin {
                                               rotation: _rotation2,
                                               segments: _segments2,
                                               value: _diceValue2,
-                                              label: 'Dice 2',
+                                              label: l10n.dice2,
                                               buttonSize: dynamicButtonSize,
                                               arrowWidth: 0,
                                               arrowHeight: 0,
@@ -686,7 +688,7 @@ class _DicePageState extends State<DicePage> with TickerProviderStateMixin {
                                                 ),
                                               ),
                                           child: Text(
-                                            'RESULT',
+                                            l10n.resultUppercase,
                                             textAlign: TextAlign.center,
                                             style: TextStyle(
                                               color: Colors.black87,

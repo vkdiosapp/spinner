@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'truth_dare_level_page.dart';
 import 'ad_helper.dart';
+import 'app_localizations_helper.dart';
 
 class TruthDareConfigPage extends StatefulWidget {
   const TruthDareConfigPage({super.key});
@@ -62,6 +63,8 @@ class _TruthDareConfigPageState extends State<TruthDareConfigPage> {
   }
 
   void _startTruthDare() {
+    final l10n = AppLocalizationsHelper.of(context);
+    
     // Update users from controllers
     final updatedUsers = <String>[];
     for (var controller in _userControllers) {
@@ -73,8 +76,8 @@ class _TruthDareConfigPageState extends State<TruthDareConfigPage> {
 
     if (updatedUsers.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please add at least one user'),
+        SnackBar(
+          content: Text(l10n.pleaseAddAtLeastOneUser),
           backgroundColor: Colors.red,
         ),
       );
@@ -89,7 +92,7 @@ class _TruthDareConfigPageState extends State<TruthDareConfigPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Duplicate user name: "$user". Please use unique names.',
+              l10n.duplicateUserName(user),
             ),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 3),
@@ -109,6 +112,8 @@ class _TruthDareConfigPageState extends State<TruthDareConfigPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizationsHelper.of(context);
+    
     return Scaffold(
       backgroundColor: const Color(0xFF2D2D44),
       body: SafeArea(
@@ -147,13 +152,48 @@ class _TruthDareConfigPageState extends State<TruthDareConfigPage> {
                     ),
                   ),
                   // Title - centered on screen
-                  const Text(
-                    'Truth & Dare',
+                  Text(
+                    l10n.truthDare,
                     textAlign: TextAlign.center,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  // Start button - right aligned
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFF1493),
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: _startTruthDare,
+                          borderRadius: BorderRadius.circular(12),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                            child: Text(
+                              l10n.start,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -177,9 +217,9 @@ class _TruthDareConfigPageState extends State<TruthDareConfigPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
-                              'Users',
-                              style: TextStyle(
+                            Text(
+                              l10n.users,
+                              style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -243,7 +283,7 @@ class _TruthDareConfigPageState extends State<TruthDareConfigPage> {
                                     color: Colors.white,
                                   ),
                                   decoration: InputDecoration(
-                                    hintText: 'Enter user name',
+                                    hintText: l10n.enterUserName,
                                     hintStyle: TextStyle(
                                       color: Colors.white.withOpacity(0.5),
                                     ),
@@ -265,28 +305,7 @@ class _TruthDareConfigPageState extends State<TruthDareConfigPage> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 32),
-
-                    // Start Button
-                    ElevatedButton(
-                      onPressed: _startTruthDare,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFFF1493),
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 18),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        elevation: 4,
-                      ),
-                      child: const Text(
-                        'Start',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
+                    const SizedBox(height: 20),
                   ],
                 ),
               ),

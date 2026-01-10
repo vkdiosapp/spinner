@@ -1,0 +1,157 @@
+{
+  "@@locale": "fr",
+  "appTitle": "Spinner",
+  "languages": "Langues",
+  "continueButton": "Continuer",
+  "save": "Enregistrer",
+  "changeLanguage": "Changer la langue",
+  "randomPicker": "Sélecteur Aléatoire",
+  "randomPickerDescription": "Créez un spinner personnalisé avec vos propres éléments",
+  "multiplayer": "Multijoueur",
+  "multiplayerDescription": "Jouez avec des amis et competez en rounds",
+  "dice": "Dés",
+  "diceDescription": "Lancez deux dés et voyez le total",
+  "whoFirst": "Qui en Premier",
+  "whoFirstDescription": "Jouez avec des amis et competez en rounds",
+  "adsOn": "Publicités Activées",
+  "adsOff": "Publicités Désactivées",
+  "vibrationOn": "Vibration Activée",
+  "vibrationOff": "Vibration Désactivée",
+  "soundOn": "Son Activé",
+  "soundOff": "Son Désactivé",
+  "spinnerTitle": "Titre du Spinner",
+  "enterSpinnerTitle": "Entrez le titre du spinner",
+  "start": "Démarrer",
+  "addItem": "Ajouter un Élément",
+  "gameMode": "Mode de Jeu",
+  "singlePlayer": "Joueur Unique",
+  "multiplayerMode": "Multijoueur",
+  "howManyRounds": "Combien de Rounds?",
+  "players": "Joueurs",
+  "addPlayer": "Ajouter un Joueur",
+  "enterPlayerName": "Entrez le nom du joueur",
+  "truthDare": "Action ou Vérité",
+  "close": "Fermer",
+  "edit": "Modifier",
+  "reset": "Réinitialiser",
+  "share": "Partager",
+  "truth": "Vérité",
+  "dare": "Action",
+  "earned": "GAGNÉ",
+  "selected": "SÉLECTIONNÉ",
+  "you": "Vous",
+  "computer": "Ordinateur",
+  "round": "Round",
+  "leave": "Quitter",
+  "leaveGame": "Quitter le Jeu?",
+  "leaveGameMessage": "Êtes-vous sûr de vouloir quitter le jeu?",
+  "cancel": "Annuler",
+  "gameResults": "Résultats du Jeu",
+  "gold": "Or",
+  "silver": "Argent",
+  "bronze": "Bronze",
+  "watchAd": "Regarder la Pub",
+  "toUnlock": "pour débloquer",
+  "twoDice": "Deux Dés",
+  "multiplication": "Multiplication",
+  "result": "Résultat",
+  "spin": "Tourner",
+  "randomPickerTitle": "Sélecteur Aléatoire",
+  "spinner": "Spinner",
+  "level": "Niveau",
+  "easy": "Facile",
+  "medium": "Moyen",
+  "hard": "Difficile",
+  "selectLevel": "Sélectionner le Niveau",
+  "mathSpinner": "Spinner Mathématique",
+  "mathSpinnerDescription": "Pratiquez les mathématiques avec des défis de spinner amusants",
+  "spinnerItems": "Éléments du Spinner",
+  "enterItemName": "Entrez le nom de l'élément",
+  "noItems": "Aucun élément. Cliquez sur \"Ajouter un élément\" pour ajouter des éléments.",
+  "pleaseAddAtLeastOneItem": "Veuillez ajouter au moins un élément",
+  "duplicateItemName": "Nom d'élément en double: \"{item}\". Veuillez utiliser des noms uniques.",
+  "@duplicateItemName": {
+    "placeholders": {
+      "item": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseAddAtLeastOneUser": "Veuillez ajouter au moins un utilisateur",
+  "duplicateUserName": "Nom d'utilisateur en double: \"{user}\". Veuillez utiliser des noms uniques.",
+  "@duplicateUserName": {
+    "placeholders": {
+      "user": {
+        "type": "String"
+      }
+    }
+  },
+  "mathSpinnerComingSoon": "Page Spinner Mathématique à venir bientôt!",
+  "errorSharing": "Erreur lors du partage: {error}",
+  "@errorSharing": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "playerCount": "Nombre de Joueurs",
+  "users": "Utilisateurs",
+  "enterUserName": "Entrez le nom d'utilisateur",
+  "total": "Total: {score}",
+  "@total": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "rounds": "Rondes: {roundsList}",
+  "@rounds": {
+    "placeholders": {
+      "roundsList": {
+        "type": "String"
+      }
+    }
+  },
+  "roundScore": "R{round}: {score}",
+  "@roundScore": {
+    "placeholders": {
+      "round": {
+        "type": "String"
+      },
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "checkOutResults": "Découvrez les résultats de notre jeu de spinner multijoueur!",
+  "allItemsUsed": "Tous les éléments de vérité et d'action ont été utilisés!",
+  "errorLoadingData": "Erreur lors du chargement des données: {error}",
+  "@errorLoadingData": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "dice1": "Dé 1",
+  "dice2": "Dé 2",
+  "resultUppercase": "RÉSULTAT",
+  "score": "Score: {score}",
+  "@score": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "turn": "Tour de {user}",
+  "@turn": {
+    "placeholders": {
+      "user": {
+        "type": "String"
+      }
+    }
+  }
+}

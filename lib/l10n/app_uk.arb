@@ -1,0 +1,157 @@
+{
+  "@@locale": "uk",
+  "appTitle": "Спіннер",
+  "languages": "Мови",
+  "continueButton": "Продовжити",
+  "save": "Зберегти",
+  "changeLanguage": "Змінити Мову",
+  "randomPicker": "Випадковий Вибір",
+  "randomPickerDescription": "Створіть користувацький спіннер зі своїми елементами",
+  "multiplayer": "Мультиплеєр",
+  "multiplayerDescription": "Грайте з друзями та змагайтеся в раундах",
+  "dice": "Кістки",
+  "diceDescription": "Киньте дві кістки та подивіться суму",
+  "whoFirst": "Хто Перший",
+  "whoFirstDescription": "Грайте з друзями та змагайтеся в раундах",
+  "adsOn": "Реклама Увімкнена",
+  "adsOff": "Реклама Вимкнена",
+  "vibrationOn": "Вібрація Увімкнена",
+  "vibrationOff": "Вібрація Вимкнена",
+  "soundOn": "Звук Увімкнено",
+  "soundOff": "Звук Вимкнено",
+  "spinnerTitle": "Назва Спіннера",
+  "enterSpinnerTitle": "Введіть назву спіннера",
+  "start": "Почати",
+  "addItem": "Додати Елемент",
+  "gameMode": "Режим Гри",
+  "singlePlayer": "Одиночна Гра",
+  "multiplayerMode": "Мультиплеєр",
+  "howManyRounds": "Скільки Раундів?",
+  "players": "Гравці",
+  "addPlayer": "Додати Гравця",
+  "enterPlayerName": "Введіть ім'я гравця",
+  "truthDare": "Правда чи Дія",
+  "close": "Закрити",
+  "edit": "Редагувати",
+  "reset": "Скинути",
+  "share": "Поділитися",
+  "truth": "Правда",
+  "dare": "Дія",
+  "earned": "ЗАРОБЛЕНО",
+  "selected": "ВИБРАНО",
+  "you": "Ви",
+  "computer": "Комп'ютер",
+  "round": "Раунд",
+  "leave": "Вийти",
+  "leaveGame": "Вийти з Гри?",
+  "leaveGameMessage": "Ви впевнені, що хочете вийти з гри?",
+  "cancel": "Скасувати",
+  "gameResults": "Результати Гри",
+  "gold": "Золото",
+  "silver": "Срібло",
+  "bronze": "Бронза",
+  "watchAd": "Дивитися Рекламу",
+  "toUnlock": "щоб розблокувати",
+  "twoDice": "Дві Кістки",
+  "multiplication": "Множення",
+  "result": "Результат",
+  "spin": "Крутити",
+  "randomPickerTitle": "Випадковий Вибір",
+  "spinner": "Спіннер",
+  "level": "Рівень",
+  "easy": "Легкий",
+  "medium": "Середній",
+  "hard": "Важкий",
+  "selectLevel": "Вибрати Рівень",
+  "mathSpinner": "Математичний Спіннер",
+  "mathSpinnerDescription": "Практикуйте математику з веселими завданнями спіннера",
+  "spinnerItems": "Елементи Спіннера",
+  "enterItemName": "Введіть назву елемента",
+  "noItems": "Немає елементів. Натисніть \"Додати елемент\", щоб додати елементи.",
+  "pleaseAddAtLeastOneItem": "Будь ласка, додайте принаймні один елемент",
+  "duplicateItemName": "Дубльована назва елемента: \"{item}\". Будь ласка, використовуйте унікальні імена.",
+  "@duplicateItemName": {
+    "placeholders": {
+      "item": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseAddAtLeastOneUser": "Будь ласка, додайте принаймні одного користувача",
+  "duplicateUserName": "Дубльоване ім'я користувача: \"{user}\". Будь ласка, використовуйте унікальні імена.",
+  "@duplicateUserName": {
+    "placeholders": {
+      "user": {
+        "type": "String"
+      }
+    }
+  },
+  "mathSpinnerComingSoon": "Сторінка Математичного Спіннера незабаром!",
+  "errorSharing": "Помилка при обміні: {error}",
+  "@errorSharing": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "playerCount": "Кількість Гравців",
+  "users": "Користувачі",
+  "enterUserName": "Введіть ім'я користувача",
+  "total": "Всього: {score}",
+  "@total": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "rounds": "Раунди: {roundsList}",
+  "@rounds": {
+    "placeholders": {
+      "roundsList": {
+        "type": "String"
+      }
+    }
+  },
+  "roundScore": "Р{round}: {score}",
+  "@roundScore": {
+    "placeholders": {
+      "round": {
+        "type": "String"
+      },
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "checkOutResults": "Перевірте результати нашої багатокористувацької гри зі спіннером!",
+  "allItemsUsed": "Всі елементи правди та виклику були використані!",
+  "errorLoadingData": "Помилка при завантаженні даних: {error}",
+  "@errorLoadingData": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "dice1": "Кістка 1",
+  "dice2": "Кістка 2",
+  "resultUppercase": "РЕЗУЛЬТАТ",
+  "score": "Очки: {score}",
+  "@score": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "turn": "Хід {user}",
+  "@turn": {
+    "placeholders": {
+      "user": {
+        "type": "String"
+      }
+    }
+  }
+}

@@ -1,0 +1,157 @@
+{
+  "@@locale": "af",
+  "appTitle": "Spinner",
+  "languages": "Tale",
+  "continueButton": "Gaan voort",
+  "save": "Stoor",
+  "changeLanguage": "Verander Taal",
+  "randomPicker": "Ewekansige Kieser",
+  "randomPickerDescription": "Skep 'n pasgemaakte spinner met jou eie items",
+  "multiplayer": "Meervoudige Speler",
+  "multiplayerDescription": "Speel met vriende en kompeteer in rondes",
+  "dice": "Dobbelstene",
+  "diceDescription": "Rol twee dobbelstene en sien die totaal",
+  "whoFirst": "Wie Eerste",
+  "whoFirstDescription": "Speel met vriende en kompeteer in rondes",
+  "adsOn": "Advertensies Aan",
+  "adsOff": "Advertensies Af",
+  "vibrationOn": "Vibrasie Aan",
+  "vibrationOff": "Vibrasie Af",
+  "soundOn": "Klank Aan",
+  "soundOff": "Klank Af",
+  "spinnerTitle": "Spinner Titel",
+  "enterSpinnerTitle": "Voer spinner titel in",
+  "start": "Begin",
+  "addItem": "Voeg Item By",
+  "gameMode": "Spel Modus",
+  "singlePlayer": "Enkelspeler",
+  "multiplayerMode": "Meervoudige Speler",
+  "howManyRounds": "Hoeveel Rondes?",
+  "players": "Spelers",
+  "addPlayer": "Voeg Speler By",
+  "enterPlayerName": "Voer speler naam in",
+  "truthDare": "Waarheid & Durf",
+  "close": "Sluit",
+  "edit": "Wysig",
+  "reset": "Herstel",
+  "share": "Deel",
+  "truth": "Waarheid",
+  "dare": "Durf",
+  "earned": "VERDIEN",
+  "selected": "GEKIES",
+  "you": "Jy",
+  "computer": "Rekenaar",
+  "round": "Ronde",
+  "leave": "Verlaat",
+  "leaveGame": "Verlaat Spel?",
+  "leaveGameMessage": "Is jy seker jy wil die spel verlaat?",
+  "cancel": "Kanselleer",
+  "gameResults": "Spel Resultate",
+  "gold": "Goud",
+  "silver": "Silwer",
+  "bronze": "Brons",
+  "watchAd": "Kyk Advertensie",
+  "toUnlock": "om te ontsluit",
+  "twoDice": "Twee Dobbelstene",
+  "multiplication": "Vermenigvuldiging",
+  "result": "Resultaat",
+  "spin": "Draai",
+  "randomPickerTitle": "Ewekansige Kieser",
+  "spinner": "Spinner",
+  "level": "Vlak",
+  "easy": "Maklik",
+  "medium": "Medium",
+  "hard": "Moeilik",
+  "selectLevel": "Kies Vlak",
+  "mathSpinner": "Wiskunde Spinner",
+  "mathSpinnerDescription": "Oefen wiskunde met lekker spinner uitdagings",
+  "spinnerItems": "Spinner Items",
+  "enterItemName": "Voer item naam in",
+  "noItems": "Geen items. Klik \"Voeg Item By\" om items by te voeg.",
+  "pleaseAddAtLeastOneItem": "Voeg asseblief ten minste een item by",
+  "duplicateItemName": "Duplikaat item naam: \"{item}\". Gebruik asseblief unieke name.",
+  "@duplicateItemName": {
+    "placeholders": {
+      "item": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseAddAtLeastOneUser": "Voeg asseblief ten minste een gebruiker by",
+  "duplicateUserName": "Duplikaat gebruiker naam: \"{user}\". Gebruik asseblief unieke name.",
+  "@duplicateUserName": {
+    "placeholders": {
+      "user": {
+        "type": "String"
+      }
+    }
+  },
+  "mathSpinnerComingSoon": "Wiskunde Spinner bladsy kom binnekort!",
+  "errorSharing": "Fout met deel: {error}",
+  "@errorSharing": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "playerCount": "Speler Telling",
+  "users": "Gebruikers",
+  "enterUserName": "Voer gebruiker naam in",
+  "total": "Totaal: {score}",
+  "@total": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "rounds": "Rondes: {roundsList}",
+  "@rounds": {
+    "placeholders": {
+      "roundsList": {
+        "type": "String"
+      }
+    }
+  },
+  "roundScore": "R{round}: {score}",
+  "@roundScore": {
+    "placeholders": {
+      "round": {
+        "type": "String"
+      },
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "checkOutResults": "Kyk na ons meervoudige spinner spel resultate!",
+  "allItemsUsed": "Alle waarheid en durf items is gebruik!",
+  "errorLoadingData": "Fout met laai data: {error}",
+  "@errorLoadingData": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "dice1": "Dobbelsteen 1",
+  "dice2": "Dobbelsteen 2",
+  "resultUppercase": "RESULTAAT",
+  "score": "Punt: {score}",
+  "@score": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "turn": "{user} se Beurt",
+  "@turn": {
+    "placeholders": {
+      "user": {
+        "type": "String"
+      }
+    }
+  }
+}

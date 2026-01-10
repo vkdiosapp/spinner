@@ -1,0 +1,157 @@
+{
+  "@@locale": "pl",
+  "appTitle": "Koło",
+  "languages": "Języki",
+  "continueButton": "Kontynuuj",
+  "save": "Zapisz",
+  "changeLanguage": "Zmień Język",
+  "randomPicker": "Losowy Wybór",
+  "randomPickerDescription": "Utwórz niestandardowe koło z własnymi elementami",
+  "multiplayer": "Multiplayer",
+  "multiplayerDescription": "Graj z przyjaciółmi i rywalizuj w rundach",
+  "dice": "Kostki",
+  "diceDescription": "Rzuć dwiema kostkami i zobacz sumę",
+  "whoFirst": "Kto Pierwszy",
+  "whoFirstDescription": "Graj z przyjaciółmi i rywalizuj w rundach",
+  "adsOn": "Reklamy Włączone",
+  "adsOff": "Reklamy Wyłączone",
+  "vibrationOn": "Wibracje Włączone",
+  "vibrationOff": "Wibracje Wyłączone",
+  "soundOn": "Dźwięk Włączony",
+  "soundOff": "Dźwięk Wyłączony",
+  "spinnerTitle": "Tytuł Koła",
+  "enterSpinnerTitle": "Wprowadź tytuł koła",
+  "start": "Start",
+  "addItem": "Dodaj Element",
+  "gameMode": "Tryb Gry",
+  "singlePlayer": "Pojedynczy Gracz",
+  "multiplayerMode": "Multiplayer",
+  "howManyRounds": "Ile Rund?",
+  "players": "Gracze",
+  "addPlayer": "Dodaj Gracza",
+  "enterPlayerName": "Wprowadź imię gracza",
+  "truthDare": "Prawda czy Wyzwanie",
+  "close": "Zamknij",
+  "edit": "Edytuj",
+  "reset": "Resetuj",
+  "share": "Udostępnij",
+  "truth": "Prawda",
+  "dare": "Wyzwanie",
+  "earned": "ZAROBIONE",
+  "selected": "WYBRANE",
+  "you": "Ty",
+  "computer": "Komputer",
+  "round": "Runda",
+  "leave": "Opuść",
+  "leaveGame": "Opuścić Grę?",
+  "leaveGameMessage": "Czy na pewno chcesz opuścić grę?",
+  "cancel": "Anuluj",
+  "gameResults": "Wyniki Gry",
+  "gold": "Złoto",
+  "silver": "Srebro",
+  "bronze": "Brąz",
+  "watchAd": "Obejrzyj Reklamę",
+  "toUnlock": "aby odblokować",
+  "twoDice": "Dwie Kostki",
+  "multiplication": "Mnożenie",
+  "result": "Wynik",
+  "spin": "Obróć",
+  "randomPickerTitle": "Losowy Wybór",
+  "spinner": "Koło",
+  "level": "Poziom",
+  "easy": "Łatwy",
+  "medium": "Średni",
+  "hard": "Trudny",
+  "selectLevel": "Wybierz Poziom",
+  "mathSpinner": "Koło Matematyczne",
+  "mathSpinnerDescription": "Ćwicz matematykę z zabawnymi wyzwaniami koła",
+  "spinnerItems": "Elementy Koła",
+  "enterItemName": "Wprowadź nazwę elementu",
+  "noItems": "Brak elementów. Kliknij \"Dodaj Element\", aby dodać elementy.",
+  "pleaseAddAtLeastOneItem": "Proszę dodać co najmniej jeden element",
+  "duplicateItemName": "Zduplikowana nazwa elementu: \"{item}\". Proszę użyć unikalnych nazw.",
+  "@duplicateItemName": {
+    "placeholders": {
+      "item": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseAddAtLeastOneUser": "Proszę dodać co najmniej jednego użytkownika",
+  "duplicateUserName": "Zduplikowana nazwa użytkownika: \"{user}\". Proszę użyć unikalnych nazw.",
+  "@duplicateUserName": {
+    "placeholders": {
+      "user": {
+        "type": "String"
+      }
+    }
+  },
+  "mathSpinnerComingSoon": "Strona Koła Matematycznego wkrótce!",
+  "errorSharing": "Błąd podczas udostępniania: {error}",
+  "@errorSharing": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "playerCount": "Liczba Graczy",
+  "users": "Użytkownicy",
+  "enterUserName": "Wprowadź nazwę użytkownika",
+  "total": "Suma: {score}",
+  "@total": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "rounds": "Rundy: {roundsList}",
+  "@rounds": {
+    "placeholders": {
+      "roundsList": {
+        "type": "String"
+      }
+    }
+  },
+  "roundScore": "R{round}: {score}",
+  "@roundScore": {
+    "placeholders": {
+      "round": {
+        "type": "String"
+      },
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "checkOutResults": "Sprawdź wyniki naszej gry koła dla wielu graczy!",
+  "allItemsUsed": "Wszystkie elementy prawdy i wyzwania zostały użyte!",
+  "errorLoadingData": "Błąd podczas ładowania danych: {error}",
+  "@errorLoadingData": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "dice1": "Kostka 1",
+  "dice2": "Kostka 2",
+  "resultUppercase": "WYNIK",
+  "score": "Wynik: {score}",
+  "@score": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "turn": "Kolej {user}",
+  "@turn": {
+    "placeholders": {
+      "user": {
+        "type": "String"
+      }
+    }
+  }
+}

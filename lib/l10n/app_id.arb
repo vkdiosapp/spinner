@@ -1,0 +1,157 @@
+{
+  "@@locale": "id",
+  "appTitle": "Spinner",
+  "languages": "Bahasa",
+  "continueButton": "Lanjutkan",
+  "save": "Simpan",
+  "changeLanguage": "Ubah Bahasa",
+  "randomPicker": "Pemilih Acak",
+  "randomPickerDescription": "Buat spinner kustom dengan item Anda sendiri",
+  "multiplayer": "Multiplayer",
+  "multiplayerDescription": "Bermain dengan teman dan bersaing dalam putaran",
+  "dice": "Dadu",
+  "diceDescription": "Lempar dua dadu dan lihat totalnya",
+  "whoFirst": "Siapa Pertama",
+  "whoFirstDescription": "Bermain dengan teman dan bersaing dalam putaran",
+  "adsOn": "Iklan Aktif",
+  "adsOff": "Iklan Nonaktif",
+  "vibrationOn": "Getaran Aktif",
+  "vibrationOff": "Getaran Nonaktif",
+  "soundOn": "Suara Aktif",
+  "soundOff": "Suara Nonaktif",
+  "spinnerTitle": "Judul Spinner",
+  "enterSpinnerTitle": "Masukkan judul spinner",
+  "start": "Mulai",
+  "addItem": "Tambah Item",
+  "gameMode": "Mode Permainan",
+  "singlePlayer": "Pemain Tunggal",
+  "multiplayerMode": "Multiplayer",
+  "howManyRounds": "Berapa Banyak Putaran?",
+  "players": "Pemain",
+  "addPlayer": "Tambah Pemain",
+  "enterPlayerName": "Masukkan nama pemain",
+  "truthDare": "Truth & Dare",
+  "close": "Tutup",
+  "edit": "Edit",
+  "reset": "Reset",
+  "share": "Bagikan",
+  "truth": "Truth",
+  "dare": "Dare",
+  "earned": "DIPEROLEH",
+  "selected": "DIPILIH",
+  "you": "Anda",
+  "computer": "Komputer",
+  "round": "Putaran",
+  "leave": "Keluar",
+  "leaveGame": "Keluar dari Permainan?",
+  "leaveGameMessage": "Apakah Anda yakin ingin keluar dari permainan?",
+  "cancel": "Batal",
+  "gameResults": "Hasil Permainan",
+  "gold": "Emas",
+  "silver": "Perak",
+  "bronze": "Perunggu",
+  "watchAd": "Tonton Iklan",
+  "toUnlock": "untuk membuka",
+  "twoDice": "Dua Dadu",
+  "multiplication": "Perkalian",
+  "result": "Hasil",
+  "spin": "Putar",
+  "randomPickerTitle": "Pemilih Acak",
+  "spinner": "Spinner",
+  "level": "Level",
+  "easy": "Mudah",
+  "medium": "Sedang",
+  "hard": "Sulit",
+  "selectLevel": "Pilih Level",
+  "mathSpinner": "Spinner Matematika",
+  "mathSpinnerDescription": "Berlatih matematika dengan tantangan spinner yang menyenangkan",
+  "spinnerItems": "Item Spinner",
+  "enterItemName": "Masukkan nama item",
+  "noItems": "Tidak ada item. Klik \"Add Item\" untuk menambahkan item.",
+  "pleaseAddAtLeastOneItem": "Harap tambahkan setidaknya satu item",
+  "duplicateItemName": "Nama item duplikat: \"{item}\". Harap gunakan nama yang unik.",
+  "@duplicateItemName": {
+    "placeholders": {
+      "item": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseAddAtLeastOneUser": "Harap tambahkan setidaknya satu pengguna",
+  "duplicateUserName": "Nama pengguna duplikat: \"{user}\". Harap gunakan nama yang unik.",
+  "@duplicateUserName": {
+    "placeholders": {
+      "user": {
+        "type": "String"
+      }
+    }
+  },
+  "mathSpinnerComingSoon": "Halaman Spinner Matematika akan segera hadir!",
+  "errorSharing": "Kesalahan saat berbagi: {error}",
+  "@errorSharing": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "playerCount": "Jumlah Pemain",
+  "users": "Pengguna",
+  "enterUserName": "Masukkan nama pengguna",
+  "total": "Total: {score}",
+  "@total": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "rounds": "Ronde: {roundsList}",
+  "@rounds": {
+    "placeholders": {
+      "roundsList": {
+        "type": "String"
+      }
+    }
+  },
+  "roundScore": "R{round}: {score}",
+  "@roundScore": {
+    "placeholders": {
+      "round": {
+        "type": "String"
+      },
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "checkOutResults": "Lihat hasil permainan spinner multiplayer kami!",
+  "allItemsUsed": "Semua item truth dan dare telah digunakan!",
+  "errorLoadingData": "Kesalahan saat memuat data: {error}",
+  "@errorLoadingData": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "dice1": "Dadu 1",
+  "dice2": "Dadu 2",
+  "resultUppercase": "HASIL",
+  "score": "Skor: {score}",
+  "@score": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "turn": "Giliran {user}",
+  "@turn": {
+    "placeholders": {
+      "user": {
+        "type": "String"
+      }
+    }
+  }
+}

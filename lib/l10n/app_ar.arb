@@ -1,0 +1,157 @@
+{
+  "@@locale": "ar",
+  "appTitle": "الدوار",
+  "languages": "اللغات",
+  "continueButton": "متابعة",
+  "save": "حفظ",
+  "changeLanguage": "تغيير اللغة",
+  "randomPicker": "منتقي عشوائي",
+  "randomPickerDescription": "أنشئ دوارًا مخصصًا بعناصرك الخاصة",
+  "multiplayer": "متعدد اللاعبين",
+  "multiplayerDescription": "العب مع الأصدقاء وتنافس في الجولات",
+  "dice": "النرد",
+  "diceDescription": "ارمي نردتين وشاهد المجموع",
+  "whoFirst": "من الأول",
+  "whoFirstDescription": "العب مع الأصدقاء وتنافس في الجولات",
+  "adsOn": "الإعلانات مفعلة",
+  "adsOff": "الإعلانات معطلة",
+  "vibrationOn": "الاهتزاز مفعل",
+  "vibrationOff": "الاهتزاز معطل",
+  "soundOn": "الصوت مفعل",
+  "soundOff": "الصوت معطل",
+  "spinnerTitle": "عنوان الدوار",
+  "enterSpinnerTitle": "أدخل عنوان الدوار",
+  "start": "ابدأ",
+  "addItem": "إضافة عنصر",
+  "gameMode": "وضع اللعبة",
+  "singlePlayer": "لاعب واحد",
+  "multiplayerMode": "متعدد اللاعبين",
+  "howManyRounds": "كم عدد الجولات؟",
+  "players": "اللاعبون",
+  "addPlayer": "إضافة لاعب",
+  "enterPlayerName": "أدخل اسم اللاعب",
+  "truthDare": "الحقيقة والجرأة",
+  "close": "إغلاق",
+  "edit": "تعديل",
+  "reset": "إعادة تعيين",
+  "share": "مشاركة",
+  "truth": "الحقيقة",
+  "dare": "الجرأة",
+  "earned": "مكتسب",
+  "selected": "محدد",
+  "you": "أنت",
+  "computer": "الكمبيوتر",
+  "round": "جولة",
+  "leave": "مغادرة",
+  "leaveGame": "مغادرة اللعبة؟",
+  "leaveGameMessage": "هل أنت متأكد أنك تريد مغادرة اللعبة؟",
+  "cancel": "إلغاء",
+  "gameResults": "نتائج اللعبة",
+  "gold": "ذهبي",
+  "silver": "فضي",
+  "bronze": "برونزي",
+  "watchAd": "شاهد الإعلان",
+  "toUnlock": "للفتح",
+  "twoDice": "نردتان",
+  "multiplication": "الضرب",
+  "result": "النتيجة",
+  "spin": "دور",
+  "randomPickerTitle": "منتقي عشوائي",
+  "spinner": "الدوار",
+  "level": "المستوى",
+  "easy": "سهل",
+  "medium": "متوسط",
+  "hard": "صعب",
+  "selectLevel": "اختر المستوى",
+  "mathSpinner": "دوار الرياضيات",
+  "mathSpinnerDescription": "تدرب على الرياضيات مع تحديات دوار ممتعة",
+  "spinnerItems": "عناصر الدوار",
+  "enterItemName": "أدخل اسم العنصر",
+  "noItems": "لا توجد عناصر. انقر \"إضافة عنصر\" لإضافة عناصر.",
+  "pleaseAddAtLeastOneItem": "يرجى إضافة عنصر واحد على الأقل",
+  "duplicateItemName": "اسم عنصر مكرر: \"{item}\". يرجى استخدام أسماء فريدة.",
+  "@duplicateItemName": {
+    "placeholders": {
+      "item": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseAddAtLeastOneUser": "يرجى إضافة مستخدم واحد على الأقل",
+  "duplicateUserName": "اسم مستخدم مكرر: \"{user}\". يرجى استخدام أسماء فريدة.",
+  "@duplicateUserName": {
+    "placeholders": {
+      "user": {
+        "type": "String"
+      }
+    }
+  },
+  "mathSpinnerComingSoon": "صفحة دوار الرياضيات قريباً!",
+  "errorSharing": "خطأ في المشاركة: {error}",
+  "@errorSharing": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "playerCount": "عدد اللاعبين",
+  "users": "المستخدمون",
+  "enterUserName": "أدخل اسم المستخدم",
+  "total": "المجموع: {score}",
+  "@total": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "rounds": "الجولات: {roundsList}",
+  "@rounds": {
+    "placeholders": {
+      "roundsList": {
+        "type": "String"
+      }
+    }
+  },
+  "roundScore": "ج{round}: {score}",
+  "@roundScore": {
+    "placeholders": {
+      "round": {
+        "type": "String"
+      },
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "checkOutResults": "تحقق من نتائج لعبة الدوار متعددة اللاعبين!",
+  "allItemsUsed": "تم استخدام جميع عناصر الحقيقة والجرأة!",
+  "errorLoadingData": "خطأ في تحميل البيانات: {error}",
+  "@errorLoadingData": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "dice1": "النرد 1",
+  "dice2": "النرد 2",
+  "resultUppercase": "النتيجة",
+  "score": "النقاط: {score}",
+  "@score": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "turn": "دور {user}",
+  "@turn": {
+    "placeholders": {
+      "user": {
+        "type": "String"
+      }
+    }
+  }
+}

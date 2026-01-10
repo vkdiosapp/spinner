@@ -6,6 +6,7 @@ import 'dart:math' as math;
 import 'sound_vibration_helper.dart';
 import 'ad_helper.dart';
 import 'spinner_colors.dart';
+import 'app_localizations_helper.dart';
 
 class TruthDareSpinnerPage extends StatefulWidget {
   final String level;
@@ -98,8 +99,9 @@ class _TruthDareSpinnerPageState extends State<TruthDareSpinnerPage>
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizationsHelper.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading data: $e')),
+          SnackBar(content: Text(l10n.errorLoadingData(e.toString()))),
         );
       }
     }
@@ -127,12 +129,14 @@ class _TruthDareSpinnerPageState extends State<TruthDareSpinnerPage>
     // Only allow current user to spin
     // This check is handled in the UI by disabling the button, but keep as safety
 
+    final l10n = AppLocalizationsHelper.of(context);
+    
     // Check if all items are used
     if (_usedTruthIndices.length >= _truthItems.length &&
         _usedDareIndices.length >= _dareItems.length) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('All truth and dare items have been used!'),
+        SnackBar(
+          content: Text(l10n.allItemsUsed),
           backgroundColor: Colors.orange,
         ),
       );

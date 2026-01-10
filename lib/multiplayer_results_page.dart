@@ -4,6 +4,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:path_provider/path_provider.dart';
 import 'home_page.dart';
+import 'app_localizations_helper.dart';
 
 class MultiplayerResultsPage extends StatefulWidget {
   final List<String> users;
@@ -137,9 +138,10 @@ class _MultiplayerResultsPageState extends State<MultiplayerResultsPage> {
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizationsHelper.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error sharing: $e'),
+            content: Text(l10n.errorSharing(e.toString())),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 4),
           ),
@@ -157,6 +159,7 @@ class _MultiplayerResultsPageState extends State<MultiplayerResultsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizationsHelper.of(context);
     return Scaffold(
       backgroundColor: const Color(0xFF2D2D44),
       body: SafeArea(
@@ -192,10 +195,10 @@ class _MultiplayerResultsPageState extends State<MultiplayerResultsPage> {
                     ),
                   ),
                   // Title - centered on screen
-                  const Text(
-                    '🏆 Game Results 🏆',
+                  Text(
+                    '🏆 ${l10n.gameResults} 🏆',
                     textAlign: TextAlign.center,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -338,7 +341,7 @@ class _MultiplayerResultsPageState extends State<MultiplayerResultsPage> {
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                     child: Text(
-                                      'Total: $totalScore',
+                                      l10n.total(totalScore.toString()),
                                       style: TextStyle(
                                         color: rank <= 3 ? Colors.black : Colors.white,
                                         fontSize: 18,
@@ -351,11 +354,13 @@ class _MultiplayerResultsPageState extends State<MultiplayerResultsPage> {
                               const SizedBox(height: 8),
                               // Round scores - all in one line
                               Text(
-                                'Rounds: ${List.generate(widget.rounds, (roundIndex) {
-                                  final round = roundIndex + 1;
-                                  final roundScore = widget.roundScores[round]?[user] ?? 0;
-                                  return 'R$round: $roundScore';
-                                }).join(' | ')}',
+                                l10n.rounds(
+                                  List.generate(widget.rounds, (roundIndex) {
+                                    final round = roundIndex + 1;
+                                    final roundScore = widget.roundScores[round]?[user] ?? 0;
+                                    return l10n.roundScore(round.toString(), roundScore.toString());
+                                  }).join(' | ')
+                                ),
                                 style: TextStyle(
                                   color: rank <= 3 ? Colors.black87 : Colors.white70,
                                   fontSize: 14,

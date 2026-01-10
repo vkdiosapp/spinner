@@ -3,8 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:vibration/vibration.dart';
 import 'spinner_config_page.dart';
 import 'multiplayer_config_page.dart';
-import 'dice_level_page.dart';
+// import 'dice_level_page.dart'; // Commented out - will add later
 import 'sound_vibration_settings.dart';
+import 'language_selection_page.dart';
+import 'app_localizations_helper.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -108,31 +110,40 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizationsHelper.of(context);
+    
     final items = [
       {
-        'title': 'Random Picker',
-        'description': 'Create a custom spinner with your own items',
+        'title': l10n.randomPicker,
+        'description': l10n.randomPickerDescription,
         'icon': Icons.shuffle,
         'color': const Color(0xFF6C5CE7),
         'route': const SpinnerConfigPage(),
       },
       {
-        'title': 'Multiplayer',
-        'description': 'Play with friends and compete in rounds',
+        'title': l10n.multiplayer,
+        'description': l10n.multiplayerDescription,
         'icon': Icons.people,
         'color': const Color(0xFFFF6B35),
         'route': const MultiplayerConfigPage(),
       },
+      // {
+      //   'title': l10n.dice,
+      //   'description': l10n.diceDescription,
+      //   'icon': Icons.casino,
+      //   'color': const Color(0xFF00D2FF),
+      //   'route': const DiceLevelPage(),
+      // },
       {
-        'title': 'Dice',
-        'description': 'Roll two dice and see the total',
-        'icon': Icons.casino,
-        'color': const Color(0xFF00D2FF),
-        'route': const DiceLevelPage(),
+        'title': l10n.mathSpinner,
+        'description': l10n.mathSpinnerDescription,
+        'icon': Icons.calculate,
+        'color': const Color(0xFF9B59B6),
+        'route': const MultiplayerConfigPage(isMathSpinner: true),
       },
       {
-        'title': 'Who First',
-        'description': 'Play with friends and compete in rounds',
+        'title': l10n.whoFirst,
+        'description': l10n.whoFirstDescription,
         'icon': Icons.timer,
         'color': const Color(0xFF00B894),
         'route': const MultiplayerConfigPage(isWhoFirst: true),
@@ -144,6 +155,42 @@ class _HomePageState extends State<HomePage> {
       body: SafeArea(
         child: Stack(
           children: [
+            // Language icon - top left
+            Positioned(
+              top: 16,
+              left: 16,
+              child: Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF6C5CE7),
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.3),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: IconButton(
+                  icon: const Icon(Icons.language, color: Colors.white, size: 24),
+                  onPressed: () async {
+                    final result = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const LanguageSelectionPage(),
+                      ),
+                    );
+                    // Reload page if language changed
+                    if (result == true) {
+                      setState(() {});
+                    }
+                  },
+                  tooltip: l10n.changeLanguage,
+                ),
+              ),
+            ),
             LayoutBuilder(
               builder: (context, constraints) {
                 final isLandscape =
@@ -160,9 +207,9 @@ class _HomePageState extends State<HomePage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           const SizedBox(height: 20),
-                          const Text(
-                            'Spinner',
-                            style: TextStyle(
+                          Text(
+                            l10n.appTitle,
+                            style: const TextStyle(
                               color: Colors.white,
                               fontSize: 32,
                               fontWeight: FontWeight.bold,
@@ -287,7 +334,7 @@ class _HomePageState extends State<HomePage> {
                             color: Colors.white,
                           ),
                           onPressed: _toggleAds,
-                          tooltip: _adsEnabled ? 'Ads On' : 'Ads Off',
+                          tooltip: _adsEnabled ? l10n.adsOn : l10n.adsOff,
                         ),
                       ),
                       // Vibration toggle button
@@ -317,8 +364,8 @@ class _HomePageState extends State<HomePage> {
                           ),
                           onPressed: _toggleVibration,
                           tooltip: _vibrationEnabled
-                              ? 'Vibration On'
-                              : 'Vibration Off',
+                              ? l10n.vibrationOn
+                              : l10n.vibrationOff,
                         ),
                       ),
                       // Sound toggle button
@@ -344,7 +391,7 @@ class _HomePageState extends State<HomePage> {
                             color: Colors.white,
                           ),
                           onPressed: _toggleSound,
-                          tooltip: _soundEnabled ? 'Sound On' : 'Sound Off',
+                          tooltip: _soundEnabled ? l10n.soundOn : l10n.soundOff,
                         ),
                       ),
                     ],

@@ -1,0 +1,157 @@
+{
+  "@@locale": "fil",
+  "appTitle": "Spinner",
+  "languages": "Mga Wika",
+  "continueButton": "Magpatuloy",
+  "save": "I-save",
+  "changeLanguage": "Palitan ang Wika",
+  "randomPicker": "Random Picker",
+  "randomPickerDescription": "Gumawa ng custom spinner gamit ang iyong sariling mga item",
+  "multiplayer": "Multiplayer",
+  "multiplayerDescription": "Maglaro kasama ang mga kaibigan at makipagkumpetensya sa mga round",
+  "dice": "Dice",
+  "diceDescription": "I-roll ang dalawang dice at tingnan ang kabuuan",
+  "whoFirst": "Sino Una",
+  "whoFirstDescription": "Maglaro kasama ang mga kaibigan at makipagkumpetensya sa mga round",
+  "adsOn": "Naka-on ang Ads",
+  "adsOff": "Naka-off ang Ads",
+  "vibrationOn": "Naka-on ang Vibration",
+  "vibrationOff": "Naka-off ang Vibration",
+  "soundOn": "Naka-on ang Sound",
+  "soundOff": "Naka-off ang Sound",
+  "spinnerTitle": "Spinner Title",
+  "enterSpinnerTitle": "Ilagay ang spinner title",
+  "start": "Simula",
+  "addItem": "Magdagdag ng Item",
+  "gameMode": "Game Mode",
+  "singlePlayer": "Single Player",
+  "multiplayerMode": "Multiplayer",
+  "howManyRounds": "Ilang Rounds?",
+  "players": "Mga Player",
+  "addPlayer": "Magdagdag ng Player",
+  "enterPlayerName": "Ilagay ang pangalan ng player",
+  "truthDare": "Truth & Dare",
+  "close": "Isara",
+  "edit": "I-edit",
+  "reset": "I-reset",
+  "share": "I-share",
+  "truth": "Truth",
+  "dare": "Dare",
+  "earned": "NAKAMIT",
+  "selected": "NAPILI",
+  "you": "Ikaw",
+  "computer": "Computer",
+  "round": "Round",
+  "leave": "Umalis",
+  "leaveGame": "Umalis sa Laro?",
+  "leaveGameMessage": "Sigurado ka bang gusto mong umalis sa laro?",
+  "cancel": "Kanselahin",
+  "gameResults": "Mga Resulta ng Laro",
+  "gold": "Ginto",
+  "silver": "Pilak",
+  "bronze": "Tanso",
+  "watchAd": "Manood ng Ad",
+  "toUnlock": "para ma-unlock",
+  "twoDice": "Dalawang Dice",
+  "multiplication": "Multiplication",
+  "result": "Resulta",
+  "spin": "I-spin",
+  "randomPickerTitle": "Random Picker",
+  "spinner": "Spinner",
+  "level": "Level",
+  "easy": "Madali",
+  "medium": "Katamtaman",
+  "hard": "Mahirap",
+  "selectLevel": "Pumili ng Level",
+  "mathSpinner": "Math Spinner",
+  "mathSpinnerDescription": "Magsanay ng math gamit ang masayang spinner challenges",
+  "spinnerItems": "Spinner Items",
+  "enterItemName": "Ilagay ang pangalan ng item",
+  "noItems": "Walang items. I-click ang \"Add Item\" para magdagdag ng items.",
+  "pleaseAddAtLeastOneItem": "Mangyaring magdagdag ng kahit isang item",
+  "duplicateItemName": "Duplicate na pangalan ng item: \"{item}\". Mangyaring gumamit ng natatanging pangalan.",
+  "@duplicateItemName": {
+    "placeholders": {
+      "item": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseAddAtLeastOneUser": "Mangyaring magdagdag ng kahit isang user",
+  "duplicateUserName": "Duplicate na pangalan ng user: \"{user}\". Mangyaring gumamit ng natatanging pangalan.",
+  "@duplicateUserName": {
+    "placeholders": {
+      "user": {
+        "type": "String"
+      }
+    }
+  },
+  "mathSpinnerComingSoon": "Math Spinner page darating na!",
+  "errorSharing": "Error sa pagbabahagi: {error}",
+  "@errorSharing": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "playerCount": "Bilang ng Player",
+  "users": "Users",
+  "enterUserName": "Ilagay ang pangalan ng user",
+  "total": "Kabuuan: {score}",
+  "@total": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "rounds": "Rounds: {roundsList}",
+  "@rounds": {
+    "placeholders": {
+      "roundsList": {
+        "type": "String"
+      }
+    }
+  },
+  "roundScore": "R{round}: {score}",
+  "@roundScore": {
+    "placeholders": {
+      "round": {
+        "type": "String"
+      },
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "checkOutResults": "Tingnan ang aming multiplayer spinner game results!",
+  "allItemsUsed": "Lahat ng truth at dare items ay nagamit na!",
+  "errorLoadingData": "Error sa pag-load ng data: {error}",
+  "@errorLoadingData": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "dice1": "Dice 1",
+  "dice2": "Dice 2",
+  "resultUppercase": "RESULTA",
+  "score": "Score: {score}",
+  "@score": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "turn": "Turn ni {user}",
+  "@turn": {
+    "placeholders": {
+      "user": {
+        "type": "String"
+      }
+    }
+  }
+}

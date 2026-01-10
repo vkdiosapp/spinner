@@ -1,0 +1,157 @@
+{
+  "@@locale": "th",
+  "appTitle": "สปินเนอร์",
+  "languages": "ภาษา",
+  "continueButton": "ดำเนินการต่อ",
+  "save": "บันทึก",
+  "changeLanguage": "เปลี่ยนภาษา",
+  "randomPicker": "ตัวเลือกแบบสุ่ม",
+  "randomPickerDescription": "สร้างสปินเนอร์แบบกำหนดเองด้วยรายการของคุณเอง",
+  "multiplayer": "หลายผู้เล่น",
+  "multiplayerDescription": "เล่นกับเพื่อนและแข่งขันในรอบ",
+  "dice": "ลูกเต๋า",
+  "diceDescription": "ทอยลูกเต๋าสองลูกและดูผลรวม",
+  "whoFirst": "ใครก่อน",
+  "whoFirstDescription": "เล่นกับเพื่อนและแข่งขันในรอบ",
+  "adsOn": "โฆษณาเปิด",
+  "adsOff": "โฆษณาปิด",
+  "vibrationOn": "การสั่นเปิด",
+  "vibrationOff": "การสั่นปิด",
+  "soundOn": "เสียงเปิด",
+  "soundOff": "เสียงปิด",
+  "spinnerTitle": "ชื่อสปินเนอร์",
+  "enterSpinnerTitle": "ใส่ชื่อสปินเนอร์",
+  "start": "เริ่ม",
+  "addItem": "เพิ่มรายการ",
+  "gameMode": "โหมดเกม",
+  "singlePlayer": "ผู้เล่นเดี่ยว",
+  "multiplayerMode": "หลายผู้เล่น",
+  "howManyRounds": "กี่รอบ?",
+  "players": "ผู้เล่น",
+  "addPlayer": "เพิ่มผู้เล่น",
+  "enterPlayerName": "ใส่ชื่อผู้เล่น",
+  "truthDare": "จริงหรือกล้า",
+  "close": "ปิด",
+  "edit": "แก้ไข",
+  "reset": "รีเซ็ต",
+  "share": "แชร์",
+  "truth": "จริง",
+  "dare": "กล้า",
+  "earned": "ได้รับ",
+  "selected": "เลือกแล้ว",
+  "you": "คุณ",
+  "computer": "คอมพิวเตอร์",
+  "round": "รอบ",
+  "leave": "ออก",
+  "leaveGame": "ออกจากเกม?",
+  "leaveGameMessage": "คุณแน่ใจหรือไม่ว่าต้องการออกจากเกม?",
+  "cancel": "ยกเลิก",
+  "gameResults": "ผลการแข่งขัน",
+  "gold": "ทอง",
+  "silver": "เงิน",
+  "bronze": "ทองแดง",
+  "watchAd": "ดูโฆษณา",
+  "toUnlock": "เพื่อปลดล็อก",
+  "twoDice": "ลูกเต๋าสองลูก",
+  "multiplication": "การคูณ",
+  "result": "ผลลัพธ์",
+  "spin": "หมุน",
+  "randomPickerTitle": "ตัวเลือกแบบสุ่ม",
+  "spinner": "สปินเนอร์",
+  "level": "ระดับ",
+  "easy": "ง่าย",
+  "medium": "ปานกลาง",
+  "hard": "ยาก",
+  "selectLevel": "เลือกระดับ",
+  "mathSpinner": "สปินเนอร์คณิตศาสตร์",
+  "mathSpinnerDescription": "ฝึกคณิตศาสตร์ด้วยความท้าทายสปินเนอร์ที่สนุก",
+  "spinnerItems": "รายการสปินเนอร์",
+  "enterItemName": "ใส่ชื่อรายการ",
+  "noItems": "ไม่มีรายการ คลิก \"เพิ่มรายการ\" เพื่อเพิ่มรายการ",
+  "pleaseAddAtLeastOneItem": "กรุณาเพิ่มอย่างน้อยหนึ่งรายการ",
+  "duplicateItemName": "ชื่อรายการซ้ำ: \"{item}\" กรุณาใช้ชื่อที่ไม่ซ้ำกัน",
+  "@duplicateItemName": {
+    "placeholders": {
+      "item": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseAddAtLeastOneUser": "กรุณาเพิ่มผู้ใช้อย่างน้อยหนึ่งคน",
+  "duplicateUserName": "ชื่อผู้ใช้ซ้ำ: \"{user}\" กรุณาใช้ชื่อที่ไม่ซ้ำกัน",
+  "@duplicateUserName": {
+    "placeholders": {
+      "user": {
+        "type": "String"
+      }
+    }
+  },
+  "mathSpinnerComingSoon": "หน้าสปินเนอร์คณิตศาสตร์เร็วๆ นี้!",
+  "errorSharing": "ข้อผิดพลาดในการแชร์: {error}",
+  "@errorSharing": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "playerCount": "จำนวนผู้เล่น",
+  "users": "ผู้ใช้",
+  "enterUserName": "ใส่ชื่อผู้ใช้",
+  "total": "รวม: {score}",
+  "@total": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "rounds": "รอบ: {roundsList}",
+  "@rounds": {
+    "placeholders": {
+      "roundsList": {
+        "type": "String"
+      }
+    }
+  },
+  "roundScore": "รอบ{round}: {score}",
+  "@roundScore": {
+    "placeholders": {
+      "round": {
+        "type": "String"
+      },
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "checkOutResults": "ดูผลลัพธ์เกมสปินเนอร์แบบหลายผู้เล่นของเรา!",
+  "allItemsUsed": "รายการความจริงและความกล้าทั้งหมดถูกใช้แล้ว!",
+  "errorLoadingData": "ข้อผิดพลาดในการโหลดข้อมูล: {error}",
+  "@errorLoadingData": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "dice1": "ลูกเต๋า 1",
+  "dice2": "ลูกเต๋า 2",
+  "resultUppercase": "ผลลัพธ์",
+  "score": "คะแนน: {score}",
+  "@score": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "turn": "ตาของ {user}",
+  "@turn": {
+    "placeholders": {
+      "user": {
+        "type": "String"
+      }
+    }
+  }
+}

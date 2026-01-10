@@ -1,0 +1,157 @@
+{
+  "@@locale": "ja",
+  "appTitle": "スピナー",
+  "languages": "言語",
+  "continueButton": "続ける",
+  "save": "保存",
+  "changeLanguage": "言語を変更",
+  "randomPicker": "ランダムピッカー",
+  "randomPickerDescription": "独自のアイテムでカスタムスピナーを作成",
+  "multiplayer": "マルチプレイヤー",
+  "multiplayerDescription": "友達とプレイしてラウンドで競争",
+  "dice": "サイコロ",
+  "diceDescription": "2つのサイコロを振って合計を確認",
+  "whoFirst": "誰が最初",
+  "whoFirstDescription": "友達とプレイしてラウンドで競争",
+  "adsOn": "広告オン",
+  "adsOff": "広告オフ",
+  "vibrationOn": "振動オン",
+  "vibrationOff": "振動オフ",
+  "soundOn": "音オン",
+  "soundOff": "音オフ",
+  "spinnerTitle": "スピナータイトル",
+  "enterSpinnerTitle": "スピナータイトルを入力",
+  "start": "開始",
+  "addItem": "アイテムを追加",
+  "gameMode": "ゲームモード",
+  "singlePlayer": "シングルプレイヤー",
+  "multiplayerMode": "マルチプレイヤー",
+  "howManyRounds": "何ラウンド？",
+  "players": "プレイヤー",
+  "addPlayer": "プレイヤーを追加",
+  "enterPlayerName": "プレイヤー名を入力",
+  "truthDare": "真実か挑戦",
+  "close": "閉じる",
+  "edit": "編集",
+  "reset": "リセット",
+  "share": "共有",
+  "truth": "真実",
+  "dare": "挑戦",
+  "earned": "獲得",
+  "selected": "選択済み",
+  "you": "あなた",
+  "computer": "コンピューター",
+  "round": "ラウンド",
+  "leave": "退出",
+  "leaveGame": "ゲームを退出しますか？",
+  "leaveGameMessage": "ゲームを退出してもよろしいですか？",
+  "cancel": "キャンセル",
+  "gameResults": "ゲーム結果",
+  "gold": "金",
+  "silver": "銀",
+  "bronze": "銅",
+  "watchAd": "広告を見る",
+  "toUnlock": "ロック解除するには",
+  "twoDice": "2つのサイコロ",
+  "multiplication": "掛け算",
+  "result": "結果",
+  "spin": "回転",
+  "randomPickerTitle": "ランダムピッカー",
+  "spinner": "スピナー",
+  "level": "レベル",
+  "easy": "簡単",
+  "medium": "中程度",
+  "hard": "難しい",
+  "selectLevel": "レベルを選択",
+  "mathSpinner": "数学スピナー",
+  "mathSpinnerDescription": "楽しいスピナーチャレンジで数学を練習",
+  "spinnerItems": "スピナーアイテム",
+  "enterItemName": "アイテム名を入力",
+  "noItems": "アイテムがありません。\"アイテムを追加\"をクリックしてアイテムを追加してください。",
+  "pleaseAddAtLeastOneItem": "少なくとも1つのアイテムを追加してください",
+  "duplicateItemName": "重複したアイテム名: \"{item}\"。一意の名前を使用してください。",
+  "@duplicateItemName": {
+    "placeholders": {
+      "item": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseAddAtLeastOneUser": "少なくとも1人のユーザーを追加してください",
+  "duplicateUserName": "重複したユーザー名: \"{user}\"。一意の名前を使用してください。",
+  "@duplicateUserName": {
+    "placeholders": {
+      "user": {
+        "type": "String"
+      }
+    }
+  },
+  "mathSpinnerComingSoon": "数学スピナーページが間もなく公開されます！",
+  "errorSharing": "共有エラー: {error}",
+  "@errorSharing": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "playerCount": "プレイヤー数",
+  "users": "ユーザー",
+  "enterUserName": "ユーザー名を入力",
+  "total": "合計: {score}",
+  "@total": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "rounds": "ラウンド: {roundsList}",
+  "@rounds": {
+    "placeholders": {
+      "roundsList": {
+        "type": "String"
+      }
+    }
+  },
+  "roundScore": "R{round}: {score}",
+  "@roundScore": {
+    "placeholders": {
+      "round": {
+        "type": "String"
+      },
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "checkOutResults": "マルチプレイヤースピナーゲームの結果をチェックしてください！",
+  "allItemsUsed": "すべての真実と挑戦のアイテムが使用されました！",
+  "errorLoadingData": "データの読み込みエラー: {error}",
+  "@errorLoadingData": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "dice1": "サイコロ1",
+  "dice2": "サイコロ2",
+  "resultUppercase": "結果",
+  "score": "スコア: {score}",
+  "@score": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "turn": "{user}のターン",
+  "@turn": {
+    "placeholders": {
+      "user": {
+        "type": "String"
+      }
+    }
+  }
+}

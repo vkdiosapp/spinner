@@ -909,8 +909,6 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
                                 final finalSize = math.max(200.0, spinnerSize);
 
                                 final buttonSize = finalSize * 0.25;
-                                final arrowWidth = finalSize * 0.22;
-                                final arrowHeightSize = finalSize * 0.18;
 
                                 return Center(
                                   child: Container(
@@ -931,20 +929,6 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
                                           ),
                                         ),
                                         // Pointer
-                                        Positioned(
-                                          top: 0,
-                                          child: Container(
-                                            width: arrowWidth,
-                                            height: arrowHeightSize,
-                                            child: CustomPaint(
-                                              size: Size(
-                                                arrowWidth,
-                                                arrowHeightSize,
-                                              ),
-                                              painter: PointerPainter(),
-                                            ),
-                                          ),
-                                        ),
                                         // Center Spin Button
                                         GestureDetector(
                                           onTap:
@@ -966,47 +950,11 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
                                                             'Computer'))
                                                 ? 0.5
                                                 : 1.0,
-                                            child: Container(
+                                            child: Image.asset(
+                                              'assets/images/spin_logo.png',
                                               width: buttonSize,
                                               height: buttonSize,
-                                              decoration: BoxDecoration(
-                                                shape: BoxShape.circle,
-                                                gradient: const LinearGradient(
-                                                  begin: Alignment.topLeft,
-                                                  end: Alignment.bottomRight,
-                                                  colors: [
-                                                    Color(0xFF6C5CE7),
-                                                    Color(0xFF5A4FCF),
-                                                  ],
-                                                ),
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                    color: Colors.black
-                                                        .withOpacity(0.3),
-                                                    blurRadius: 10,
-                                                    offset: const Offset(0, 5),
-                                                  ),
-                                                ],
-                                              ),
-                                              child: Container(
-                                                margin: EdgeInsets.all(
-                                                  buttonSize * 0.1,
-                                                ),
-                                                decoration: BoxDecoration(
-                                                  shape: BoxShape.circle,
-                                                  border: Border.all(
-                                                    color: const Color(
-                                                      0xFF8B7ED8,
-                                                    ),
-                                                    width: 2,
-                                                  ),
-                                                ),
-                                                child: Icon(
-                                                  Icons.refresh,
-                                                  color: Colors.white,
-                                                  size: buttonSize * 0.44,
-                                                ),
-                                              ),
+                                              fit: BoxFit.contain,
                                             ),
                                           ),
                                         ),
@@ -1561,8 +1509,6 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
                                 final finalSize = math.max(200.0, spinnerSize);
 
                                 final buttonSize = finalSize * 0.25;
-                                final arrowWidth = finalSize * 0.22;
-                                final arrowHeightSize = finalSize * 0.18;
 
                                 return Center(
                                   child: Container(
@@ -1583,20 +1529,6 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
                                           ),
                                         ),
                                         // Pointer
-                                        Positioned(
-                                          top: 0,
-                                          child: Container(
-                                            width: arrowWidth,
-                                            height: arrowHeightSize,
-                                            child: CustomPaint(
-                                              size: Size(
-                                                arrowWidth,
-                                                arrowHeightSize,
-                                              ),
-                                              painter: PointerPainter(),
-                                            ),
-                                          ),
-                                        ),
                                         // Center Spin Button
                                         GestureDetector(
                                           onTap:
@@ -1618,47 +1550,11 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
                                                             'Computer'))
                                                 ? 0.5
                                                 : 1.0,
-                                            child: Container(
+                                            child: Image.asset(
+                                              'assets/images/spin_logo.png',
                                               width: buttonSize,
                                               height: buttonSize,
-                                              decoration: BoxDecoration(
-                                                shape: BoxShape.circle,
-                                                gradient: const LinearGradient(
-                                                  begin: Alignment.topLeft,
-                                                  end: Alignment.bottomRight,
-                                                  colors: [
-                                                    Color(0xFF6C5CE7),
-                                                    Color(0xFF5A4FCF),
-                                                  ],
-                                                ),
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                    color: Colors.black
-                                                        .withOpacity(0.3),
-                                                    blurRadius: 10,
-                                                    offset: const Offset(0, 5),
-                                                  ),
-                                                ],
-                                              ),
-                                              child: Container(
-                                                margin: EdgeInsets.all(
-                                                  buttonSize * 0.1,
-                                                ),
-                                                decoration: BoxDecoration(
-                                                  shape: BoxShape.circle,
-                                                  border: Border.all(
-                                                    color: const Color(
-                                                      0xFF8B7ED8,
-                                                    ),
-                                                    width: 2,
-                                                  ),
-                                                ),
-                                                child: Icon(
-                                                  Icons.refresh,
-                                                  color: Colors.white,
-                                                  size: buttonSize * 0.44,
-                                                ),
-                                              ),
+                                              fit: BoxFit.contain,
                                             ),
                                           ),
                                         ),

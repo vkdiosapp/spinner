@@ -446,8 +446,6 @@ class _TruthDareSpinnerPageState extends State<TruthDareSpinnerPage>
                   final finalSize = math.max(230.0, spinnerSize);
 
                   final buttonSize = finalSize * 0.25;
-                  final arrowWidth = finalSize * 0.22;
-                  final arrowHeightSize = finalSize * 0.18;
 
                   return SingleChildScrollView(
                     padding: EdgeInsets.symmetric(
@@ -528,59 +526,16 @@ class _TruthDareSpinnerPageState extends State<TruthDareSpinnerPage>
                                 painter: TruthDareWheelPainter(segments: segments),
                               ),
                             ),
-                            // Pointer
-                            Positioned(
-                              top: 10,
-                              child: Container(
-                                width: arrowWidth,
-                                height: arrowHeightSize,
-                                child: CustomPaint(
-                                  size: Size(arrowWidth, arrowHeightSize),
-                                  painter: TruthDarePointerPainter(),
-                                ),
-                              ),
-                            ),
                             // Center Button - only enabled for current user when not spinning/revealed
                             GestureDetector(
                               onTap: (_isSpinning || _isRevealed) ? null : _spin,
                               child: Opacity(
                                 opacity: (_isSpinning || _isRevealed) ? 0.5 : 1.0,
-                                child: Container(
+                                child: Image.asset(
+                                  'assets/images/spin_logo.png',
                                   width: buttonSize,
                                   height: buttonSize,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    gradient: const LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                      colors: [
-                                        Color(0xFF6C5CE7),
-                                        Color(0xFF5A4FCF),
-                                      ],
-                                    ),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity(0.3),
-                                        blurRadius: 10,
-                                        offset: const Offset(0, 5),
-                                      ),
-                                    ],
-                                  ),
-                                  child: Container(
-                                    margin: EdgeInsets.all(buttonSize * 0.1),
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                        color: const Color(0xFF8B7ED8),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    child: Icon(
-                                      Icons.refresh,
-                                      color: Colors.white,
-                                      size: buttonSize * 0.44,
-                                    ),
-                                  ),
+                                  fit: BoxFit.contain,
                                 ),
                               ),
                             ),

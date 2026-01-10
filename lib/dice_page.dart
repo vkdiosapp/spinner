@@ -1049,49 +1049,13 @@ class _DicePageState extends State<DicePage> with TickerProviderStateMixin {
                   ),
                 ),
               ),
-              // Pointer (same as main spinner wheel)
-              Positioned(
-                top: 0,
-                child: CustomPaint(
-                  size: Size(arrowWidth, arrowHeight),
-                  painter: DicePointerPainter(),
-                ),
-              ),
-              // Center Button (non-tappable, same UI as multiplayer spinner)
+              // Center Button (non-tappable, same UI as other spinner pages)
               IgnorePointer(
-                child: Container(
+                child: Image.asset(
+                  'assets/images/spin_logo.png',
                   width: buttonSize,
                   height: buttonSize,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: const LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [Color(0xFF6C5CE7), Color(0xFF5A4FCF)],
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.3),
-                        blurRadius: 10,
-                        offset: const Offset(0, 5),
-                      ),
-                    ],
-                  ),
-                  child: Container(
-                    margin: EdgeInsets.all(buttonSize * 0.1),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: const Color(0xFF8B7ED8),
-                        width: 2,
-                      ),
-                    ),
-                    child: Icon(
-                      Icons.casino,
-                      color: Colors.white,
-                      size: buttonSize * 0.44,
-                    ),
-                  ),
+                  fit: BoxFit.contain,
                 ),
               ),
             ],

@@ -297,6 +297,7 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
         _disabledRounds[_currentUserIndex].add(selectedNumber);
         _isRevealed = false;
         _earnedNumber = null;
+        _isSpinning = false; // Ensure spinning state is reset
         
         // Update scores
         _totalScores[currentUser] = _disabledRounds[_currentUserIndex].length;
@@ -326,6 +327,7 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
       setState(() {
         _isRevealed = false;
         _earnedNumber = null;
+        _isSpinning = false; // Ensure spinning state is reset
       });
       _revealController.reset();
       
@@ -345,8 +347,12 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
       _isHighlighting = false;
       _finalSelectedRound = null;
       _shouldDisableFinalRound = false;
+      _isSpinning = false; // Ensure spinning state is reset
+      _isRevealed = false; // Ensure reveal state is reset
+      _earnedNumber = null; // Ensure earned number is reset
     });
     _controller.reset();
+    _revealController.reset();
     
     // If single player mode and it's Computer's turn, auto-spin after a short delay
     if (_isSinglePlayer && _displayUsers[_currentUserIndex] == 'Computer') {
@@ -543,11 +549,16 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
                                 final tileFontSize = math.max(10.0, math.min(18.0, tileSize * 0.36));
                                 
                                 // Calculate column width based on available width - more compact on mobile
-                                final horizontalMargin = isMobile ? 4.0 : 8.0;
-                                final totalHorizontalMargin = (_displayUsers.length - 1) * horizontalMargin * 2;
-                                final calculatedColumnWidth = (availableWidth - (padding * 2) - totalHorizontalMargin) / _displayUsers.length;
-                                final minColumnWidth = isMobile ? 45.0 : 60.0;
-                                final maxColumnWidth = isMobile ? 70.0 : 80.0;
+                                // Adjust margins based on number of users to prevent overflow
+                                final numUsers = _displayUsers.length;
+                                final horizontalMargin = isMobile 
+                                    ? (numUsers > 5 ? 2.0 : 4.0)
+                                    : (numUsers > 5 ? 4.0 : 8.0);
+                                final totalHorizontalMargin = (numUsers - 1) * horizontalMargin * 2;
+                                final totalPadding = padding * 2;
+                                final calculatedColumnWidth = (availableWidth - totalPadding - totalHorizontalMargin) / numUsers;
+                                final minColumnWidth = isMobile ? (numUsers > 5 ? 35.0 : 45.0) : (numUsers > 5 ? 50.0 : 60.0);
+                                final maxColumnWidth = isMobile ? (numUsers > 5 ? 55.0 : 70.0) : (numUsers > 5 ? 70.0 : 80.0);
                                 final columnWidth = math.max(minColumnWidth, math.min(maxColumnWidth, calculatedColumnWidth));
                                 
                                 return Padding(
@@ -557,28 +568,32 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
                                     children: [
                                       // Users list with rounds
                                       Expanded(
-                                        child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                              // Users with their rounds - side by side
-                                              ...List.generate(_displayUsers.length, (userIndex) {
-                                                final user = _displayUsers[userIndex];
-                                                final isCurrentUser =
-                                                    userIndex == _currentUserIndex &&
-                                                    (_isSpinning || _isHighlighting);
-                                                
-                                                return Container(
-                                                  width: columnWidth,
-                                                  margin: EdgeInsets.symmetric(horizontal: horizontalMargin),
-                                                  child: Column(
-                                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                                    mainAxisSize: MainAxisSize.min,
-                                                    children: [
-                                                      // Rounds display vertically
-                                                      Column(
-                                                        mainAxisSize: MainAxisSize.min,
-                                                        children: List.generate(widget.rounds, (index) {
+                                        child: SingleChildScrollView(
+                                          scrollDirection: Axis.horizontal,
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                                // Users with their rounds - side by side
+                                                ...List.generate(_displayUsers.length, (userIndex) {
+                                                  final user = _displayUsers[userIndex];
+                                                  final isCurrentUser = userIndex == _currentUserIndex;
+                                                  
+                                                  return Container(
+                                                    width: columnWidth,
+                                                    margin: EdgeInsets.only(
+                                                      left: userIndex == 0 ? 0 : horizontalMargin,
+                                                      right: userIndex == _displayUsers.length - 1 ? 0 : horizontalMargin,
+                                                    ),
+                                                    child: Column(
+                                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                                      mainAxisSize: MainAxisSize.min,
+                                                      children: [
+                                                        // Rounds display vertically
+                                                        Column(
+                                                          mainAxisSize: MainAxisSize.min,
+                                                          children: List.generate(widget.rounds, (index) {
                                                           final roundNumber = index + 1;
                                                           final isDisabled =
                                                               _disabledRounds[userIndex].contains(roundNumber);
@@ -690,28 +705,21 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
                                                         child: Row(
                                                           mainAxisSize: MainAxisSize.min,
                                                           children: [
-                                                            if (isCurrentUser)
-                                                              Padding(
-                                                                padding: EdgeInsets.only(right: isMobile ? 3.0 : 4.0),
-                                                                child: Icon(
-                                                                  Icons.play_arrow,
-                                                                  color: Colors.white,
-                                                                  size: isMobile ? 14.0 : 16.0,
+                                                            Expanded(
+                                                              child: FittedBox(
+                                                                fit: BoxFit.scaleDown,
+                                                                child: Text(
+                                                                  user,
+                                                                  style: TextStyle(
+                                                                    color: Colors.white,
+                                                                    fontSize: isMobile 
+                                                                        ? math.max(10.0, math.min(14.0, columnWidth * 0.2))
+                                                                        : math.max(12.0, math.min(16.0, columnWidth * 0.2)),
+                                                                    fontWeight: FontWeight.bold,
+                                                                  ),
+                                                                  textAlign: TextAlign.center,
+                                                                  maxLines: 1,
                                                                 ),
-                                                              ),
-                                                            Flexible(
-                                                              child: Text(
-                                                                user,
-                                                                style: TextStyle(
-                                                                  color: Colors.white,
-                                                                  fontSize: isMobile 
-                                                                      ? math.max(10.0, math.min(14.0, columnWidth * 0.2))
-                                                                      : math.max(12.0, math.min(16.0, columnWidth * 0.2)),
-                                                                  fontWeight: FontWeight.bold,
-                                                                ),
-                                                                textAlign: TextAlign.center,
-                                                                overflow: TextOverflow.ellipsis,
-                                                                maxLines: 1,
                                                               ),
                                                             ),
                                                             if (_disabledRounds[userIndex].length == widget.rounds)
@@ -733,6 +741,7 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
                                             ],
                                           ),
                                         ),
+                                      ),
                                     ],
                                   ),
                                 );
@@ -958,11 +967,16 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
                                 final tileFontSize = math.max(10.0, math.min(18.0, tileSize * 0.36));
                                 
                                 // Calculate column width based on available width - more compact on mobile
-                                final horizontalMargin = isMobile ? 4.0 : 8.0;
-                                final totalHorizontalMargin = (_displayUsers.length - 1) * horizontalMargin * 2;
-                                final calculatedColumnWidth = (availableWidth - (padding * 2) - totalHorizontalMargin) / _displayUsers.length;
-                                final minColumnWidth = isMobile ? 45.0 : 60.0;
-                                final maxColumnWidth = isMobile ? 70.0 : 80.0;
+                                // Adjust margins based on number of users to prevent overflow
+                                final numUsers = _displayUsers.length;
+                                final horizontalMargin = isMobile 
+                                    ? (numUsers > 5 ? 2.0 : 4.0)
+                                    : (numUsers > 5 ? 4.0 : 8.0);
+                                final totalHorizontalMargin = (numUsers - 1) * horizontalMargin * 2;
+                                final totalPadding = padding * 2;
+                                final calculatedColumnWidth = (availableWidth - totalPadding - totalHorizontalMargin) / numUsers;
+                                final minColumnWidth = isMobile ? (numUsers > 5 ? 35.0 : 45.0) : (numUsers > 5 ? 50.0 : 60.0);
+                                final maxColumnWidth = isMobile ? (numUsers > 5 ? 55.0 : 70.0) : (numUsers > 5 ? 70.0 : 80.0);
                                 final columnWidth = math.max(minColumnWidth, math.min(maxColumnWidth, calculatedColumnWidth));
                                 
                                 return Padding(
@@ -972,28 +986,32 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
                                     children: [
                                       // Users list with rounds
                                       Expanded(
-                                        child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                              // Users with their rounds - side by side
-                                              ...List.generate(_displayUsers.length, (userIndex) {
-                                                final user = _displayUsers[userIndex];
-                                                final isCurrentUser =
-                                                    userIndex == _currentUserIndex &&
-                                                    (_isSpinning || _isHighlighting);
-                                                
-                                                return Container(
-                                                  width: columnWidth,
-                                                  margin: EdgeInsets.symmetric(horizontal: horizontalMargin),
-                                                  child: Column(
-                                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                                    mainAxisSize: MainAxisSize.min,
-                                                    children: [
-                                                      // Rounds display vertically
-                                                      Column(
-                                                        mainAxisSize: MainAxisSize.min,
-                                                        children: List.generate(widget.rounds, (index) {
+                                        child: SingleChildScrollView(
+                                          scrollDirection: Axis.horizontal,
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                                // Users with their rounds - side by side
+                                                ...List.generate(_displayUsers.length, (userIndex) {
+                                                  final user = _displayUsers[userIndex];
+                                                  final isCurrentUser = userIndex == _currentUserIndex;
+                                                  
+                                                  return Container(
+                                                    width: columnWidth,
+                                                    margin: EdgeInsets.only(
+                                                      left: userIndex == 0 ? 0 : horizontalMargin,
+                                                      right: userIndex == _displayUsers.length - 1 ? 0 : horizontalMargin,
+                                                    ),
+                                                    child: Column(
+                                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                                      mainAxisSize: MainAxisSize.min,
+                                                      children: [
+                                                        // Rounds display vertically
+                                                        Column(
+                                                          mainAxisSize: MainAxisSize.min,
+                                                          children: List.generate(widget.rounds, (index) {
                                                           final roundNumber = index + 1;
                                                           final isDisabled =
                                                               _disabledRounds[userIndex].contains(roundNumber);
@@ -1105,28 +1123,21 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
                                                         child: Row(
                                                           mainAxisSize: MainAxisSize.min,
                                                           children: [
-                                                            if (isCurrentUser)
-                                                              Padding(
-                                                                padding: EdgeInsets.only(right: isMobile ? 3.0 : 4.0),
-                                                                child: Icon(
-                                                                  Icons.play_arrow,
-                                                                  color: Colors.white,
-                                                                  size: isMobile ? 14.0 : 16.0,
+                                                            Expanded(
+                                                              child: FittedBox(
+                                                                fit: BoxFit.scaleDown,
+                                                                child: Text(
+                                                                  user,
+                                                                  style: TextStyle(
+                                                                    color: Colors.white,
+                                                                    fontSize: isMobile 
+                                                                        ? math.max(10.0, math.min(14.0, columnWidth * 0.2))
+                                                                        : math.max(12.0, math.min(16.0, columnWidth * 0.2)),
+                                                                    fontWeight: FontWeight.bold,
+                                                                  ),
+                                                                  textAlign: TextAlign.center,
+                                                                  maxLines: 1,
                                                                 ),
-                                                              ),
-                                                            Flexible(
-                                                              child: Text(
-                                                                user,
-                                                                style: TextStyle(
-                                                                  color: Colors.white,
-                                                                  fontSize: isMobile 
-                                                                      ? math.max(10.0, math.min(14.0, columnWidth * 0.2))
-                                                                      : math.max(12.0, math.min(16.0, columnWidth * 0.2)),
-                                                                  fontWeight: FontWeight.bold,
-                                                                ),
-                                                                textAlign: TextAlign.center,
-                                                                overflow: TextOverflow.ellipsis,
-                                                                maxLines: 1,
                                                               ),
                                                             ),
                                                             if (_disabledRounds[userIndex].length == widget.rounds)
@@ -1148,6 +1159,7 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
                                             ],
                                           ),
                                         ),
+                                      ),
                                     ],
                                   ),
                                 );

@@ -5,13 +5,13 @@
   "continueButton": "Continua",
   "save": "Salva",
   "changeLanguage": "Cambia Lingua",
-  "randomPicker": "Selettore Casuale",
+  "randomPicker": "Giratore di Decisioni",
   "randomPickerDescription": "Crea uno spinner personalizzato con i tuoi elementi",
-  "multiplayer": "Multigiocatore",
+  "multiplayer": "Battaglia di Rotazione",
   "multiplayerDescription": "Gioca con gli amici e competi in round",
   "dice": "Dadi",
   "diceDescription": "Lancia due dadi e vedi il totale",
-  "whoFirst": "Chi per Primo",
+  "whoFirst": "Corsa a 10",
   "whoFirstDescription": "Gioca con gli amici e competi in round",
   "adsOn": "Pubblicità Attive",
   "adsOff": "Pubblicità Disattivate",
@@ -25,7 +25,7 @@
   "addItem": "Aggiungi Elemento",
   "gameMode": "Modalità di Gioco",
   "singlePlayer": "Giocatore Singolo",
-  "multiplayerMode": "Multigiocatore",
+  "multiplayerMode": "Battaglia di Rotazione",
   "howManyRounds": "Quanti Round?",
   "players": "Giocatori",
   "addPlayer": "Aggiungi Giocatore",
@@ -56,14 +56,14 @@
   "multiplication": "Moltiplicazione",
   "result": "Risultato",
   "spin": "Gira",
-  "randomPickerTitle": "Selettore Casuale",
+  "randomPickerTitle": "Giratore di Decisioni",
   "spinner": "Spinner",
   "level": "Livello",
   "easy": "Facile",
   "medium": "Medio",
   "hard": "Difficile",
   "selectLevel": "Seleziona Livello",
-  "mathSpinner": "Spinner Matematico",
+  "mathSpinner": "Sfida Matematica",
   "mathSpinnerDescription": "Pratica la matematica con sfide spinner divertenti",
   "spinnerItems": "Elementi dello Spinner",
   "enterItemName": "Inserisci il nome dell'elemento",
@@ -86,7 +86,7 @@
       }
     }
   },
-  "mathSpinnerComingSoon": "Pagina Spinner Matematico in arrivo!",
+  "mathSpinnerComingSoon": "Pagina Sfida Matematica in arrivo!",
   "errorSharing": "Errore nella condivisione: {error}",
   "@errorSharing": {
     "placeholders": {
@@ -125,7 +125,7 @@
       }
     }
   },
-  "checkOutResults": "Guarda i risultati del nostro gioco spinner multiplayer!",
+  "checkOutResults": "Guarda i risultati del nostro gioco spinner Battaglia di Rotazione!",
   "allItemsUsed": "Tutti gli elementi verità e sfida sono stati usati!",
   "errorLoadingData": "Errore nel caricamento dei dati: {error}",
   "@errorLoadingData": {

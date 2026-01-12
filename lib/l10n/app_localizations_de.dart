@@ -24,14 +24,14 @@ class AppLocalizationsDe extends AppLocalizations {
   String get changeLanguage => 'Sprache ändern';
 
   @override
-  String get randomPicker => 'Zufallsauswahl';
+  String get randomPicker => 'Entscheidungsrad';
 
   @override
   String get randomPickerDescription =>
       'Erstellen Sie einen benutzerdefinierten Spinner mit Ihren eigenen Elementen';
 
   @override
-  String get multiplayer => 'Mehrspieler';
+  String get multiplayer => 'Drehschlacht';
 
   @override
   String get multiplayerDescription =>
@@ -45,7 +45,7 @@ class AppLocalizationsDe extends AppLocalizations {
       'Werfen Sie zwei Würfel und sehen Sie die Summe';
 
   @override
-  String get whoFirst => 'Wer zuerst';
+  String get whoFirst => 'Rennen zu 10';
 
   @override
   String get whoFirstDescription =>
@@ -88,7 +88,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get singlePlayer => 'Einzelspieler';
 
   @override
-  String get multiplayerMode => 'Mehrspieler';
+  String get multiplayerMode => 'Drehschlacht';
 
   @override
   String get howManyRounds => 'Wie Viele Runden?';
@@ -182,7 +182,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get spin => 'Drehen';
 
   @override
-  String get randomPickerTitle => 'Zufallsauswahl';
+  String get randomPickerTitle => 'Entscheidungsrad';
 
   @override
   String get spinner => 'Spinner';
@@ -203,7 +203,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get selectLevel => 'Level Auswählen';
 
   @override
-  String get mathSpinner => 'Mathe-Spinner';
+  String get mathSpinner => 'Mathe-Herausforderung';
 
   @override
   String get mathSpinnerDescription =>
@@ -238,7 +238,7 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get mathSpinnerComingSoon => 'Mathe-Spinner-Seite kommt bald!';
+  String get mathSpinnerComingSoon => 'Mathe-Herausforderung-Seite kommt bald!';
 
   @override
   String errorSharing(String error) {
@@ -271,7 +271,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get checkOutResults =>
-      'Schauen Sie sich unsere Multiplayer-Spinner-Spielergebnisse an!';
+      'Schauen Sie sich unsere Drehschlacht-Spinner-Spielergebnisse an!';
 
   @override
   String get allItemsUsed =>

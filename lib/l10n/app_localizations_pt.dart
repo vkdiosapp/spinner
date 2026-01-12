@@ -24,14 +24,14 @@ class AppLocalizationsPt extends AppLocalizations {
   String get changeLanguage => 'Alterar Idioma';
 
   @override
-  String get randomPicker => 'Seletor Aleatório';
+  String get randomPicker => 'Giratório de Decisões';
 
   @override
   String get randomPickerDescription =>
       'Crie um spinner personalizado com seus próprios itens';
 
   @override
-  String get multiplayer => 'Multijogador';
+  String get multiplayer => 'Batalha de Giro';
 
   @override
   String get multiplayerDescription => 'Jogue com amigos e compita em rodadas';
@@ -43,7 +43,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get diceDescription => 'Role dois dados e veja o total';
 
   @override
-  String get whoFirst => 'Quem Primeiro';
+  String get whoFirst => 'Corrida para 10';
 
   @override
   String get whoFirstDescription => 'Jogue com amigos e compita em rodadas';
@@ -85,7 +85,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get singlePlayer => 'Jogador Único';
 
   @override
-  String get multiplayerMode => 'Multijogador';
+  String get multiplayerMode => 'Batalha de Giro';
 
   @override
   String get howManyRounds => 'Quantas Rodadas?';
@@ -178,7 +178,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get spin => 'Girar';
 
   @override
-  String get randomPickerTitle => 'Seletor Aleatório';
+  String get randomPickerTitle => 'Giratório de Decisões';
 
   @override
   String get spinner => 'Spinner';
@@ -199,7 +199,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get selectLevel => 'Selecionar Nível';
 
   @override
-  String get mathSpinner => 'Spinner de Matemática';
+  String get mathSpinner => 'Desafio Matemático';
 
   @override
   String get mathSpinnerDescription =>

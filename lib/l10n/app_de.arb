@@ -5,13 +5,13 @@
   "continueButton": "Weiter",
   "save": "Speichern",
   "changeLanguage": "Sprache ändern",
-  "randomPicker": "Zufallsauswahl",
+  "randomPicker": "Entscheidungsrad",
   "randomPickerDescription": "Erstellen Sie einen benutzerdefinierten Spinner mit Ihren eigenen Elementen",
-  "multiplayer": "Mehrspieler",
+  "multiplayer": "Drehschlacht",
   "multiplayerDescription": "Spielen Sie mit Freunden und konkurrieren Sie in Runden",
   "dice": "Würfel",
   "diceDescription": "Werfen Sie zwei Würfel und sehen Sie die Summe",
-  "whoFirst": "Wer zuerst",
+  "whoFirst": "Rennen zu 10",
   "whoFirstDescription": "Spielen Sie mit Freunden und konkurrieren Sie in Runden",
   "adsOn": "Werbung Ein",
   "adsOff": "Werbung Aus",
@@ -25,7 +25,7 @@
   "addItem": "Element Hinzufügen",
   "gameMode": "Spielmodus",
   "singlePlayer": "Einzelspieler",
-  "multiplayerMode": "Mehrspieler",
+  "multiplayerMode": "Drehschlacht",
   "howManyRounds": "Wie Viele Runden?",
   "players": "Spieler",
   "addPlayer": "Spieler Hinzufügen",
@@ -56,14 +56,14 @@
   "multiplication": "Multiplikation",
   "result": "Ergebnis",
   "spin": "Drehen",
-  "randomPickerTitle": "Zufallsauswahl",
+  "randomPickerTitle": "Entscheidungsrad",
   "spinner": "Spinner",
   "level": "Level",
   "easy": "Einfach",
   "medium": "Mittel",
   "hard": "Schwer",
   "selectLevel": "Level Auswählen",
-  "mathSpinner": "Mathe-Spinner",
+  "mathSpinner": "Mathe-Herausforderung",
   "mathSpinnerDescription": "Mathe üben mit lustigen Spinner-Herausforderungen",
   "spinnerItems": "Spinner-Elemente",
   "enterItemName": "Elementname eingeben",
@@ -86,7 +86,7 @@
       }
     }
   },
-  "mathSpinnerComingSoon": "Mathe-Spinner-Seite kommt bald!",
+  "mathSpinnerComingSoon": "Mathe-Herausforderung-Seite kommt bald!",
   "errorSharing": "Fehler beim Teilen: {error}",
   "@errorSharing": {
     "placeholders": {
@@ -125,7 +125,7 @@
       }
     }
   },
-  "checkOutResults": "Schauen Sie sich unsere Multiplayer-Spinner-Spielergebnisse an!",
+  "checkOutResults": "Schauen Sie sich unsere Drehschlacht-Spinner-Spielergebnisse an!",
   "allItemsUsed": "Alle Wahrheit- und Mutproben-Elemente wurden verwendet!",
   "errorLoadingData": "Fehler beim Laden der Daten: {error}",
   "@errorLoadingData": {

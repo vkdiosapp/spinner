@@ -24,14 +24,14 @@ class AppLocalizationsEs extends AppLocalizations {
   String get changeLanguage => 'Cambiar Idioma';
 
   @override
-  String get randomPicker => 'Selector Aleatorio';
+  String get randomPicker => 'Giratorio de Decisiones';
 
   @override
   String get randomPickerDescription =>
       'Crea un spinner personalizado con tus propios elementos';
 
   @override
-  String get multiplayer => 'Multijugador';
+  String get multiplayer => 'Batalla de Giro';
 
   @override
   String get multiplayerDescription => 'Juega con amigos y compite en rondas';
@@ -43,7 +43,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get diceDescription => 'Tira dos dados y ve el total';
 
   @override
-  String get whoFirst => 'Quién Primero';
+  String get whoFirst => 'Carrera a 10';
 
   @override
   String get whoFirstDescription => 'Juega con amigos y compite en rondas';
@@ -85,7 +85,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get singlePlayer => 'Un Jugador';
 
   @override
-  String get multiplayerMode => 'Multijugador';
+  String get multiplayerMode => 'Batalla de Giro';
 
   @override
   String get howManyRounds => '¿Cuántas Rondas?';
@@ -179,7 +179,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get spin => 'Girar';
 
   @override
-  String get randomPickerTitle => 'Selector Aleatorio';
+  String get randomPickerTitle => 'Giratorio de Decisiones';
 
   @override
   String get spinner => 'Spinner';
@@ -200,7 +200,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get selectLevel => 'Seleccionar Nivel';
 
   @override
-  String get mathSpinner => 'Spinner de Matemáticas';
+  String get mathSpinner => 'Desafío Matemático';
 
   @override
   String get mathSpinnerDescription =>
@@ -234,7 +234,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get mathSpinnerComingSoon =>
-      '¡La página del Spinner de Matemáticas llegará pronto!';
+      '¡La página del Desafío Matemático llegará pronto!';
 
   @override
   String errorSharing(String error) {
@@ -267,7 +267,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get checkOutResults =>
-      '¡Mira los resultados de nuestro juego de spinner multijugador!';
+      '¡Mira los resultados de nuestro juego de spinner Batalla de Giro!';
 
   @override
   String get allItemsUsed =>

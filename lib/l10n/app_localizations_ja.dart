@@ -24,13 +24,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get changeLanguage => '言語を変更';
 
   @override
-  String get randomPicker => 'ランダムピッカー';
+  String get randomPicker => '決定スピナー';
 
   @override
   String get randomPickerDescription => '独自のアイテムでカスタムスピナーを作成';
 
   @override
-  String get multiplayer => 'マルチプレイヤー';
+  String get multiplayer => 'スピンバトル';
 
   @override
   String get multiplayerDescription => '友達とプレイしてラウンドで競争';
@@ -42,7 +42,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get diceDescription => '2つのサイコロを振って合計を確認';
 
   @override
-  String get whoFirst => '誰が最初';
+  String get whoFirst => '10へのレース';
 
   @override
   String get whoFirstDescription => '友達とプレイしてラウンドで競争';
@@ -84,7 +84,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get singlePlayer => 'シングルプレイヤー';
 
   @override
-  String get multiplayerMode => 'マルチプレイヤー';
+  String get multiplayerMode => 'スピンバトル';
 
   @override
   String get howManyRounds => '何ラウンド？';
@@ -177,7 +177,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get spin => '回転';
 
   @override
-  String get randomPickerTitle => 'ランダムピッカー';
+  String get randomPickerTitle => '決定スピナー';
 
   @override
   String get spinner => 'スピナー';
@@ -198,7 +198,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get selectLevel => 'レベルを選択';
 
   @override
-  String get mathSpinner => '数学スピナー';
+  String get mathSpinner => '数学チャレンジ';
 
   @override
   String get mathSpinnerDescription => '楽しいスピナーチャレンジで数学を練習';
@@ -229,7 +229,7 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get mathSpinnerComingSoon => '数学スピナーページが間もなく公開されます！';
+  String get mathSpinnerComingSoon => '数学チャレンジページが間もなく公開されます！';
 
   @override
   String errorSharing(String error) {
@@ -261,7 +261,7 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get checkOutResults => 'マルチプレイヤースピナーゲームの結果をチェックしてください！';
+  String get checkOutResults => 'スピンバトルスピナーゲームの結果をチェックしてください！';
 
   @override
   String get allItemsUsed => 'すべての真実と挑戦のアイテムが使用されました！';

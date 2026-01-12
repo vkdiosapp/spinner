@@ -5,13 +5,13 @@
   "continueButton": "जारी रखें",
   "save": "सहेजें",
   "changeLanguage": "भाषा बदलें",
-  "randomPicker": "यादृच्छिक पिकर",
+  "randomPicker": "निर्णय स्पिनर",
   "randomPickerDescription": "अपने स्वयं के आइटम के साथ एक कस्टम स्पिनर बनाएं",
-  "multiplayer": "मल्टीप्लेयर",
+  "multiplayer": "स्पिन बैटल",
   "multiplayerDescription": "दोस्तों के साथ खेलें और राउंड में प्रतिस्पर्धा करें",
   "dice": "पासा",
   "diceDescription": "दो पासे फेंकें और कुल देखें",
-  "whoFirst": "कौन पहले",
+  "whoFirst": "10 तक दौड़",
   "whoFirstDescription": "दोस्तों के साथ खेलें और राउंड में प्रतिस्पर्धा करें",
   "adsOn": "विज्ञापन चालू",
   "adsOff": "विज्ञापन बंद",
@@ -25,7 +25,7 @@
   "addItem": "आइटम जोड़ें",
   "gameMode": "गेम मोड",
   "singlePlayer": "सिंगल प्लेयर",
-  "multiplayerMode": "मल्टीप्लेयर",
+  "multiplayerMode": "स्पिन बैटल",
   "howManyRounds": "कितने राउंड?",
   "players": "खिलाड़ी",
   "addPlayer": "खिलाड़ी जोड़ें",
@@ -56,14 +56,14 @@
   "multiplication": "गुणा",
   "result": "परिणाम",
   "spin": "घुमाएं",
-  "randomPickerTitle": "यादृच्छिक पिकर",
+  "randomPickerTitle": "निर्णय स्पिनर",
   "spinner": "स्पिनर",
   "level": "स्तर",
   "easy": "आसान",
   "medium": "मध्यम",
   "hard": "कठिन",
   "selectLevel": "स्तर चुनें",
-  "mathSpinner": "गणित स्पिनर",
+  "mathSpinner": "गणित चुनौती",
   "mathSpinnerDescription": "मजेदार स्पिनर चुनौतियों के साथ गणित का अभ्यास करें",
   "spinnerItems": "स्पिनर आइटम",
   "enterItemName": "आइटम का नाम दर्ज करें",
@@ -86,7 +86,7 @@
       }
     }
   },
-  "mathSpinnerComingSoon": "गणित स्पिनर पेज जल्द ही आ रहा है!",
+  "mathSpinnerComingSoon": "गणित चुनौती पेज जल्द ही आ रहा है!",
   "errorSharing": "साझा करने में त्रुटि: {error}",
   "@errorSharing": {
     "placeholders": {
@@ -125,7 +125,7 @@
       }
     }
   },
-  "checkOutResults": "हमारे मल्टीप्लेयर स्पिनर गेम परिणाम देखें!",
+  "checkOutResults": "हमारे स्पिन बैटल स्पिनर गेम परिणाम देखें!",
   "allItemsUsed": "सभी सत्य और साहस आइटम का उपयोग किया जा चुका है!",
   "errorLoadingData": "डेटा लोड करने में त्रुटि: {error}",
   "@errorLoadingData": {

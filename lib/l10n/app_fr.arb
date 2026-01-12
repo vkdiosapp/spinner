@@ -5,13 +5,13 @@
   "continueButton": "Continuer",
   "save": "Enregistrer",
   "changeLanguage": "Changer la langue",
-  "randomPicker": "Sélecteur Aléatoire",
+  "randomPicker": "Girouette de Décision",
   "randomPickerDescription": "Créez un spinner personnalisé avec vos propres éléments",
-  "multiplayer": "Multijoueur",
+  "multiplayer": "Bataille de Rotation",
   "multiplayerDescription": "Jouez avec des amis et competez en rounds",
   "dice": "Dés",
   "diceDescription": "Lancez deux dés et voyez le total",
-  "whoFirst": "Qui en Premier",
+  "whoFirst": "Course vers 10",
   "whoFirstDescription": "Jouez avec des amis et competez en rounds",
   "adsOn": "Publicités Activées",
   "adsOff": "Publicités Désactivées",
@@ -25,7 +25,7 @@
   "addItem": "Ajouter un Élément",
   "gameMode": "Mode de Jeu",
   "singlePlayer": "Joueur Unique",
-  "multiplayerMode": "Multijoueur",
+  "multiplayerMode": "Bataille de Rotation",
   "howManyRounds": "Combien de Rounds?",
   "players": "Joueurs",
   "addPlayer": "Ajouter un Joueur",
@@ -56,14 +56,14 @@
   "multiplication": "Multiplication",
   "result": "Résultat",
   "spin": "Tourner",
-  "randomPickerTitle": "Sélecteur Aléatoire",
+  "randomPickerTitle": "Girouette de Décision",
   "spinner": "Spinner",
   "level": "Niveau",
   "easy": "Facile",
   "medium": "Moyen",
   "hard": "Difficile",
   "selectLevel": "Sélectionner le Niveau",
-  "mathSpinner": "Spinner Mathématique",
+  "mathSpinner": "Défi Mathématique",
   "mathSpinnerDescription": "Pratiquez les mathématiques avec des défis de spinner amusants",
   "spinnerItems": "Éléments du Spinner",
   "enterItemName": "Entrez le nom de l'élément",
@@ -86,7 +86,7 @@
       }
     }
   },
-  "mathSpinnerComingSoon": "Page Spinner Mathématique à venir bientôt!",
+  "mathSpinnerComingSoon": "Page Défi Mathématique à venir bientôt!",
   "errorSharing": "Erreur lors du partage: {error}",
   "@errorSharing": {
     "placeholders": {
@@ -125,7 +125,7 @@
       }
     }
   },
-  "checkOutResults": "Découvrez les résultats de notre jeu de spinner multijoueur!",
+  "checkOutResults": "Découvrez les résultats de notre jeu de spinner Bataille de Rotation!",
   "allItemsUsed": "Tous les éléments de vérité et d'action ont été utilisés!",
   "errorLoadingData": "Erreur lors du chargement des données: {error}",
   "@errorLoadingData": {

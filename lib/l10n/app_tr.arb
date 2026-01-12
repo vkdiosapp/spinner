@@ -5,13 +5,13 @@
   "continueButton": "Devam Et",
   "save": "Kaydet",
   "changeLanguage": "Dili Değiştir",
-  "randomPicker": "Rastgele Seçici",
+  "randomPicker": "Karar Çarkı",
   "randomPickerDescription": "Kendi öğelerinizle özel bir spinner oluşturun",
-  "multiplayer": "Çok Oyunculu",
+  "multiplayer": "Döndürme Savaşı",
   "multiplayerDescription": "Arkadaşlarınızla oynayın ve raundlarda yarışın",
   "dice": "Zar",
   "diceDescription": "İki zar atın ve toplamı görün",
-  "whoFirst": "Kim Önce",
+  "whoFirst": "10'a Yarış",
   "whoFirstDescription": "Arkadaşlarınızla oynayın ve raundlarda yarışın",
   "adsOn": "Reklamlar Açık",
   "adsOff": "Reklamlar Kapalı",
@@ -25,7 +25,7 @@
   "addItem": "Öğe Ekle",
   "gameMode": "Oyun Modu",
   "singlePlayer": "Tek Oyunculu",
-  "multiplayerMode": "Çok Oyunculu",
+  "multiplayerMode": "Döndürme Savaşı",
   "howManyRounds": "Kaç Raund?",
   "players": "Oyuncular",
   "addPlayer": "Oyuncu Ekle",
@@ -56,14 +56,14 @@
   "multiplication": "Çarpma",
   "result": "Sonuç",
   "spin": "Döndür",
-  "randomPickerTitle": "Rastgele Seçici",
+  "randomPickerTitle": "Karar Çarkı",
   "spinner": "Spinner",
   "level": "Seviye",
   "easy": "Kolay",
   "medium": "Orta",
   "hard": "Zor",
   "selectLevel": "Seviye Seç",
-  "mathSpinner": "Matematik Spinner",
+  "mathSpinner": "Matematik Mücadelesi",
   "mathSpinnerDescription": "Eğlenceli spinner zorluklarıyla matematik pratiği yapın",
   "spinnerItems": "Spinner Öğeleri",
   "enterItemName": "Öğe adını girin",
@@ -86,7 +86,7 @@
       }
     }
   },
-  "mathSpinnerComingSoon": "Matematik Spinner sayfası yakında!",
+  "mathSpinnerComingSoon": "Matematik Mücadelesi sayfası yakında!",
   "errorSharing": "Paylaşma hatası: {error}",
   "@errorSharing": {
     "placeholders": {
@@ -125,7 +125,7 @@
       }
     }
   },
-  "checkOutResults": "Çok oyunculu spinner oyunu sonuçlarımıza bakın!",
+  "checkOutResults": "Döndürme Savaşı spinner oyunu sonuçlarımıza bakın!",
   "allItemsUsed": "Tüm doğruluk ve cesaret öğeleri kullanıldı!",
   "errorLoadingData": "Veri yükleme hatası: {error}",
   "@errorLoadingData": {

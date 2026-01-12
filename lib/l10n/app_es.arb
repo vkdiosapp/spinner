@@ -5,13 +5,13 @@
   "continueButton": "Continuar",
   "save": "Guardar",
   "changeLanguage": "Cambiar Idioma",
-  "randomPicker": "Selector Aleatorio",
+  "randomPicker": "Giratorio de Decisiones",
   "randomPickerDescription": "Crea un spinner personalizado con tus propios elementos",
-  "multiplayer": "Multijugador",
+  "multiplayer": "Batalla de Giro",
   "multiplayerDescription": "Juega con amigos y compite en rondas",
   "dice": "Dados",
   "diceDescription": "Tira dos dados y ve el total",
-  "whoFirst": "Quién Primero",
+  "whoFirst": "Carrera a 10",
   "whoFirstDescription": "Juega con amigos y compite en rondas",
   "adsOn": "Anuncios Activados",
   "adsOff": "Anuncios Desactivados",
@@ -25,7 +25,7 @@
   "addItem": "Agregar Elemento",
   "gameMode": "Modo de Juego",
   "singlePlayer": "Un Jugador",
-  "multiplayerMode": "Multijugador",
+  "multiplayerMode": "Batalla de Giro",
   "howManyRounds": "¿Cuántas Rondas?",
   "players": "Jugadores",
   "addPlayer": "Agregar Jugador",
@@ -56,14 +56,14 @@
   "multiplication": "Multiplicación",
   "result": "Resultado",
   "spin": "Girar",
-  "randomPickerTitle": "Selector Aleatorio",
+  "randomPickerTitle": "Giratorio de Decisiones",
   "spinner": "Spinner",
   "level": "Nivel",
   "easy": "Fácil",
   "medium": "Medio",
   "hard": "Difícil",
   "selectLevel": "Seleccionar Nivel",
-  "mathSpinner": "Spinner de Matemáticas",
+  "mathSpinner": "Desafío Matemático",
   "mathSpinnerDescription": "Practica matemáticas con desafíos divertidos de spinner",
   "spinnerItems": "Elementos del Spinner",
   "enterItemName": "Ingresa el nombre del elemento",
@@ -86,7 +86,7 @@
       }
     }
   },
-  "mathSpinnerComingSoon": "¡La página del Spinner de Matemáticas llegará pronto!",
+  "mathSpinnerComingSoon": "¡La página del Desafío Matemático llegará pronto!",
   "errorSharing": "Error al compartir: {error}",
   "@errorSharing": {
     "placeholders": {
@@ -125,7 +125,7 @@
       }
     }
   },
-  "checkOutResults": "¡Mira los resultados de nuestro juego de spinner multijugador!",
+  "checkOutResults": "¡Mira los resultados de nuestro juego de spinner Batalla de Giro!",
   "allItemsUsed": "¡Todos los elementos de verdad o reto han sido usados!",
   "errorLoadingData": "Error al cargar datos: {error}",
   "@errorLoadingData": {

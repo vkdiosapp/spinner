@@ -5,13 +5,13 @@
   "continueButton": "Continue",
   "save": "Save",
   "changeLanguage": "Change Language",
-  "randomPicker": "Random Picker",
+  "randomPicker": "Decision Spinner",
   "randomPickerDescription": "Create a custom spinner with your own items",
-  "multiplayer": "Multiplayer",
+  "multiplayer": "Spin Battle",
   "multiplayerDescription": "Play with friends and compete in rounds",
   "dice": "Dice",
   "diceDescription": "Roll two dice and see the total",
-  "whoFirst": "Who First",
+  "whoFirst": "Race to 10",
   "whoFirstDescription": "Play with friends and compete in rounds",
   "adsOn": "Ads On",
   "adsOff": "Ads Off",
@@ -25,7 +25,7 @@
   "addItem": "Add Item",
   "gameMode": "Game Mode",
   "singlePlayer": "Single Player",
-  "multiplayerMode": "Multiplayer",
+  "multiplayerMode": "Spin Battle",
   "howManyRounds": "How Many Rounds?",
   "players": "Players",
   "addPlayer": "Add Player",
@@ -56,14 +56,14 @@
   "multiplication": "Multiplication",
   "result": "Result",
   "spin": "Spin",
-  "randomPickerTitle": "Random Picker",
+  "randomPickerTitle": "Decision Spinner",
   "spinner": "Spinner",
   "level": "Level",
   "easy": "Easy",
   "medium": "Medium",
   "hard": "Hard",
   "selectLevel": "Select Level",
-  "mathSpinner": "Math Spinner",
+  "mathSpinner": "Math Challenge",
   "mathSpinnerDescription": "Practice math with fun spinner challenges",
   "spinnerItems": "Spinner Items",
   "enterItemName": "Enter item name",
@@ -86,7 +86,7 @@
       }
     }
   },
-  "mathSpinnerComingSoon": "Math Spinner page coming soon!",
+  "mathSpinnerComingSoon": "Math Challenge page coming soon!",
   "errorSharing": "Error sharing: {error}",
   "@errorSharing": {
     "placeholders": {
@@ -126,7 +126,7 @@
       }
     }
   },
-  "checkOutResults": "Check out our multiplayer spinner game results!",
+  "checkOutResults": "Check out our Spin Battle spinner game results!",
   "allItemsUsed": "All truth and dare items have been used!",
   "errorLoadingData": "Error loading data: {error}",
   "@errorLoadingData": {

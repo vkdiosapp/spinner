@@ -24,14 +24,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get changeLanguage => 'Change Language';
 
   @override
-  String get randomPicker => 'Random Picker';
+  String get randomPicker => 'Decision Spinner';
 
   @override
   String get randomPickerDescription =>
       'Create a custom spinner with your own items';
 
   @override
-  String get multiplayer => 'Multiplayer';
+  String get multiplayer => 'Spin Battle';
 
   @override
   String get multiplayerDescription =>
@@ -44,7 +44,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get diceDescription => 'Roll two dice and see the total';
 
   @override
-  String get whoFirst => 'Who First';
+  String get whoFirst => 'Race to 10';
 
   @override
   String get whoFirstDescription => 'Play with friends and compete in rounds';
@@ -86,7 +86,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get singlePlayer => 'Single Player';
 
   @override
-  String get multiplayerMode => 'Multiplayer';
+  String get multiplayerMode => 'Spin Battle';
 
   @override
   String get howManyRounds => 'How Many Rounds?';
@@ -179,7 +179,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get spin => 'Spin';
 
   @override
-  String get randomPickerTitle => 'Random Picker';
+  String get randomPickerTitle => 'Decision Spinner';
 
   @override
   String get spinner => 'Spinner';
@@ -200,7 +200,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get selectLevel => 'Select Level';
 
   @override
-  String get mathSpinner => 'Math Spinner';
+  String get mathSpinner => 'Math Challenge';
 
   @override
   String get mathSpinnerDescription =>
@@ -232,7 +232,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get mathSpinnerComingSoon => 'Math Spinner page coming soon!';
+  String get mathSpinnerComingSoon => 'Math Challenge page coming soon!';
 
   @override
   String errorSharing(String error) {
@@ -265,7 +265,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get checkOutResults =>
-      'Check out our multiplayer spinner game results!';
+      'Check out our Spin Battle spinner game results!';
 
   @override
   String get allItemsUsed => 'All truth and dare items have been used!';

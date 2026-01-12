@@ -24,14 +24,14 @@ class AppLocalizationsTr extends AppLocalizations {
   String get changeLanguage => 'Dili Değiştir';
 
   @override
-  String get randomPicker => 'Rastgele Seçici';
+  String get randomPicker => 'Karar Çarkı';
 
   @override
   String get randomPickerDescription =>
       'Kendi öğelerinizle özel bir spinner oluşturun';
 
   @override
-  String get multiplayer => 'Çok Oyunculu';
+  String get multiplayer => 'Döndürme Savaşı';
 
   @override
   String get multiplayerDescription =>
@@ -44,7 +44,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get diceDescription => 'İki zar atın ve toplamı görün';
 
   @override
-  String get whoFirst => 'Kim Önce';
+  String get whoFirst => '10\'a Yarış';
 
   @override
   String get whoFirstDescription =>
@@ -87,7 +87,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get singlePlayer => 'Tek Oyunculu';
 
   @override
-  String get multiplayerMode => 'Çok Oyunculu';
+  String get multiplayerMode => 'Döndürme Savaşı';
 
   @override
   String get howManyRounds => 'Kaç Raund?';
@@ -181,7 +181,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get spin => 'Döndür';
 
   @override
-  String get randomPickerTitle => 'Rastgele Seçici';
+  String get randomPickerTitle => 'Karar Çarkı';
 
   @override
   String get spinner => 'Spinner';
@@ -202,7 +202,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get selectLevel => 'Seviye Seç';
 
   @override
-  String get mathSpinner => 'Matematik Spinner';
+  String get mathSpinner => 'Matematik Mücadelesi';
 
   @override
   String get mathSpinnerDescription =>
@@ -234,7 +234,7 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get mathSpinnerComingSoon => 'Matematik Spinner sayfası yakında!';
+  String get mathSpinnerComingSoon => 'Matematik Mücadelesi sayfası yakında!';
 
   @override
   String errorSharing(String error) {
@@ -267,7 +267,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get checkOutResults =>
-      'Çok oyunculu spinner oyunu sonuçlarımıza bakın!';
+      'Döndürme Savaşı spinner oyunu sonuçlarımıza bakın!';
 
   @override
   String get allItemsUsed => 'Tüm doğruluk ve cesaret öğeleri kullanıldı!';

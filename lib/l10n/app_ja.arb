@@ -5,13 +5,13 @@
   "continueButton": "続ける",
   "save": "保存",
   "changeLanguage": "言語を変更",
-  "randomPicker": "ランダムピッカー",
+  "randomPicker": "決定スピナー",
   "randomPickerDescription": "独自のアイテムでカスタムスピナーを作成",
-  "multiplayer": "マルチプレイヤー",
+  "multiplayer": "スピンバトル",
   "multiplayerDescription": "友達とプレイしてラウンドで競争",
   "dice": "サイコロ",
   "diceDescription": "2つのサイコロを振って合計を確認",
-  "whoFirst": "誰が最初",
+  "whoFirst": "10へのレース",
   "whoFirstDescription": "友達とプレイしてラウンドで競争",
   "adsOn": "広告オン",
   "adsOff": "広告オフ",
@@ -25,7 +25,7 @@
   "addItem": "アイテムを追加",
   "gameMode": "ゲームモード",
   "singlePlayer": "シングルプレイヤー",
-  "multiplayerMode": "マルチプレイヤー",
+  "multiplayerMode": "スピンバトル",
   "howManyRounds": "何ラウンド？",
   "players": "プレイヤー",
   "addPlayer": "プレイヤーを追加",
@@ -56,14 +56,14 @@
   "multiplication": "掛け算",
   "result": "結果",
   "spin": "回転",
-  "randomPickerTitle": "ランダムピッカー",
+  "randomPickerTitle": "決定スピナー",
   "spinner": "スピナー",
   "level": "レベル",
   "easy": "簡単",
   "medium": "中程度",
   "hard": "難しい",
   "selectLevel": "レベルを選択",
-  "mathSpinner": "数学スピナー",
+  "mathSpinner": "数学チャレンジ",
   "mathSpinnerDescription": "楽しいスピナーチャレンジで数学を練習",
   "spinnerItems": "スピナーアイテム",
   "enterItemName": "アイテム名を入力",
@@ -86,7 +86,7 @@
       }
     }
   },
-  "mathSpinnerComingSoon": "数学スピナーページが間もなく公開されます！",
+  "mathSpinnerComingSoon": "数学チャレンジページが間もなく公開されます！",
   "errorSharing": "共有エラー: {error}",
   "@errorSharing": {
     "placeholders": {
@@ -125,7 +125,7 @@
       }
     }
   },
-  "checkOutResults": "マルチプレイヤースピナーゲームの結果をチェックしてください！",
+  "checkOutResults": "スピンバトルスピナーゲームの結果をチェックしてください！",
   "allItemsUsed": "すべての真実と挑戦のアイテムが使用されました！",
   "errorLoadingData": "データの読み込みエラー: {error}",
   "@errorLoadingData": {

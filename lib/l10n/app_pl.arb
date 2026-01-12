@@ -5,13 +5,13 @@
   "continueButton": "Kontynuuj",
   "save": "Zapisz",
   "changeLanguage": "Zmień Język",
-  "randomPicker": "Losowy Wybór",
+  "randomPicker": "Koło Decyzji",
   "randomPickerDescription": "Utwórz niestandardowe koło z własnymi elementami",
-  "multiplayer": "Multiplayer",
+  "multiplayer": "Bitwa Obrótów",
   "multiplayerDescription": "Graj z przyjaciółmi i rywalizuj w rundach",
   "dice": "Kostki",
   "diceDescription": "Rzuć dwiema kostkami i zobacz sumę",
-  "whoFirst": "Kto Pierwszy",
+  "whoFirst": "Wyścig do 10",
   "whoFirstDescription": "Graj z przyjaciółmi i rywalizuj w rundach",
   "adsOn": "Reklamy Włączone",
   "adsOff": "Reklamy Wyłączone",
@@ -25,7 +25,7 @@
   "addItem": "Dodaj Element",
   "gameMode": "Tryb Gry",
   "singlePlayer": "Pojedynczy Gracz",
-  "multiplayerMode": "Multiplayer",
+  "multiplayerMode": "Bitwa Obrótów",
   "howManyRounds": "Ile Rund?",
   "players": "Gracze",
   "addPlayer": "Dodaj Gracza",
@@ -56,14 +56,14 @@
   "multiplication": "Mnożenie",
   "result": "Wynik",
   "spin": "Obróć",
-  "randomPickerTitle": "Losowy Wybór",
+  "randomPickerTitle": "Koło Decyzji",
   "spinner": "Koło",
   "level": "Poziom",
   "easy": "Łatwy",
   "medium": "Średni",
   "hard": "Trudny",
   "selectLevel": "Wybierz Poziom",
-  "mathSpinner": "Koło Matematyczne",
+  "mathSpinner": "Wyzwanie Matematyczne",
   "mathSpinnerDescription": "Ćwicz matematykę z zabawnymi wyzwaniami koła",
   "spinnerItems": "Elementy Koła",
   "enterItemName": "Wprowadź nazwę elementu",
@@ -86,7 +86,7 @@
       }
     }
   },
-  "mathSpinnerComingSoon": "Strona Koła Matematycznego wkrótce!",
+  "mathSpinnerComingSoon": "Strona Wyzwania Matematycznego wkrótce!",
   "errorSharing": "Błąd podczas udostępniania: {error}",
   "@errorSharing": {
     "placeholders": {
@@ -125,7 +125,7 @@
       }
     }
   },
-  "checkOutResults": "Sprawdź wyniki naszej gry koła dla wielu graczy!",
+  "checkOutResults": "Sprawdź wyniki naszej gry koła Bitwa Obrótów!",
   "allItemsUsed": "Wszystkie elementy prawdy i wyzwania zostały użyte!",
   "errorLoadingData": "Błąd podczas ładowania danych: {error}",
   "@errorLoadingData": {

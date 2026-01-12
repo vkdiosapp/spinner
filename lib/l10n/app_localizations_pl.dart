@@ -24,14 +24,14 @@ class AppLocalizationsPl extends AppLocalizations {
   String get changeLanguage => 'Zmień Język';
 
   @override
-  String get randomPicker => 'Losowy Wybór';
+  String get randomPicker => 'Koło Decyzji';
 
   @override
   String get randomPickerDescription =>
       'Utwórz niestandardowe koło z własnymi elementami';
 
   @override
-  String get multiplayer => 'Multiplayer';
+  String get multiplayer => 'Bitwa Obrótów';
 
   @override
   String get multiplayerDescription =>
@@ -44,7 +44,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String get diceDescription => 'Rzuć dwiema kostkami i zobacz sumę';
 
   @override
-  String get whoFirst => 'Kto Pierwszy';
+  String get whoFirst => 'Wyścig do 10';
 
   @override
   String get whoFirstDescription => 'Graj z przyjaciółmi i rywalizuj w rundach';
@@ -86,7 +86,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String get singlePlayer => 'Pojedynczy Gracz';
 
   @override
-  String get multiplayerMode => 'Multiplayer';
+  String get multiplayerMode => 'Bitwa Obrótów';
 
   @override
   String get howManyRounds => 'Ile Rund?';
@@ -179,7 +179,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String get spin => 'Obróć';
 
   @override
-  String get randomPickerTitle => 'Losowy Wybór';
+  String get randomPickerTitle => 'Koło Decyzji';
 
   @override
   String get spinner => 'Koło';
@@ -200,7 +200,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String get selectLevel => 'Wybierz Poziom';
 
   @override
-  String get mathSpinner => 'Koło Matematyczne';
+  String get mathSpinner => 'Wyzwanie Matematyczne';
 
   @override
   String get mathSpinnerDescription =>
@@ -235,7 +235,7 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
-  String get mathSpinnerComingSoon => 'Strona Koła Matematycznego wkrótce!';
+  String get mathSpinnerComingSoon => 'Strona Wyzwania Matematycznego wkrótce!';
 
   @override
   String errorSharing(String error) {
@@ -267,8 +267,7 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
-  String get checkOutResults =>
-      'Sprawdź wyniki naszej gry koła dla wielu graczy!';
+  String get checkOutResults => 'Sprawdź wyniki naszej gry koła Bitwa Obrótów!';
 
   @override
   String get allItemsUsed =>

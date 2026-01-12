@@ -24,13 +24,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get changeLanguage => 'تغيير اللغة';
 
   @override
-  String get randomPicker => 'منتقي عشوائي';
+  String get randomPicker => 'دوار القرارات';
 
   @override
   String get randomPickerDescription => 'أنشئ دوارًا مخصصًا بعناصرك الخاصة';
 
   @override
-  String get multiplayer => 'متعدد اللاعبين';
+  String get multiplayer => 'معركة الدوران';
 
   @override
   String get multiplayerDescription => 'العب مع الأصدقاء وتنافس في الجولات';
@@ -42,7 +42,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get diceDescription => 'ارمي نردتين وشاهد المجموع';
 
   @override
-  String get whoFirst => 'من الأول';
+  String get whoFirst => 'سباق إلى 10';
 
   @override
   String get whoFirstDescription => 'العب مع الأصدقاء وتنافس في الجولات';
@@ -84,7 +84,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get singlePlayer => 'لاعب واحد';
 
   @override
-  String get multiplayerMode => 'متعدد اللاعبين';
+  String get multiplayerMode => 'معركة الدوران';
 
   @override
   String get howManyRounds => 'كم عدد الجولات؟';
@@ -177,7 +177,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get spin => 'دور';
 
   @override
-  String get randomPickerTitle => 'منتقي عشوائي';
+  String get randomPickerTitle => 'دوار القرارات';
 
   @override
   String get spinner => 'الدوار';
@@ -198,7 +198,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get selectLevel => 'اختر المستوى';
 
   @override
-  String get mathSpinner => 'دوار الرياضيات';
+  String get mathSpinner => 'تحدي الرياضيات';
 
   @override
   String get mathSpinnerDescription =>
@@ -230,7 +230,7 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get mathSpinnerComingSoon => 'صفحة دوار الرياضيات قريباً!';
+  String get mathSpinnerComingSoon => 'صفحة تحدي الرياضيات قريباً!';
 
   @override
   String errorSharing(String error) {
@@ -262,7 +262,7 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get checkOutResults => 'تحقق من نتائج لعبة الدوار متعددة اللاعبين!';
+  String get checkOutResults => 'تحقق من نتائج لعبة الدوار معركة الدوران!';
 
   @override
   String get allItemsUsed => 'تم استخدام جميع عناصر الحقيقة والجرأة!';

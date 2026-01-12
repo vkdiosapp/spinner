@@ -165,7 +165,7 @@ abstract class AppLocalizations {
   /// No description provided for @randomPicker.
   ///
   /// In en, this message translates to:
-  /// **'Random Picker'**
+  /// **'Decision Spinner'**
   String get randomPicker;
 
   /// No description provided for @randomPickerDescription.
@@ -177,7 +177,7 @@ abstract class AppLocalizations {
   /// No description provided for @multiplayer.
   ///
   /// In en, this message translates to:
-  /// **'Multiplayer'**
+  /// **'Spin Battle'**
   String get multiplayer;
 
   /// No description provided for @multiplayerDescription.
@@ -201,7 +201,7 @@ abstract class AppLocalizations {
   /// No description provided for @whoFirst.
   ///
   /// In en, this message translates to:
-  /// **'Who First'**
+  /// **'Race to 10'**
   String get whoFirst;
 
   /// No description provided for @whoFirstDescription.
@@ -285,7 +285,7 @@ abstract class AppLocalizations {
   /// No description provided for @multiplayerMode.
   ///
   /// In en, this message translates to:
-  /// **'Multiplayer'**
+  /// **'Spin Battle'**
   String get multiplayerMode;
 
   /// No description provided for @howManyRounds.
@@ -471,7 +471,7 @@ abstract class AppLocalizations {
   /// No description provided for @randomPickerTitle.
   ///
   /// In en, this message translates to:
-  /// **'Random Picker'**
+  /// **'Decision Spinner'**
   String get randomPickerTitle;
 
   /// No description provided for @spinner.
@@ -513,7 +513,7 @@ abstract class AppLocalizations {
   /// No description provided for @mathSpinner.
   ///
   /// In en, this message translates to:
-  /// **'Math Spinner'**
+  /// **'Math Challenge'**
   String get mathSpinner;
 
   /// No description provided for @mathSpinnerDescription.
@@ -567,7 +567,7 @@ abstract class AppLocalizations {
   /// No description provided for @mathSpinnerComingSoon.
   ///
   /// In en, this message translates to:
-  /// **'Math Spinner page coming soon!'**
+  /// **'Math Challenge page coming soon!'**
   String get mathSpinnerComingSoon;
 
   /// No description provided for @errorSharing.
@@ -615,7 +615,7 @@ abstract class AppLocalizations {
   /// No description provided for @checkOutResults.
   ///
   /// In en, this message translates to:
-  /// **'Check out our multiplayer spinner game results!'**
+  /// **'Check out our Spin Battle spinner game results!'**
   String get checkOutResults;
 
   /// No description provided for @allItemsUsed.

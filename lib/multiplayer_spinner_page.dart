@@ -1138,9 +1138,7 @@ class MultiplayerWheelPainter extends CustomPainter {
 
       // Draw border - same thickness for all segments
       final borderPaint = Paint()
-        ..color = segment.isJackpot
-            ? Colors.white
-            : Colors.white.withOpacity(0.3)
+        ..color = Colors.white.withOpacity(0.3)
         ..style = PaintingStyle.stroke
         ..strokeWidth = 2;
 

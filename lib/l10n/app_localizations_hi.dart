@@ -24,14 +24,14 @@ class AppLocalizationsHi extends AppLocalizations {
   String get changeLanguage => 'भाषा बदलें';
 
   @override
-  String get randomPicker => 'यादृच्छिक पिकर';
+  String get randomPicker => 'निर्णय स्पिनर';
 
   @override
   String get randomPickerDescription =>
       'अपने स्वयं के आइटम के साथ एक कस्टम स्पिनर बनाएं';
 
   @override
-  String get multiplayer => 'मल्टीप्लेयर';
+  String get multiplayer => 'स्पिन बैटल';
 
   @override
   String get multiplayerDescription =>
@@ -44,7 +44,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get diceDescription => 'दो पासे फेंकें और कुल देखें';
 
   @override
-  String get whoFirst => 'कौन पहले';
+  String get whoFirst => '10 तक दौड़';
 
   @override
   String get whoFirstDescription =>
@@ -87,7 +87,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get singlePlayer => 'सिंगल प्लेयर';
 
   @override
-  String get multiplayerMode => 'मल्टीप्लेयर';
+  String get multiplayerMode => 'स्पिन बैटल';
 
   @override
   String get howManyRounds => 'कितने राउंड?';
@@ -180,7 +180,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get spin => 'घुमाएं';
 
   @override
-  String get randomPickerTitle => 'यादृच्छिक पिकर';
+  String get randomPickerTitle => 'निर्णय स्पिनर';
 
   @override
   String get spinner => 'स्पिनर';
@@ -201,7 +201,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get selectLevel => 'स्तर चुनें';
 
   @override
-  String get mathSpinner => 'गणित स्पिनर';
+  String get mathSpinner => 'गणित चुनौती';
 
   @override
   String get mathSpinnerDescription =>
@@ -234,7 +234,7 @@ class AppLocalizationsHi extends AppLocalizations {
   }
 
   @override
-  String get mathSpinnerComingSoon => 'गणित स्पिनर पेज जल्द ही आ रहा है!';
+  String get mathSpinnerComingSoon => 'गणित चुनौती पेज जल्द ही आ रहा है!';
 
   @override
   String errorSharing(String error) {
@@ -266,7 +266,7 @@ class AppLocalizationsHi extends AppLocalizations {
   }
 
   @override
-  String get checkOutResults => 'हमारे मल्टीप्लेयर स्पिनर गेम परिणाम देखें!';
+  String get checkOutResults => 'हमारे स्पिन बैटल स्पिनर गेम परिणाम देखें!';
 
   @override
   String get allItemsUsed => 'सभी सत्य और साहस आइटम का उपयोग किया जा चुका है!';

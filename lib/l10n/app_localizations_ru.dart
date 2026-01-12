@@ -24,14 +24,14 @@ class AppLocalizationsRu extends AppLocalizations {
   String get changeLanguage => 'Изменить Язык';
 
   @override
-  String get randomPicker => 'Случайный Выбор';
+  String get randomPicker => 'Колесо Решений';
 
   @override
   String get randomPickerDescription =>
       'Создайте пользовательский спиннер со своими элементами';
 
   @override
-  String get multiplayer => 'Мультиплеер';
+  String get multiplayer => 'Битва Вращения';
 
   @override
   String get multiplayerDescription =>
@@ -44,7 +44,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get diceDescription => 'Бросьте две кости и посмотрите сумму';
 
   @override
-  String get whoFirst => 'Кто Первый';
+  String get whoFirst => 'Гонка до 10';
 
   @override
   String get whoFirstDescription =>
@@ -87,7 +87,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get singlePlayer => 'Одиночная Игра';
 
   @override
-  String get multiplayerMode => 'Мультиплеер';
+  String get multiplayerMode => 'Битва Вращения';
 
   @override
   String get howManyRounds => 'Сколько Раундов?';
@@ -180,7 +180,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get spin => 'Крутить';
 
   @override
-  String get randomPickerTitle => 'Случайный Выбор';
+  String get randomPickerTitle => 'Колесо Решений';
 
   @override
   String get spinner => 'Спиннер';
@@ -201,7 +201,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get selectLevel => 'Выбрать Уровень';
 
   @override
-  String get mathSpinner => 'Математический Спиннер';
+  String get mathSpinner => 'Математический Вызов';
 
   @override
   String get mathSpinnerDescription =>

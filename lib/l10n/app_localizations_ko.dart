@@ -24,13 +24,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get changeLanguage => '언어 변경';
 
   @override
-  String get randomPicker => '랜덤 선택기';
+  String get randomPicker => '결정 스피너';
 
   @override
   String get randomPickerDescription => '자신만의 항목으로 맞춤 스피너 만들기';
 
   @override
-  String get multiplayer => '멀티플레이어';
+  String get multiplayer => '스핀 배틀';
 
   @override
   String get multiplayerDescription => '친구와 함께 플레이하고 라운드에서 경쟁';
@@ -42,7 +42,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get diceDescription => '두 개의 주사위를 굴려 합계 확인';
 
   @override
-  String get whoFirst => '누가 먼저';
+  String get whoFirst => '10까지 레이스';
 
   @override
   String get whoFirstDescription => '친구와 함께 플레이하고 라운드에서 경쟁';
@@ -84,7 +84,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get singlePlayer => '싱글 플레이어';
 
   @override
-  String get multiplayerMode => '멀티플레이어';
+  String get multiplayerMode => '스핀 배틀';
 
   @override
   String get howManyRounds => '몇 라운드?';
@@ -177,7 +177,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get spin => '회전';
 
   @override
-  String get randomPickerTitle => '랜덤 선택기';
+  String get randomPickerTitle => '결정 스피너';
 
   @override
   String get spinner => '스피너';
@@ -198,7 +198,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get selectLevel => '레벨 선택';
 
   @override
-  String get mathSpinner => '수학 스피너';
+  String get mathSpinner => '수학 챌린지';
 
   @override
   String get mathSpinnerDescription => '재미있는 스피너 도전으로 수학 연습';
@@ -229,7 +229,7 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get mathSpinnerComingSoon => '수학 스피너 페이지가 곧 출시됩니다!';
+  String get mathSpinnerComingSoon => '수학 챌린지 페이지가 곧 출시됩니다!';
 
   @override
   String errorSharing(String error) {
@@ -261,7 +261,7 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get checkOutResults => '멀티플레이어 스피너 게임 결과를 확인하세요!';
+  String get checkOutResults => '스핀 배틀 스피너 게임 결과를 확인하세요!';
 
   @override
   String get allItemsUsed => '모든 진실과 도전 항목이 사용되었습니다!';

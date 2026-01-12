@@ -5,13 +5,13 @@
   "continueButton": "متابعة",
   "save": "حفظ",
   "changeLanguage": "تغيير اللغة",
-  "randomPicker": "منتقي عشوائي",
+  "randomPicker": "دوار القرارات",
   "randomPickerDescription": "أنشئ دوارًا مخصصًا بعناصرك الخاصة",
-  "multiplayer": "متعدد اللاعبين",
+  "multiplayer": "معركة الدوران",
   "multiplayerDescription": "العب مع الأصدقاء وتنافس في الجولات",
   "dice": "النرد",
   "diceDescription": "ارمي نردتين وشاهد المجموع",
-  "whoFirst": "من الأول",
+  "whoFirst": "سباق إلى 10",
   "whoFirstDescription": "العب مع الأصدقاء وتنافس في الجولات",
   "adsOn": "الإعلانات مفعلة",
   "adsOff": "الإعلانات معطلة",
@@ -25,7 +25,7 @@
   "addItem": "إضافة عنصر",
   "gameMode": "وضع اللعبة",
   "singlePlayer": "لاعب واحد",
-  "multiplayerMode": "متعدد اللاعبين",
+  "multiplayerMode": "معركة الدوران",
   "howManyRounds": "كم عدد الجولات؟",
   "players": "اللاعبون",
   "addPlayer": "إضافة لاعب",
@@ -56,14 +56,14 @@
   "multiplication": "الضرب",
   "result": "النتيجة",
   "spin": "دور",
-  "randomPickerTitle": "منتقي عشوائي",
+  "randomPickerTitle": "دوار القرارات",
   "spinner": "الدوار",
   "level": "المستوى",
   "easy": "سهل",
   "medium": "متوسط",
   "hard": "صعب",
   "selectLevel": "اختر المستوى",
-  "mathSpinner": "دوار الرياضيات",
+  "mathSpinner": "تحدي الرياضيات",
   "mathSpinnerDescription": "تدرب على الرياضيات مع تحديات دوار ممتعة",
   "spinnerItems": "عناصر الدوار",
   "enterItemName": "أدخل اسم العنصر",
@@ -86,7 +86,7 @@
       }
     }
   },
-  "mathSpinnerComingSoon": "صفحة دوار الرياضيات قريباً!",
+  "mathSpinnerComingSoon": "صفحة تحدي الرياضيات قريباً!",
   "errorSharing": "خطأ في المشاركة: {error}",
   "@errorSharing": {
     "placeholders": {
@@ -125,7 +125,7 @@
       }
     }
   },
-  "checkOutResults": "تحقق من نتائج لعبة الدوار متعددة اللاعبين!",
+  "checkOutResults": "تحقق من نتائج لعبة الدوار معركة الدوران!",
   "allItemsUsed": "تم استخدام جميع عناصر الحقيقة والجرأة!",
   "errorLoadingData": "خطأ في تحميل البيانات: {error}",
   "@errorLoadingData": {

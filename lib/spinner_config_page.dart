@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'app_theme.dart';
 import 'spinner_wheel_page.dart';
 import 'ad_helper.dart';
 import 'app_localizations_helper.dart';

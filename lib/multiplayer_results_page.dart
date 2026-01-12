@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'app_theme.dart';
 import 'dart:io';
 import 'package:share_plus/share_plus.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:path_provider/path_provider.dart';
 import 'home_page.dart';
 import 'app_localizations_helper.dart';
+import 'ad_helper.dart';
 
 class MultiplayerResultsPage extends StatefulWidget {
   final List<String> users;
@@ -160,9 +162,12 @@ class _MultiplayerResultsPageState extends State<MultiplayerResultsPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizationsHelper.of(context);
-    return Scaffold(
-      backgroundColor: const Color(0xFF2D2D44),
-      body: SafeArea(
+    return ValueListenableBuilder<bool>(
+      valueListenable: AppTheme.themeNotifier,
+      builder: (context, isDark, _) {
+        return Scaffold(
+          backgroundColor: AppTheme.backgroundColor,
+          body: SafeArea(
         child: Column(
           children: [
             // Fixed header with back button, title, and share button
@@ -198,8 +203,8 @@ class _MultiplayerResultsPageState extends State<MultiplayerResultsPage> {
                   Text(
                     '🏆 ${l10n.gameResults} 🏆',
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                        color: AppTheme.textColor,
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                     ),
@@ -244,6 +249,8 @@ class _MultiplayerResultsPageState extends State<MultiplayerResultsPage> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                     const SizedBox(height: 30),
+                    // Native Ad above first user
+                    const NativeAdWidget(),
                     // Users List with Rankings
                     ..._sortedUsers.asMap().entries.map((entry) {
                       final rank = entry.key + 1;
@@ -260,9 +267,9 @@ class _MultiplayerResultsPageState extends State<MultiplayerResultsPage> {
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                             colors: [
-                              const Color(0xFF3D3D5C), // Dark purple-gray
-                              const Color(0xFF4A4A6A), // Slightly lighter
-                              const Color(0xFF3D3D5C), // Back to dark
+                              AppTheme.cardBackgroundColor,
+                              AppTheme.cardBackgroundColor.withOpacity(0.8),
+                              AppTheme.cardBackgroundColor,
                             ],
                             stops: const [0.0, 0.5, 1.0],
                           ),
@@ -380,6 +387,8 @@ class _MultiplayerResultsPageState extends State<MultiplayerResultsPage> {
           ],
         ),
       ),
+        );
+      },
     );
   }
 }

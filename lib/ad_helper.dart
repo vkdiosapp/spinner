@@ -360,3 +360,96 @@ class RewardedAdHelper {
   }
 }
 
+/// Native Ad Widget
+/// 
+/// This widget displays a native-style ad that matches the app's design
+/// Uses BannerAd styled to look like a native ad for simplicity
+class NativeAdWidget extends StatefulWidget {
+  const NativeAdWidget({super.key});
+
+  @override
+  State<NativeAdWidget> createState() => _NativeAdWidgetState();
+}
+
+class _NativeAdWidgetState extends State<NativeAdWidget> {
+  BannerAd? _bannerAd;
+  bool _isAdLoaded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAd();
+  }
+
+  void _loadAd() {
+    // Only load ad if ads are enabled
+    if (!SoundVibrationSettings.adsEnabled) {
+      return;
+    }
+
+    final adUnitId = AdHelper.getBannerAdUnitId();
+
+    _bannerAd = BannerAd(
+      adUnitId: adUnitId,
+      size: AdSize.mediumRectangle,
+      request: const AdRequest(),
+      listener: BannerAdListener(
+        onAdLoaded: (_) {
+          setState(() {
+            _isAdLoaded = true;
+          });
+        },
+        onAdFailedToLoad: (ad, error) {
+          ad.dispose();
+          setState(() {
+            _isAdLoaded = false;
+          });
+          debugPrint('Native-style ad failed to load: $error');
+        },
+      ),
+    );
+
+    _bannerAd?.load();
+  }
+
+  @override
+  void dispose() {
+    _bannerAd?.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Don't show ad widget if ads are disabled
+    if (!SoundVibrationSettings.adsEnabled) {
+      return const SizedBox.shrink();
+    }
+
+    // Only show ad container if ad is loaded
+    if (!_isAdLoaded || _bannerAd == null) {
+      return const SizedBox.shrink();
+    }
+
+    // Return native-style ad in a styled container matching the app design
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        color: const Color(0xFF3D3D5C),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Colors.white.withOpacity(0.2),
+          width: 1.5,
+        ),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: SizedBox(
+          height: 250,
+          width: double.infinity,
+          child: AdWidget(ad: _bannerAd!),
+        ),
+      ),
+    );
+  }
+}
+

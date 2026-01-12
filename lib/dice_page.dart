@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'app_theme.dart';
 import 'dart:math' as math;
 import 'sound_vibration_helper.dart';
 import 'ad_helper.dart';

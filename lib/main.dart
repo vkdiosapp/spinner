@@ -8,11 +8,13 @@ import 'onesignal_service.dart';
 import 'language_settings.dart';
 import 'language_selection_page.dart';
 import 'app_localizations_helper.dart';
+import 'app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SoundVibrationSettings.initialize();
   await LanguageSettings.initialize();
+  await AppTheme.initialize();
   
   // Initialize AdMob
   await MobileAds.instance.initialize();
@@ -38,15 +40,24 @@ class _MyAppState extends State<MyApp> {
     LanguageSettings.initialize();
     // Listen to locale changes and rebuild app
     LanguageSettings.localeNotifier.addListener(_onLocaleChanged);
+    // Listen to theme changes and rebuild app
+    AppTheme.themeNotifier.addListener(_onThemeChanged);
   }
   
   @override
   void dispose() {
     LanguageSettings.localeNotifier.removeListener(_onLocaleChanged);
+    AppTheme.themeNotifier.removeListener(_onThemeChanged);
     super.dispose();
   }
   
   void _onLocaleChanged() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
+  
+  void _onThemeChanged() {
     if (mounted) {
       setState(() {});
     }
@@ -62,21 +73,40 @@ class _MyAppState extends State<MyApp> {
     // Get current locale from notifier
     final currentLocale = LanguageSettings.localeNotifier.value;
     
-    return MaterialApp(
-      title: 'Spinner',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
-      // Localization configuration
-      localizationsDelegates: [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: AppLocalizationsHelper.getSupportedLocales(),
-      locale: currentLocale,
-      home: initialRoute,
+    return ValueListenableBuilder<bool>(
+      valueListenable: AppTheme.themeNotifier,
+      builder: (context, isDark, _) {
+        return MaterialApp(
+          title: 'Spinner',
+          theme: ThemeData(
+            brightness: Brightness.light,
+            scaffoldBackgroundColor: AppTheme.lightBackground,
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: Colors.deepPurple,
+              brightness: Brightness.light,
+            ),
+          ),
+          darkTheme: ThemeData(
+            brightness: Brightness.dark,
+            scaffoldBackgroundColor: AppTheme.darkBackground,
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: Colors.deepPurple,
+              brightness: Brightness.dark,
+            ),
+          ),
+          themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
+          // Localization configuration
+          localizationsDelegates: [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizationsHelper.getSupportedLocales(),
+          locale: currentLocale,
+          home: initialRoute,
+        );
+      },
     );
   }
 }

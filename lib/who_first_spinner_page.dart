@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'app_theme.dart';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'home_page.dart';
@@ -34,6 +35,7 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
   late List<Set<int>> _disabledRounds;
   int _currentUserIndex = 0;
   String? _winner;
+  Set<int> _winners = {}; // Track user indices who have won (completed all rounds)
 
   // Track completion order and scores for results page
   List<String> _completionOrder = [];
@@ -127,12 +129,21 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
       setState(() {
         final curvedValue = Curves.decelerate.transform(_controller.value);
         _rotation = (curvedValue * 360 * 6) + _randomOffset;
+
+        // Calculate speed based on curve derivative (rate of change)
+        final speed = _calculateSpeed(_controller.value);
+        SoundVibrationHelper.updateSpeed(speed);
       });
     });
 
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
-        _handleSpinComplete();
+        setState(() {
+          _isSpinning = false;
+          _handleSpinComplete();
+        });
+        // Stop continuous sound when animation completes
+        SoundVibrationHelper.stopContinuousSound();
       }
     });
 
@@ -182,9 +193,18 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
   }
 
   void _spin() {
+    // Skip if current user has already won
+    if (_winners.contains(_currentUserIndex)) {
+      _moveToNextUser();
+      return;
+    }
+    
     // Check if current user has already completed all rounds
     if (_disabledRounds[_currentUserIndex].length == widget.rounds) {
-      // User already completed, move to next
+      // User already completed, mark as winner and move to next
+      setState(() {
+        _winners.add(_currentUserIndex);
+      });
       _moveToNextUser();
       return;
     }
@@ -195,7 +215,10 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
         .toList();
 
     if (availableRounds.isEmpty) {
-      // Current user has no available rounds, move to next
+      // Current user has no available rounds, mark as winner and move to next
+      setState(() {
+        _winners.add(_currentUserIndex);
+      });
       _moveToNextUser();
       return;
     }
@@ -215,6 +238,11 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
 
     _controller.reset();
     _controller.forward();
+  }
+
+  // Calculate speed based on animation value (0.0 to 1.0)
+  double _calculateSpeed(double animationValue) {
+    return (1.0 - animationValue).clamp(0.1, 1.0);
   }
 
   void _handleSpinComplete() {
@@ -318,9 +346,19 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
         if (!_completionOrder.contains(currentUser)) {
           _completionOrder.add(currentUser);
         }
+        
+        // Mark this user as a winner
+        setState(() {
+          _winners.add(_currentUserIndex);
+        });
 
-        // Game ends when first user completes - navigate to results
-        _navigateToResults();
+        // Don't end game - continue playing, but skip this user in future turns
+        // Move to next user after a short delay
+        Future.delayed(const Duration(milliseconds: 300), () {
+          if (mounted) {
+            _moveToNextUser();
+          }
+        });
       } else {
         // Move to next user after a short delay
         Future.delayed(const Duration(milliseconds: 300), () {
@@ -330,7 +368,7 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
         });
       }
     } else {
-      // Landed on already disabled round - hide reveal and move to next user
+      // Landed on already disabled round - USER LOSES! Game ends
       setState(() {
         _isRevealed = false;
         _earnedNumber = null;
@@ -338,17 +376,35 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
       });
       _revealController.reset();
 
-      Future.delayed(const Duration(milliseconds: 300), () {
+      // Game ends - navigate to results
+      Future.delayed(const Duration(milliseconds: 500), () {
         if (mounted) {
-          _moveToNextUser();
+          _navigateToResults();
         }
       });
     }
   }
 
   void _moveToNextUser() {
+    // Find next user who hasn't won yet
+    int attempts = 0;
+    int nextUserIndex = (_currentUserIndex + 1) % _displayUsers.length;
+    
+    // Skip winners - find next non-winner user
+    while (_winners.contains(nextUserIndex) && attempts < _displayUsers.length) {
+      nextUserIndex = (nextUserIndex + 1) % _displayUsers.length;
+      attempts++;
+    }
+    
+    // If all users have won (shouldn't happen, but handle it)
+    if (_winners.contains(nextUserIndex) && _winners.length == _displayUsers.length) {
+      // All users won - navigate to results
+      _navigateToResults();
+      return;
+    }
+    
     setState(() {
-      _currentUserIndex = (_currentUserIndex + 1) % _displayUsers.length;
+      _currentUserIndex = nextUserIndex;
       _rotation = 0;
       _randomOffset = 0;
       _isHighlighting = false;
@@ -472,9 +528,12 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
           _goHome();
         }
       },
-      child: Scaffold(
-        backgroundColor: const Color(0xFF2D2D44),
-        body: SafeArea(
+      child: ValueListenableBuilder<bool>(
+        valueListenable: AppTheme.themeNotifier,
+        builder: (context, isDark, _) {
+          return Scaffold(
+            backgroundColor: AppTheme.backgroundColor,
+            body: SafeArea(
           child: Column(
             children: [
               // Header
@@ -503,19 +562,19 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
                           ],
                         ),
                         child: IconButton(
-                          icon: const Icon(
+                          icon: Icon(
                             Icons.arrow_back,
-                            color: Colors.white,
+                            color: AppTheme.textColor,
                           ),
                           onPressed: _goHome,
                         ),
                       ),
                     ),
-                    const Text(
+                    Text(
                       'Who First',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        color: Colors.white,
+                        color: AppTheme.textColor,
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
                       ),
@@ -697,8 +756,8 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
                                                                             _highlightAnimation.value,
                                                                           )!
                                                                         : Color.lerp(
-                                                                            Colors.green,
-                                                                            Colors.lightGreen,
+                                                                            const Color(0xFF00B894),
+                                                                            const Color(0xFF00B894).withOpacity(0.8),
                                                                             _highlightAnimation.value,
                                                                           )!
                                                                   : null;
@@ -723,7 +782,7 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
                                                                         ? Colors.red.withOpacity(
                                                                             0.7,
                                                                           )
-                                                                        : Colors.green.withOpacity(
+                                                                        : const Color(0xFF00B894).withOpacity(
                                                                             0.7,
                                                                           ),
                                                                     borderRadius:
@@ -736,7 +795,7 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
                                                                           ? Colors.white
                                                                           : isDisabled
                                                                           ? Colors.red
-                                                                          : Colors.green,
+                                                                          : const Color(0xFF00B894),
                                                                       width:
                                                                           isHighlighting
                                                                           ? 3
@@ -1292,8 +1351,8 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
                                                                                 _highlightAnimation.value,
                                                                               )!
                                                                             : Color.lerp(
-                                                                                Colors.green,
-                                                                                Colors.lightGreen,
+                                                                                const Color(0xFF00B894),
+                                                                                const Color(0xFF00B894).withOpacity(0.8),
                                                                                 _highlightAnimation.value,
                                                                               )!
                                                                       : null;
@@ -1318,7 +1377,7 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
                                                                             ? Colors.red.withOpacity(
                                                                                 0.7,
                                                                               )
-                                                                            : Colors.green.withOpacity(
+                                                                            : const Color(0xFF00B894).withOpacity(
                                                                                 0.7,
                                                                               ),
                                                                         borderRadius:
@@ -1331,7 +1390,7 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
                                                                               ? Colors.white
                                                                               : isDisabled
                                                                               ? Colors.red
-                                                                              : Colors.green,
+                                                                              : const Color(0xFF00B894),
                                                                           width:
                                                                               isHighlighting
                                                                               ? 3
@@ -1720,6 +1779,8 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
             ],
           ),
         ),
+          );
+        },
       ),
     );
   }

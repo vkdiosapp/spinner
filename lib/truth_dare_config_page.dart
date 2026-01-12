@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'app_theme.dart';
 import 'truth_dare_level_page.dart';
 import 'ad_helper.dart';
 import 'app_localizations_helper.dart';
@@ -67,11 +68,31 @@ class _TruthDareConfigPageState extends State<TruthDareConfigPage> {
     
     // Update users from controllers
     final updatedUsers = <String>[];
-    for (var controller in _userControllers) {
+    for (int i = 0; i < _userControllers.length; i++) {
+      final controller = _userControllers[i];
       final text = controller.text.trim();
-      if (text.isNotEmpty) {
-        updatedUsers.add(text);
+      if (text.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.pleaseAddAtLeastOneUser),
+            backgroundColor: Colors.red,
+          ),
+        );
+        // Focus on the empty field
+        _userFocusNodes[i].requestFocus();
+        return;
       }
+      if (text.length > 15) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Player name must be 15 characters or less'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        _userFocusNodes[i].requestFocus();
+        return;
+      }
+      updatedUsers.add(text);
     }
 
     if (updatedUsers.isEmpty) {
@@ -279,6 +300,7 @@ class _TruthDareConfigPageState extends State<TruthDareConfigPage> {
                                   controller: _userControllers[index],
                                   focusNode: _userFocusNodes[index],
                                   textCapitalization: TextCapitalization.words,
+                                  maxLength: 15,
                                   style: const TextStyle(
                                     color: Colors.white,
                                   ),
@@ -297,6 +319,7 @@ class _TruthDareConfigPageState extends State<TruthDareConfigPage> {
                                       horizontal: 16,
                                       vertical: 14,
                                     ),
+                                    counterText: '', // Hide character counter
                                   ),
                                 ),
                               );

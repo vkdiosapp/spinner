@@ -4,6 +4,7 @@ import 'who_first_spinner_page.dart';
 import 'math_spinner_page.dart';
 import 'ad_helper.dart';
 import 'app_localizations_helper.dart';
+import 'app_theme.dart';
 
 class MultiplayerConfigPage extends StatefulWidget {
   final bool isWhoFirst;
@@ -98,11 +99,31 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
       // For multiplayer mode, validate users
       // Update users from controllers
       final updatedUsers = <String>[];
-      for (var controller in _userControllers) {
+      for (int i = 0; i < _userControllers.length; i++) {
+        final controller = _userControllers[i];
         final text = controller.text.trim();
-        if (text.isNotEmpty) {
-          updatedUsers.add(text);
+        if (text.isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(l10n.pleaseAddAtLeastOneUser),
+              backgroundColor: Colors.red,
+            ),
+          );
+          // Focus on the empty field
+          _userFocusNodes[i].requestFocus();
+          return;
         }
+        if (text.length > 15) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Player name must be 15 characters or less'),
+              backgroundColor: Colors.red,
+            ),
+          );
+          _userFocusNodes[i].requestFocus();
+          return;
+        }
+        updatedUsers.add(text);
       }
 
       if (updatedUsers.isEmpty) {
@@ -155,11 +176,31 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
     // For multiplayer mode, validate users
     // Update users from controllers
     final updatedUsers = <String>[];
-    for (var controller in _userControllers) {
+    for (int i = 0; i < _userControllers.length; i++) {
+      final controller = _userControllers[i];
       final text = controller.text.trim();
-      if (text.isNotEmpty) {
-        updatedUsers.add(text);
+      if (text.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.pleaseAddAtLeastOneUser),
+            backgroundColor: Colors.red,
+          ),
+        );
+        // Focus on the empty field
+        _userFocusNodes[i].requestFocus();
+        return;
       }
+      if (text.length > 15) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Player name must be 15 characters or less'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        _userFocusNodes[i].requestFocus();
+        return;
+      }
+      updatedUsers.add(text);
     }
 
     if (updatedUsers.isEmpty) {
@@ -202,9 +243,12 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizationsHelper.of(context);
 
-    return Scaffold(
-      backgroundColor: const Color(0xFF2D2D44),
-      body: SafeArea(
+    return ValueListenableBuilder<bool>(
+      valueListenable: AppTheme.themeNotifier,
+      builder: (context, isDark, _) {
+        return Scaffold(
+          backgroundColor: AppTheme.backgroundColor,
+          body: SafeArea(
         child: Column(
           children: [
             // Fixed header with back button and title
@@ -280,8 +324,8 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
                             ),
                             child: Text(
                               l10n.start,
-                              style: const TextStyle(
-                                color: Colors.white,
+                              style: TextStyle(
+                                color: AppTheme.textColor,
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -306,7 +350,7 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
                   children: [
                     // Game Mode Selection Section
                     Card(
-                      color: const Color(0xFF3D3D5C),
+                      color: AppTheme.cardBackgroundColor,
                       child: Padding(
                         padding: const EdgeInsets.all(16),
                         child: Column(
@@ -314,8 +358,8 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
                           children: [
                             Text(
                               l10n.gameMode,
-                              style: const TextStyle(
-                                color: Colors.white,
+                              style: TextStyle(
+                                color: AppTheme.textColor,
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -353,14 +397,14 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
                                             _gameMode == 'single'
                                                 ? Icons.radio_button_checked
                                                 : Icons.radio_button_unchecked,
-                                            color: Colors.white,
+                                            color: AppTheme.textColor,
                                             size: 24,
                                           ),
                                           const SizedBox(width: 8),
                                           Text(
                                             l10n.singlePlayer,
-                                            style: const TextStyle(
-                                              color: Colors.white,
+                                            style: TextStyle(
+                                              color: AppTheme.textColor,
                                               fontSize: 16,
                                               fontWeight: FontWeight.w500,
                                             ),
@@ -402,14 +446,14 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
                                             _gameMode == 'multiplayer'
                                                 ? Icons.radio_button_checked
                                                 : Icons.radio_button_unchecked,
-                                            color: Colors.white,
+                                            color: AppTheme.textColor,
                                             size: 24,
                                           ),
                                           const SizedBox(width: 8),
                                           Text(
                                             l10n.multiplayerMode,
-                                            style: const TextStyle(
-                                              color: Colors.white,
+                                            style: TextStyle(
+                                              color: AppTheme.textColor,
                                               fontSize: 16,
                                               fontWeight: FontWeight.w500,
                                             ),
@@ -429,7 +473,7 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
                     // Rounds Selection Section (hide for WhoFirst and Math Spinner)
                     if (!widget.isWhoFirst && !widget.isMathSpinner)
                       Card(
-                        color: const Color(0xFF3D3D5C),
+                        color: AppTheme.cardBackgroundColor,
                         child: Padding(
                           padding: const EdgeInsets.all(16),
                           child: Column(
@@ -437,8 +481,8 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
                             children: [
                               Text(
                                 l10n.howManyRounds,
-                                style: const TextStyle(
-                                  color: Colors.white,
+                                style: TextStyle(
+                                  color: AppTheme.textColor,
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -479,7 +523,7 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
                                             child: Text(
                                               '$roundNumber',
                                               style: TextStyle(
-                                                color: Colors.white,
+                                                color: AppTheme.textColor,
                                                 fontSize: 18,
                                                 fontWeight: isSelected
                                                     ? FontWeight.bold
@@ -502,7 +546,7 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
                     // Users List Section (only show if multiplayer mode)
                     if (_gameMode == 'multiplayer')
                       Card(
-                        color: const Color(0xFF3D3D5C),
+                        color: AppTheme.cardBackgroundColor,
                         child: Padding(
                           padding: const EdgeInsets.all(16),
                           child: Column(
@@ -510,8 +554,8 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
                             children: [
                               Text(
                                 l10n.users,
-                                style: const TextStyle(
-                                  color: Colors.white,
+                                style: TextStyle(
+                                  color: AppTheme.textColor,
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -552,7 +596,7 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
                                             child: Text(
                                               '${playerCount}P',
                                               style: TextStyle(
-                                                color: Colors.white,
+                                                color: AppTheme.textColor,
                                                 fontSize: 16,
                                                 fontWeight: isSelected
                                                     ? FontWeight.bold
@@ -576,6 +620,7 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
                                     focusNode: _userFocusNodes[index],
                                     textCapitalization:
                                         TextCapitalization.words,
+                                    maxLength: 15,
                                     style: const TextStyle(color: Colors.white),
                                     decoration: InputDecoration(
                                       hintText: l10n.enterUserName,
@@ -583,7 +628,7 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
                                         color: Colors.white.withOpacity(0.5),
                                       ),
                                       filled: true,
-                                      fillColor: const Color(0xFF2D2D44),
+                                      fillColor: const Color(0xFF2D2D44), // Same as spinner items
                                       border: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(12),
                                         borderSide: BorderSide.none,
@@ -593,6 +638,7 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
                                             horizontal: 16,
                                             vertical: 14,
                                           ),
+                                      counterText: '', // Hide character counter
                                     ),
                                   ),
                                 );
@@ -610,6 +656,8 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
           ],
         ),
       ),
+        );
+      },
     );
   }
 }

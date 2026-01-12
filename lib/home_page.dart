@@ -7,6 +7,7 @@ import 'multiplayer_config_page.dart';
 import 'sound_vibration_settings.dart';
 import 'language_selection_page.dart';
 import 'app_localizations_helper.dart';
+import 'app_theme.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -25,6 +26,18 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     _loadSettings();
   }
+
+  // Theme toggle method - commented out for future use
+  // Future<void> _toggleTheme() async {
+  //   await AppTheme.toggleTheme();
+  //   // Provide feedback when toggled
+  //   try {
+  //     SystemSound.play(SystemSoundType.click);
+  //     HapticFeedback.mediumImpact();
+  //   } catch (e) {
+  //     // Ignore errors
+  //   }
+  // }
 
   Future<void> _loadSettings() async {
     await SoundVibrationSettings.initialize();
@@ -111,7 +124,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizationsHelper.of(context);
-    
+
     final items = [
       {
         'title': l10n.randomPicker,
@@ -150,258 +163,307 @@ class _HomePageState extends State<HomePage> {
       },
     ];
 
-    return Scaffold(
-      backgroundColor: const Color(0xFF2D2D44),
-      body: SafeArea(
-        child: Stack(
-          children: [
-            // Language icon - top left
-            Positioned(
-              top: 16,
-              left: 16,
-              child: Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF6C5CE7),
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.3),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
+    return ValueListenableBuilder<bool>(
+      valueListenable: AppTheme.themeNotifier,
+      builder: (context, isDark, _) {
+        return Scaffold(
+          backgroundColor: AppTheme.backgroundColor,
+          body: SafeArea(
+            child: Stack(
+              children: [
+                // Language icon - top left
+                Positioned(
+                  top: 16,
+                  left: 16,
+                  child: Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF6C5CE7),
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                child: IconButton(
-                  icon: const Icon(Icons.language, color: Colors.white, size: 24),
-                  onPressed: () async {
-                    final result = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const LanguageSelectionPage(),
+                    child: IconButton(
+                      icon: const Icon(
+                        Icons.language,
+                        color: Colors.white,
+                        size: 24,
                       ),
-                    );
-                    // Reload page if language changed
-                    if (result == true) {
-                      setState(() {});
-                    }
-                  },
-                  tooltip: l10n.changeLanguage,
-                ),
-              ),
-            ),
-            LayoutBuilder(
-              builder: (context, constraints) {
-                final isLandscape =
-                    constraints.maxWidth > constraints.maxHeight;
-                final itemSize = isLandscape
-                    ? constraints.maxWidth / 5
-                    : constraints.maxWidth / 2.5;
-
-                return Center(
-                  child: SingleChildScrollView(
-                    child: Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const SizedBox(height: 20),
-                          Text(
-                            l10n.appTitle,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 32,
-                              fontWeight: FontWeight.bold,
-                            ),
+                      onPressed: () async {
+                        final result = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const LanguageSelectionPage(),
                           ),
-                          const SizedBox(height: 30),
-                          Wrap(
-                            alignment: WrapAlignment.center,
-                            spacing: 12,
-                            runSpacing: 12,
-                            children: items.map((item) {
-                              return SizedBox(
-                                width: itemSize,
-                                height: itemSize,
-                                child: Card(
-                                  color: const Color(0xFF3D3D5C),
-                                  child: InkWell(
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              item['route'] as Widget,
+                        );
+                        // Reload page if language changed
+                        if (result == true) {
+                          setState(() {});
+                        }
+                      },
+                      tooltip: l10n.changeLanguage,
+                    ),
+                  ),
+                ),
+                // Theme toggle button - top right (above sound/vibration buttons)
+                // Commented out - will use later
+                // Positioned(
+                //   top: 16,
+                //   right: 16,
+                //   child: Container(
+                //     width: 48,
+                //     height: 48,
+                //     decoration: BoxDecoration(
+                //       color: const Color(0xFF6C5CE7),
+                //       shape: BoxShape.circle,
+                //       boxShadow: [
+                //         BoxShadow(
+                //           color: Colors.black.withOpacity(0.3),
+                //           blurRadius: 8,
+                //           offset: const Offset(0, 2),
+                //         ),
+                //       ],
+                //     ),
+                //     child: ValueListenableBuilder<bool>(
+                //       valueListenable: AppTheme.themeNotifier,
+                //       builder: (context, isDark, _) {
+                //         return IconButton(
+                //           icon: Icon(
+                //             isDark ? Icons.light_mode : Icons.dark_mode,
+                //             color: Colors.white,
+                //             size: 24,
+                //           ),
+                //           onPressed: () {}, // _toggleTheme - commented out
+                //           tooltip: isDark ? 'Light Theme' : 'Dark Theme',
+                //         );
+                //       },
+                //     ),
+                //   ),
+                // ),
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    final isLandscape =
+                        constraints.maxWidth > constraints.maxHeight;
+                    final itemSize = isLandscape
+                        ? constraints.maxWidth / 5
+                        : constraints.maxWidth / 2.5;
+
+                    return Center(
+                      child: SingleChildScrollView(
+                        child: Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const SizedBox(height: 20),
+                              Text(
+                                l10n.appTitle,
+                                style: TextStyle(
+                                  color: AppTheme.textColor,
+                                  fontSize: 32,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 30),
+                              Wrap(
+                                alignment: WrapAlignment.center,
+                                spacing: 12,
+                                runSpacing: 12,
+                                children: items.map((item) {
+                                  return SizedBox(
+                                    width: itemSize,
+                                    height: itemSize,
+                                    child: Card(
+                                      color: AppTheme.cardBackgroundColor,
+                                      child: InkWell(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  item['route'] as Widget,
+                                            ),
+                                          );
+                                        },
+                                        borderRadius: BorderRadius.circular(12),
+                                        child: Container(
+                                          padding: const EdgeInsets.all(12),
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Container(
+                                                width: itemSize * 0.35,
+                                                height: itemSize * 0.35,
+                                                decoration: BoxDecoration(
+                                                  color: item['color'] as Color,
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                ),
+                                                child: Icon(
+                                                  item['icon'] as IconData,
+                                                  color: AppTheme.textColor,
+                                                  size: itemSize * 0.2,
+                                                ),
+                                              ),
+                                              const SizedBox(height: 8),
+                                              Text(
+                                                item['title'] as String,
+                                                style: TextStyle(
+                                                  color: AppTheme.textColor,
+                                                  fontSize: itemSize * 0.08,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                                textAlign: TextAlign.center,
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                              const SizedBox(height: 4),
+                                              Text(
+                                                item['description'] as String,
+                                                style: TextStyle(
+                                                  color: AppTheme
+                                                      .textSecondaryColor,
+                                                  fontSize: itemSize * 0.055,
+                                                ),
+                                                textAlign: TextAlign.center,
+                                                maxLines: 2,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ],
+                                          ),
                                         ),
-                                      );
-                                    },
-                                    borderRadius: BorderRadius.circular(12),
-                                    child: Container(
-                                      padding: const EdgeInsets.all(12),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Container(
-                                            width: itemSize * 0.35,
-                                            height: itemSize * 0.35,
-                                            decoration: BoxDecoration(
-                                              color: item['color'] as Color,
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                            ),
-                                            child: Icon(
-                                              item['icon'] as IconData,
-                                              color: Colors.white,
-                                              size: itemSize * 0.2,
-                                            ),
-                                          ),
-                                          const SizedBox(height: 8),
-                                          Text(
-                                            item['title'] as String,
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: itemSize * 0.08,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                            textAlign: TextAlign.center,
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                          const SizedBox(height: 4),
-                                          Text(
-                                            item['description'] as String,
-                                            style: TextStyle(
-                                              color: Colors.white70,
-                                              fontSize: itemSize * 0.055,
-                                            ),
-                                            textAlign: TextAlign.center,
-                                            maxLines: 2,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ],
                                       ),
                                     ),
-                                  ),
-                                ),
-                              );
-                            }).toList(),
+                                  );
+                                }).toList(),
+                              ),
+                              const SizedBox(height: 20),
+                            ],
                           ),
-                          const SizedBox(height: 20),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+                // Sound and Vibration toggle buttons - below theme button
+                Positioned(
+                  top: 72,
+                  right: 16,
+                  child: IgnorePointer(
+                    ignoring: false,
+                    child: Material(
+                      color: Colors.transparent,
+                      elevation: 10,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          // Ads toggle button
+                          Container(
+                            width: 48,
+                            height: 48,
+                            margin: const EdgeInsets.only(right: 12),
+                            decoration: BoxDecoration(
+                              color: _adsEnabled
+                                  ? const Color(0xFF6C5CE7)
+                                  : AppTheme.cardBackgroundColor,
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.3),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: IconButton(
+                              icon: Icon(
+                                _adsEnabled
+                                    ? Icons.ads_click
+                                    : Icons.ads_click_outlined,
+                                color: Colors.white,
+                              ),
+                              onPressed: _toggleAds,
+                              tooltip: _adsEnabled ? l10n.adsOn : l10n.adsOff,
+                            ),
+                          ),
+                          // Vibration toggle button
+                          Container(
+                            width: 48,
+                            height: 48,
+                            margin: const EdgeInsets.only(right: 12),
+                            decoration: BoxDecoration(
+                              color: _vibrationEnabled
+                                  ? const Color(0xFF6C5CE7)
+                                  : AppTheme.cardBackgroundColor,
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.3),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: IconButton(
+                              icon: Icon(
+                                _vibrationEnabled
+                                    ? Icons.vibration
+                                    : Icons.vibration_outlined,
+                                color: Colors.white,
+                              ),
+                              onPressed: _toggleVibration,
+                              tooltip: _vibrationEnabled
+                                  ? l10n.vibrationOn
+                                  : l10n.vibrationOff,
+                            ),
+                          ),
+                          // Sound toggle button
+                          Container(
+                            width: 48,
+                            height: 48,
+                            decoration: BoxDecoration(
+                              color: _soundEnabled
+                                  ? const Color(0xFF6C5CE7)
+                                  : AppTheme.cardBackgroundColor,
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.3),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: IconButton(
+                              icon: Icon(
+                                _soundEnabled
+                                    ? Icons.volume_up
+                                    : Icons.volume_off,
+                                color: Colors.white,
+                              ),
+                              onPressed: _toggleSound,
+                              tooltip: _soundEnabled
+                                  ? l10n.soundOn
+                                  : l10n.soundOff,
+                            ),
+                          ),
                         ],
                       ),
                     ),
                   ),
-                );
-              },
-            ),
-            // Sound and Vibration toggle buttons - top right (above all UI)
-            Positioned(
-              top: 16,
-              right: 16,
-              child: IgnorePointer(
-                ignoring: false,
-                child: Material(
-                  color: Colors.transparent,
-                  elevation: 10,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Ads toggle button
-                      Container(
-                        width: 48,
-                        height: 48,
-                        margin: const EdgeInsets.only(right: 12),
-                        decoration: BoxDecoration(
-                          color: _adsEnabled
-                              ? const Color(0xFF6C5CE7)
-                              : const Color(0xFF3D3D5C),
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.3),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: IconButton(
-                          icon: Icon(
-                            _adsEnabled
-                                ? Icons.ads_click
-                                : Icons.ads_click_outlined,
-                            color: Colors.white,
-                          ),
-                          onPressed: _toggleAds,
-                          tooltip: _adsEnabled ? l10n.adsOn : l10n.adsOff,
-                        ),
-                      ),
-                      // Vibration toggle button
-                      Container(
-                        width: 48,
-                        height: 48,
-                        margin: const EdgeInsets.only(right: 12),
-                        decoration: BoxDecoration(
-                          color: _vibrationEnabled
-                              ? const Color(0xFF6C5CE7)
-                              : const Color(0xFF3D3D5C),
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.3),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: IconButton(
-                          icon: Icon(
-                            _vibrationEnabled
-                                ? Icons.vibration
-                                : Icons.vibration_outlined,
-                            color: Colors.white,
-                          ),
-                          onPressed: _toggleVibration,
-                          tooltip: _vibrationEnabled
-                              ? l10n.vibrationOn
-                              : l10n.vibrationOff,
-                        ),
-                      ),
-                      // Sound toggle button
-                      Container(
-                        width: 48,
-                        height: 48,
-                        decoration: BoxDecoration(
-                          color: _soundEnabled
-                              ? const Color(0xFF6C5CE7)
-                              : const Color(0xFF3D3D5C),
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.3),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: IconButton(
-                          icon: Icon(
-                            _soundEnabled ? Icons.volume_up : Icons.volume_off,
-                            color: Colors.white,
-                          ),
-                          onPressed: _toggleSound,
-                          tooltip: _soundEnabled ? l10n.soundOn : l10n.soundOff,
-                        ),
-                      ),
-                    ],
-                  ),
                 ),
-              ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }

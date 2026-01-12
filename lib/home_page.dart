@@ -20,6 +20,7 @@ class _HomePageState extends State<HomePage> {
   bool _soundEnabled = true;
   bool _vibrationEnabled = true;
   bool _adsEnabled = true;
+  bool _showSettingsPopup = false;
 
   @override
   void initState() {
@@ -27,7 +28,7 @@ class _HomePageState extends State<HomePage> {
     _loadSettings();
   }
 
-  // Theme toggle method - commented out for future use
+  // Theme toggle method - commented out temporarily, will use later
   // Future<void> _toggleTheme() async {
   //   await AppTheme.toggleTheme();
   //   // Provide feedback when toggled
@@ -211,11 +212,12 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                 ),
-                // Theme toggle button - top right (above sound/vibration buttons)
-                // Commented out - will use later
+                // Theme toggle button - beside language button (top left)
+                // Commented out temporarily - will use later
                 // Positioned(
                 //   top: 16,
-                //   right: 16,
+                //   left:
+                //       72, // 16 (left margin) + 48 (button width) + 8 (spacing)
                 //   child: Container(
                 //     width: 48,
                 //     height: 48,
@@ -239,7 +241,7 @@ class _HomePageState extends State<HomePage> {
                 //             color: Colors.white,
                 //             size: 24,
                 //           ),
-                //           onPressed: () {}, // _toggleTheme - commented out
+                //           onPressed: _toggleTheme,
                 //           tooltip: isDark ? 'Light Theme' : 'Dark Theme',
                 //         );
                 //       },
@@ -352,113 +354,168 @@ class _HomePageState extends State<HomePage> {
                     );
                   },
                 ),
-                // Sound and Vibration toggle buttons - below theme button
+                // Settings icon button - top right
                 Positioned(
-                  top: 72,
+                  top: 16,
                   right: 16,
-                  child: IgnorePointer(
-                    ignoring: false,
-                    child: Material(
-                      color: Colors.transparent,
-                      elevation: 10,
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          // Ads toggle button
-                          Container(
-                            width: 48,
-                            height: 48,
-                            margin: const EdgeInsets.only(right: 12),
-                            decoration: BoxDecoration(
-                              color: _adsEnabled
-                                  ? const Color(0xFF6C5CE7)
-                                  : AppTheme.cardBackgroundColor,
-                              shape: BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.3),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                            child: IconButton(
-                              icon: Icon(
-                                _adsEnabled
-                                    ? Icons.ads_click
-                                    : Icons.ads_click_outlined,
-                                color: Colors.white,
-                              ),
-                              onPressed: _toggleAds,
-                              tooltip: _adsEnabled ? l10n.adsOn : l10n.adsOff,
-                            ),
-                          ),
-                          // Vibration toggle button
-                          Container(
-                            width: 48,
-                            height: 48,
-                            margin: const EdgeInsets.only(right: 12),
-                            decoration: BoxDecoration(
-                              color: _vibrationEnabled
-                                  ? const Color(0xFF6C5CE7)
-                                  : AppTheme.cardBackgroundColor,
-                              shape: BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.3),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                            child: IconButton(
-                              icon: Icon(
-                                _vibrationEnabled
-                                    ? Icons.vibration
-                                    : Icons.vibration_outlined,
-                                color: Colors.white,
-                              ),
-                              onPressed: _toggleVibration,
-                              tooltip: _vibrationEnabled
-                                  ? l10n.vibrationOn
-                                  : l10n.vibrationOff,
-                            ),
-                          ),
-                          // Sound toggle button
-                          Container(
-                            width: 48,
-                            height: 48,
-                            decoration: BoxDecoration(
-                              color: _soundEnabled
-                                  ? const Color(0xFF6C5CE7)
-                                  : AppTheme.cardBackgroundColor,
-                              shape: BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.3),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                            child: IconButton(
-                              icon: Icon(
-                                _soundEnabled
-                                    ? Icons.volume_up
-                                    : Icons.volume_off,
-                                color: Colors.white,
-                              ),
-                              onPressed: _toggleSound,
-                              tooltip: _soundEnabled
-                                  ? l10n.soundOn
-                                  : l10n.soundOff,
-                            ),
-                          ),
-                        ],
+                  child: Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF6C5CE7),
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: IconButton(
+                      icon: const Icon(
+                        Icons.settings,
+                        color: Colors.white,
+                        size: 24,
                       ),
+                      onPressed: () {
+                        setState(() {
+                          _showSettingsPopup = !_showSettingsPopup;
+                        });
+                      },
+                      tooltip: 'Settings',
                     ),
                   ),
                 ),
+                // Tap outside to close popup - placed before popup so it doesn't block it
+                if (_showSettingsPopup)
+                  Positioned.fill(
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.translucent,
+                      onTap: () {
+                        setState(() {
+                          _showSettingsPopup = false;
+                        });
+                      },
+                      child: Container(color: Colors.transparent),
+                    ),
+                  ),
+                // Settings popup - top right corner
+                if (_showSettingsPopup)
+                  Positioned(
+                    top: 72,
+                    right: 16,
+                    child: GestureDetector(
+                      onTap: () {
+                        // Prevent tap from closing popup when tapping inside
+                      },
+                      child: Material(
+                        color: Colors.transparent,
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: AppTheme.cardBackgroundColor,
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.3),
+                                blurRadius: 12,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              // Ads toggle button
+                              Container(
+                                width: 48,
+                                height: 48,
+                                margin: const EdgeInsets.only(bottom: 12),
+                                decoration: BoxDecoration(
+                                  color: _adsEnabled
+                                      ? const Color(0xFF6C5CE7)
+                                      : AppTheme.cardBackgroundColor,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Colors.white.withOpacity(0.2),
+                                    width: 1,
+                                  ),
+                                ),
+                                child: IconButton(
+                                  icon: Icon(
+                                    _adsEnabled
+                                        ? Icons.ads_click
+                                        : Icons.ads_click_outlined,
+                                    color: Colors.white,
+                                  ),
+                                  onPressed: _toggleAds,
+                                  tooltip: _adsEnabled
+                                      ? l10n.adsOn
+                                      : l10n.adsOff,
+                                ),
+                              ),
+                              // Vibration toggle button
+                              Container(
+                                width: 48,
+                                height: 48,
+                                margin: const EdgeInsets.only(bottom: 12),
+                                decoration: BoxDecoration(
+                                  color: _vibrationEnabled
+                                      ? const Color(0xFF6C5CE7)
+                                      : AppTheme.cardBackgroundColor,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Colors.white.withOpacity(0.2),
+                                    width: 1,
+                                  ),
+                                ),
+                                child: IconButton(
+                                  icon: Icon(
+                                    _vibrationEnabled
+                                        ? Icons.vibration
+                                        : Icons.vibration_outlined,
+                                    color: Colors.white,
+                                  ),
+                                  onPressed: _toggleVibration,
+                                  tooltip: _vibrationEnabled
+                                      ? l10n.vibrationOn
+                                      : l10n.vibrationOff,
+                                ),
+                              ),
+                              // Sound toggle button
+                              Container(
+                                width: 48,
+                                height: 48,
+                                decoration: BoxDecoration(
+                                  color: _soundEnabled
+                                      ? const Color(0xFF6C5CE7)
+                                      : AppTheme.cardBackgroundColor,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Colors.white.withOpacity(0.2),
+                                    width: 1,
+                                  ),
+                                ),
+                                child: IconButton(
+                                  icon: Icon(
+                                    _soundEnabled
+                                        ? Icons.volume_up
+                                        : Icons.volume_off,
+                                    color: Colors.white,
+                                  ),
+                                  onPressed: _toggleSound,
+                                  tooltip: _soundEnabled
+                                      ? l10n.soundOn
+                                      : l10n.soundOff,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
               ],
             ),
           ),

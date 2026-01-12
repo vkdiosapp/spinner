@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
-import 'app_theme.dart';
 import 'dart:math' as math;
 import 'home_page.dart';
 import 'sound_vibration_helper.dart';
 import 'ad_helper.dart';
 import 'spinner_colors.dart';
 import 'app_localizations_helper.dart';
+import 'multiplayer_results_page.dart';
+
+// Global failure probability count - change this value to adjust failure probability
+const int _failProbabilityCount = 0;
 
 class MathSpinnerPage extends StatefulWidget {
   final List<String> users;
 
-  const MathSpinnerPage({
-    super.key,
-    required this.users,
-  });
+  const MathSpinnerPage({super.key, required this.users});
 
   @override
   State<MathSpinnerPage> createState() => _MathSpinnerPageState();
@@ -40,7 +40,15 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
   int _currentUserIndex = 0;
   late List<String> _displayUsers;
   bool _isSinglePlayer = false;
-  String? _winner;
+  Set<int> _winners = {}; // Track users who got correct answers (by index)
+
+  // Score tracking
+  Map<String, int> _scores = {}; // Total scores per user
+  Map<int, Map<String, int>> _roundScores = {}; // Scores per round
+  int _currentRound = 1;
+
+  // Failure probability tracking per user
+  Map<String, int> _userFailureCount = {};
 
   // Math question
   String _mathQuestion = '';
@@ -61,6 +69,17 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
       _displayUsers = ['You', 'Computer'];
     } else {
       _displayUsers = List.from(widget.users);
+    }
+
+    // Initialize failure count for all users
+    for (var user in _displayUsers) {
+      _userFailureCount[user] = 0;
+      _scores[user] = 0;
+    }
+    // Initialize round scores
+    _roundScores[1] = {};
+    for (var user in _displayUsers) {
+      _roundScores[1]![user] = 0;
     }
 
     // Initialize animation controllers
@@ -105,6 +124,8 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
 
     // Preload interstitial ad for leave game
     InterstitialAdHelper.loadInterstitialAd();
+    // Preload rewarded ad for game results
+    RewardedAdHelper.loadRewardedAd();
 
     // If single player and it's Computer's turn, auto-spin
     if (_isSinglePlayer && _displayUsers[_currentUserIndex] == 'Computer') {
@@ -120,7 +141,7 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
     // Generate random math question with result between 1-100
     while (true) {
       final operation = _random.nextInt(4); // 0: +, 1: -, 2: *, 3: /
-      
+
       if (operation == 0) {
         // Addition
         _num1 = _random.nextInt(90) + 1; // 1-90
@@ -164,7 +185,7 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
 
     // Create list of numbers: 1 correct answer + 9 random numbers
     final numbers = <int>[_correctAnswer];
-    
+
     // Generate 9 random numbers that look similar to the answer
     // Make them within a range of ±20 from the correct answer, but ensure they're different
     while (numbers.length < 10) {
@@ -172,17 +193,18 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
       final range = 20; // Range around the correct answer
       final minVal = math.max(1, _correctAnswer - range);
       final maxVal = math.min(100, _correctAnswer + range);
-      
+
       // Generate candidate in the range
       candidate = _random.nextInt(maxVal - minVal + 1) + minVal;
-      
+
       // If we're running out of options, expand the range
       int attempts = 0;
-      while ((candidate == _correctAnswer || numbers.contains(candidate)) && attempts < 50) {
+      while ((candidate == _correctAnswer || numbers.contains(candidate)) &&
+          attempts < 50) {
         candidate = _random.nextInt(maxVal - minVal + 1) + minVal;
         attempts++;
       }
-      
+
       // If still can't find unique, try any number in 1-100
       if (numbers.contains(candidate) || candidate == _correctAnswer) {
         candidate = _random.nextInt(100) + 1;
@@ -190,7 +212,7 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
           candidate = _random.nextInt(100) + 1;
         }
       }
-      
+
       numbers.add(candidate);
     }
 
@@ -201,7 +223,7 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
     for (int i = 0; i < 10; i++) {
       final number = numbers[i];
       final isCorrect = number == _correctAnswer;
-      
+
       // Assign color
       Color segmentColor;
       if (isCorrect) {
@@ -209,16 +231,18 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
         segmentColor = const Color(0xFF4CAF50);
       } else {
         // Use random color from spinner colors
-        segmentColor = SpinnerColors.segmentColors[
-            i % SpinnerColors.segmentColors.length];
+        segmentColor =
+            SpinnerColors.segmentColors[i % SpinnerColors.segmentColors.length];
       }
 
       _segmentColors.add(segmentColor);
-      _segments.add(SegmentInfo(
-        value: number.toString(),
-        color: segmentColor,
-        isCorrect: isCorrect,
-      ));
+      _segments.add(
+        SegmentInfo(
+          value: number.toString(),
+          color: segmentColor,
+          isCorrect: isCorrect,
+        ),
+      );
     }
   }
 
@@ -253,8 +277,16 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
   void _spin({bool isAutoSpin = false}) {
     if (_isSpinning || _isRevealed || _isWaitingForNextTurn) return;
 
+    // Skip if current user is already a winner
+    if (_winners.contains(_currentUserIndex)) {
+      _moveToNextUser();
+      return;
+    }
+
     // Only allow current user to spin (unless it's an auto-spin for computer)
-    if (!isAutoSpin && _isSinglePlayer && _displayUsers[_currentUserIndex] == 'Computer') {
+    if (!isAutoSpin &&
+        _isSinglePlayer &&
+        _displayUsers[_currentUserIndex] == 'Computer') {
       // Computer's turn - should be handled by auto-spin only
       return;
     }
@@ -267,8 +299,38 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
     SoundVibrationHelper.playSpinEffects();
     SoundVibrationHelper.startContinuousSound();
 
-    // Random rotation offset (0-360 degrees) to land on a random segment
-    _randomOffset = _random.nextDouble() * 360;
+    // Check failure probability logic
+    final currentUser = _displayUsers[_currentUserIndex];
+    final failureCount = _userFailureCount[currentUser] ?? 0;
+    final shouldForceCorrect = failureCount >= _failProbabilityCount;
+
+    if (shouldForceCorrect) {
+      // Force spinner to land on correct answer
+      // Find the correct answer segment index
+      int correctSegmentIndex = -1;
+      for (int i = 0; i < _segments.length; i++) {
+        if (_segments[i].isCorrect) {
+          correctSegmentIndex = i;
+          break;
+        }
+      }
+
+      if (correctSegmentIndex != -1) {
+        // Calculate the angle needed to land on the correct segment
+        final segmentAngle = 360.0 / _segments.length;
+        final correctSegmentStartAngle = correctSegmentIndex * segmentAngle;
+        // Add a small offset to land in the middle of the segment
+        final targetAngle = correctSegmentStartAngle + (segmentAngle / 2);
+        // Convert to rotation offset (accounting for pointer at top)
+        _randomOffset = (360 - targetAngle) % 360;
+      } else {
+        // Fallback to random if correct segment not found
+        _randomOffset = _random.nextDouble() * 360;
+      }
+    } else {
+      // Random rotation offset (0-360 degrees) to land on a random segment
+      _randomOffset = _random.nextDouble() * 360;
+    }
 
     _controller.reset();
     _controller.forward();
@@ -287,7 +349,7 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
     // Find the segment that contains this start angle
     int segmentIndex = 0;
     final segmentAngle = 360.0 / _segments.length;
-    
+
     for (int i = 0; i < _segments.length; i++) {
       final startAngle = i * segmentAngle;
       final endAngle = (i + 1) * segmentAngle;
@@ -324,19 +386,49 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
       // After reveal animation completes, wait a bit then check result
       Future.delayed(const Duration(milliseconds: 800), () {
         if (!mounted) return;
-        
+
         // Check if correct answer
+        final currentUser = _displayUsers[_currentUserIndex];
         if (isCorrect) {
-          // Winner found!
-          _winner = _displayUsers[_currentUserIndex];
+          // Reset failure count to 0 when user gets correct answer
+          _userFailureCount[currentUser] = 0;
+
+          // Add user to winners set (skip them in future turns)
+          _winners.add(_currentUserIndex);
+
+          // Update scores
+          _scores[currentUser] = (_scores[currentUser] ?? 0) + 1;
+          _roundScores[_currentRound]![currentUser] =
+              (_roundScores[_currentRound]![currentUser] ?? 0) + 1;
+
+          // Check if all other users have won (last user loses)
+          if (_winners.length == _displayUsers.length - 1) {
+            // All other users won - last user lost, game ends immediately
+            Future.delayed(const Duration(milliseconds: 500), () {
+              if (mounted) {
+                _navigateToResults();
+              }
+            });
+            return;
+          }
+
+          // Generate new math question when user wins
+          _generateMathQuestion();
+          _generateSpinnerSegments();
+
+          // Continue game - move to next user (winner will be skipped)
+          _moveToNextUser();
+        } else {
+          // Wrong answer - increment failure count for this user
+          _userFailureCount[currentUser] =
+              (_userFailureCount[currentUser] ?? 0) + 1;
+
+          // Game ends when user gets wrong answer - navigate to results
           Future.delayed(const Duration(milliseconds: 500), () {
             if (mounted) {
-              _showWinnerDialog();
+              _navigateToResults();
             }
           });
-        } else {
-          // Wrong answer - move to next user
-          _moveToNextUser();
         }
       });
     });
@@ -359,88 +451,80 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
     // Move to next user after a delay to ensure state is updated
     Future.delayed(const Duration(milliseconds: 800), () {
       if (!mounted) return;
-      
-      if (_currentUserIndex < _displayUsers.length - 1) {
-        setState(() {
-          _currentUserIndex++;
-          _isWaitingForNextTurn = false;
-          _isRevealed = false; // Ensure revealed is false
-          _isSpinning = false; // Ensure spinning is false
-          _rotation = 0; // Ensure spinner is reset to 0 position
-          _randomOffset = 0; // Reset offset for next spin
-        });
 
-        // If single player and it's Computer's turn, auto-spin
-        if (_isSinglePlayer && _displayUsers[_currentUserIndex] == 'Computer') {
-          Future.delayed(const Duration(milliseconds: 300), () {
-            if (mounted && !_isSpinning && !_isRevealed && !_isWaitingForNextTurn) {
-              _spin(isAutoSpin: true);
-            }
-          });
-        }
-        // If single player and it's "You"'s turn, wait for manual spin (no auto-spin)
-      } else {
-        // Back to first user
-        setState(() {
-          _currentUserIndex = 0;
-          _isWaitingForNextTurn = false;
-          _isRevealed = false; // Ensure revealed is false
-          _isSpinning = false; // Ensure spinning is false
-          _rotation = 0; // Ensure spinner is reset to 0 position
-          _randomOffset = 0; // Reset offset for next spin
-        });
+      // Find next user who hasn't won yet
+      int attempts = 0;
+      int nextUserIndex = (_currentUserIndex + 1) % _displayUsers.length;
 
-        // If single player and it's Computer's turn, auto-spin
-        if (_isSinglePlayer && _displayUsers[_currentUserIndex] == 'Computer') {
-          Future.delayed(const Duration(milliseconds: 300), () {
-            if (mounted && !_isSpinning && !_isRevealed && !_isWaitingForNextTurn) {
-              _spin(isAutoSpin: true);
-            }
-          });
-        }
-        // If single player and it's "You"'s turn, wait for manual spin (no auto-spin)
+      // Skip winners - find next non-winner user
+      while (_winners.contains(nextUserIndex) &&
+          attempts < _displayUsers.length) {
+        nextUserIndex = (nextUserIndex + 1) % _displayUsers.length;
+        attempts++;
       }
+
+      // If all other users have won, the last user automatically loses
+      if (_winners.length == _displayUsers.length - 1) {
+        // All other users won - last user lost, game ends
+        Future.delayed(const Duration(milliseconds: 500), () {
+          if (mounted) {
+            _navigateToResults();
+          }
+        });
+        return;
+      }
+
+      // If all users have won (shouldn't happen, but handle it)
+      if (_winners.contains(nextUserIndex) &&
+          _winners.length == _displayUsers.length) {
+        // All users won - navigate to results
+        _navigateToResults();
+        return;
+      }
+
+      setState(() {
+        _currentUserIndex = nextUserIndex;
+        _isWaitingForNextTurn = false;
+        _isRevealed = false; // Ensure revealed is false
+        _isSpinning = false; // Ensure spinning is false
+        _rotation = 0; // Ensure spinner is reset to 0 position
+        _randomOffset = 0; // Reset offset for next spin
+      });
+
+      // If single player and it's Computer's turn, auto-spin
+      if (_isSinglePlayer && _displayUsers[_currentUserIndex] == 'Computer') {
+        Future.delayed(const Duration(milliseconds: 300), () {
+          if (mounted &&
+              !_isSpinning &&
+              !_isRevealed &&
+              !_isWaitingForNextTurn) {
+            _spin(isAutoSpin: true);
+          }
+        });
+      }
+      // If single player and it's "You"'s turn, wait for manual spin (no auto-spin)
     });
   }
 
-  void _showWinnerDialog() {
-    final l10n = AppLocalizationsHelper.of(context);
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: const Color(0xFF3D3D5C),
-          title: Text(
-            '🎉 ${l10n.gameResults} 🎉',
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
+  Future<void> _navigateToResults() async {
+    // Show rewarded ad before navigating to results page
+    await RewardedAdHelper.showRewardedAd(
+      onRewarded: () {
+        // User earned reward (ad was watched)
+        debugPrint('User earned reward - viewing results');
+      },
+      onAdClosed: () {
+        // Navigate after ad is closed
+        if (!mounted) return;
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => MultiplayerResultsPage(
+              users: _displayUsers,
+              rounds: _currentRound,
+              roundScores: _roundScores,
+              totalScores: Map<String, int>.from(_scores),
             ),
           ),
-          content: Text(
-            '${_winner == 'You' ? l10n.you : (_winner == 'Computer' ? l10n.computer : _winner!)} ${l10n.earned.toLowerCase()}!',
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-            ),
-          ),
-          actions: [
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (context) => const HomePage()),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF6C5CE7),
-                foregroundColor: Colors.white,
-              ),
-              child: Text(l10n.close),
-            ),
-          ],
         );
       },
     );
@@ -481,7 +565,10 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
               ),
               child: Text(
                 dialogL10n.leave,
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ],
@@ -507,7 +594,7 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizationsHelper.of(context);
-    
+
     return PopScope(
       canPop: false,
       onPopInvoked: (didPop) {
@@ -547,7 +634,10 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
                           ],
                         ),
                         child: IconButton(
-                          icon: const Icon(Icons.arrow_back, color: Colors.white),
+                          icon: const Icon(
+                            Icons.arrow_back,
+                            color: Colors.white,
+                          ),
                           onPressed: () => BackArrowAd.handleBackButton(
                             context: context,
                             onBack: () => _goHome(),
@@ -577,8 +667,10 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
                     final isLargeScreen = maxWidth > 600;
 
                     // Calculate spinner size
-                    final availableWidth = maxWidth - (isLargeScreen ? 160 : 32);
-                    final availableHeight = maxHeight - 200; // Reserve space for UI
+                    final availableWidth =
+                        maxWidth - (isLargeScreen ? 160 : 32);
+                    final availableHeight =
+                        maxHeight - 200; // Reserve space for UI
 
                     final spinnerSize = math.min(
                       availableWidth * 0.9,
@@ -601,16 +693,20 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
                               spacing: 12,
                               runSpacing: 12,
                               alignment: WrapAlignment.center,
-                              children: _displayUsers.asMap().entries.map((entry) {
+                              children: _displayUsers.asMap().entries.map((
+                                entry,
+                              ) {
                                 final index = entry.key;
                                 final user = entry.value;
-                                final isCurrentUser = index == _currentUserIndex;
+                                final isCurrentUser =
+                                    index == _currentUserIndex;
 
                                 return Container(
-                                  width: (maxWidth - 60) /
-                                      (_displayUsers.length > 3
-                                          ? 3
-                                          : _displayUsers.length) -
+                                  width:
+                                      (maxWidth - 60) /
+                                          (_displayUsers.length > 3
+                                              ? 3
+                                              : _displayUsers.length) -
                                       8,
                                   constraints: const BoxConstraints(
                                     minWidth: 100,
@@ -637,7 +733,11 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       Text(
-                                        user == 'You' ? l10n.you : (user == 'Computer' ? l10n.computer : user),
+                                        user == 'You'
+                                            ? l10n.you
+                                            : (user == 'Computer'
+                                                  ? l10n.computer
+                                                  : user),
                                         style: const TextStyle(
                                           color: Colors.white,
                                           fontSize: 14,
@@ -656,9 +756,12 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
                           // Current user turn text
                           Text(
                             l10n.turn(
-                              _displayUsers[_currentUserIndex] == 'You' 
-                                ? l10n.you 
-                                : (_displayUsers[_currentUserIndex] == 'Computer' ? l10n.computer : _displayUsers[_currentUserIndex])
+                              _displayUsers[_currentUserIndex] == 'You'
+                                  ? l10n.you
+                                  : (_displayUsers[_currentUserIndex] ==
+                                            'Computer'
+                                        ? l10n.computer
+                                        : _displayUsers[_currentUserIndex]),
                             ),
                             style: const TextStyle(
                               color: Colors.white70,
@@ -705,7 +808,10 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
                                     animation: _controller,
                                     builder: (context, child) {
                                       return Transform.rotate(
-                                        angle: _rotation * math.pi / 180, // Convert degrees to radians
+                                        angle:
+                                            _rotation *
+                                            math.pi /
+                                            180, // Convert degrees to radians
                                         child: CustomPaint(
                                           size: Size(finalSize, finalSize),
                                           painter: _MathWheelPainter(
@@ -718,7 +824,8 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
                                   ),
                                   // Center button
                                   GestureDetector(
-                                    onTap: (_isRevealed ||
+                                    onTap:
+                                        (_isRevealed ||
                                             _isSpinning ||
                                             _isWaitingForNextTurn ||
                                             (_isSinglePlayer &&
@@ -727,7 +834,8 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
                                         ? null
                                         : _spin,
                                     child: Opacity(
-                                      opacity: (_isWaitingForNextTurn ||
+                                      opacity:
+                                          (_isWaitingForNextTurn ||
                                               _isRevealed ||
                                               _isSpinning ||
                                               (_isSinglePlayer &&
@@ -750,15 +858,16 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
                                         return FadeTransition(
                                           opacity: _revealController,
                                           child: ScaleTransition(
-                                            scale: Tween<double>(
-                                              begin: 0.0,
-                                              end: 1.0,
-                                            ).animate(
-                                              CurvedAnimation(
-                                                parent: _revealController,
-                                                curve: Curves.elasticOut,
-                                              ),
-                                            ),
+                                            scale:
+                                                Tween<double>(
+                                                  begin: 0.0,
+                                                  end: 1.0,
+                                                ).animate(
+                                                  CurvedAnimation(
+                                                    parent: _revealController,
+                                                    curve: Curves.elasticOut,
+                                                  ),
+                                                ),
                                             child: Container(
                                               width: finalSize * 1.2,
                                               height: finalSize * 1.2,
@@ -767,24 +876,41 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
                                                 gradient: RadialGradient(
                                                   colors: _isCorrectAnswer
                                                       ? [
-                                                          const Color(0xFFFFF9C4)
-                                                              .withOpacity(0.95), // Light yellow for correct
-                                                          const Color(0xFFFFF59D)
-                                                              .withOpacity(0.9), // Slightly darker yellow
+                                                          const Color(
+                                                            0xFFFFF9C4,
+                                                          ).withOpacity(
+                                                            0.95,
+                                                          ), // Light yellow for correct
+                                                          const Color(
+                                                            0xFFFFF59D,
+                                                          ).withOpacity(
+                                                            0.9,
+                                                          ), // Slightly darker yellow
                                                         ]
                                                       : [
-                                                          const Color(0xFFEF5350)
-                                                              .withOpacity(0.95), // Light red for wrong
-                                                          const Color(0xFFE53935)
-                                                              .withOpacity(0.9), // Darker red
+                                                          const Color(
+                                                            0xFFEF5350,
+                                                          ).withOpacity(
+                                                            0.95,
+                                                          ), // Light red for wrong
+                                                          const Color(
+                                                            0xFFE53935,
+                                                          ).withOpacity(
+                                                            0.9,
+                                                          ), // Darker red
                                                         ],
                                                 ),
                                                 boxShadow: [
                                                   BoxShadow(
-                                                    color: (_isCorrectAnswer
-                                                            ? const Color(0xFFFFF59D)
-                                                            : const Color(0xFFE53935))
-                                                        .withOpacity(0.5),
+                                                    color:
+                                                        (_isCorrectAnswer
+                                                                ? const Color(
+                                                                    0xFFFFF59D,
+                                                                  )
+                                                                : const Color(
+                                                                    0xFFE53935,
+                                                                  ))
+                                                            .withOpacity(0.5),
                                                     blurRadius: 30,
                                                     spreadRadius: 10,
                                                   ),
@@ -797,26 +923,30 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
                                                   children: [
                                                     // Label with animation
                                                     FadeTransition(
-                                                      opacity: Tween<double>(
-                                                        begin: 0.0,
-                                                        end: 1.0,
-                                                      ).animate(
-                                                        CurvedAnimation(
-                                                          parent:
-                                                              _revealController,
-                                                          curve: const Interval(
-                                                            0.0,
-                                                            0.5,
-                                                            curve: Curves.easeIn,
+                                                      opacity:
+                                                          Tween<double>(
+                                                            begin: 0.0,
+                                                            end: 1.0,
+                                                          ).animate(
+                                                            CurvedAnimation(
+                                                              parent:
+                                                                  _revealController,
+                                                              curve:
+                                                                  const Interval(
+                                                                    0.0,
+                                                                    0.5,
+                                                                    curve: Curves
+                                                                        .easeIn,
+                                                                  ),
+                                                            ),
                                                           ),
-                                                        ),
-                                                      ),
                                                       child: Text(
                                                         _isCorrectAnswer
                                                             ? l10n.earned
                                                             : l10n.selected,
                                                         style: TextStyle(
-                                                          color: _isCorrectAnswer
+                                                          color:
+                                                              _isCorrectAnswer
                                                               ? Colors.black87
                                                               : Colors.white,
                                                           fontSize:
@@ -830,25 +960,27 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
                                                     const SizedBox(height: 12),
                                                     // Number with animation
                                                     ScaleTransition(
-                                                      scale: Tween<double>(
-                                                        begin: 0.0,
-                                                        end: 1.0,
-                                                      ).animate(
-                                                        CurvedAnimation(
-                                                          parent:
-                                                              _revealController,
-                                                          curve: const Interval(
-                                                            0.2,
-                                                            0.7,
-                                                            curve: Curves
-                                                                .elasticOut,
+                                                      scale:
+                                                          Tween<double>(
+                                                            begin: 0.0,
+                                                            end: 1.0,
+                                                          ).animate(
+                                                            CurvedAnimation(
+                                                              parent:
+                                                                  _revealController,
+                                                              curve: const Interval(
+                                                                0.2,
+                                                                0.7,
+                                                                curve: Curves
+                                                                    .elasticOut,
+                                                              ),
+                                                            ),
                                                           ),
-                                                        ),
-                                                      ),
                                                       child: Text(
                                                         '$_selectedNumber',
                                                         style: TextStyle(
-                                                          color: _isCorrectAnswer
+                                                          color:
+                                                              _isCorrectAnswer
                                                               ? Colors.black
                                                               : Colors.white,
                                                           fontSize:
@@ -857,12 +989,13 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
                                                               FontWeight.bold,
                                                           shadows: [
                                                             Shadow(
-                                                              color: (_isCorrectAnswer
-                                                                      ? Colors.black
-                                                                      : Colors.black)
-                                                                  .withOpacity(
-                                                                    0.2,
-                                                                  ),
+                                                              color:
+                                                                  (_isCorrectAnswer
+                                                                          ? Colors.black
+                                                                          : Colors.black)
+                                                                      .withOpacity(
+                                                                        0.2,
+                                                                      ),
                                                               blurRadius: 10,
                                                             ),
                                                           ],
@@ -872,26 +1005,30 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
                                                     const SizedBox(height: 8),
                                                     // Status text with animation
                                                     FadeTransition(
-                                                      opacity: Tween<double>(
-                                                        begin: 0.0,
-                                                        end: 1.0,
-                                                      ).animate(
-                                                        CurvedAnimation(
-                                                          parent:
-                                                              _revealController,
-                                                          curve: const Interval(
-                                                            0.5,
-                                                            0.8,
-                                                            curve: Curves.easeIn,
+                                                      opacity:
+                                                          Tween<double>(
+                                                            begin: 0.0,
+                                                            end: 1.0,
+                                                          ).animate(
+                                                            CurvedAnimation(
+                                                              parent:
+                                                                  _revealController,
+                                                              curve:
+                                                                  const Interval(
+                                                                    0.5,
+                                                                    0.8,
+                                                                    curve: Curves
+                                                                        .easeIn,
+                                                                  ),
+                                                            ),
                                                           ),
-                                                        ),
-                                                      ),
                                                       child: Text(
                                                         _isCorrectAnswer
                                                             ? 'Correct!'
                                                             : 'Wrong Answer',
                                                         style: TextStyle(
-                                                          color: _isCorrectAnswer
+                                                          color:
+                                                              _isCorrectAnswer
                                                               ? Colors.black87
                                                               : Colors.white,
                                                           fontSize:
@@ -935,10 +1072,7 @@ class _MathWheelPainter extends CustomPainter {
   final List<SegmentInfo> segments;
   final List<Color> colors;
 
-  _MathWheelPainter({
-    required this.segments,
-    required this.colors,
-  });
+  _MathWheelPainter({required this.segments, required this.colors});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -979,15 +1113,19 @@ class _MathWheelPainter extends CustomPainter {
 
       // Draw text
       final textAngle = startAngle + (endAngle - startAngle) / 2;
-      final textRadius = radius * 0.7;
+      final textRadius = radius * 0.82;
       final textX = center.dx + textRadius * math.cos(textAngle);
       final textY = center.dy + textRadius * math.sin(textAngle);
+
+      canvas.save();
+      canvas.translate(textX, textY);
+      canvas.rotate(textAngle + math.pi / 2);
 
       final textPainter = TextPainter(
         text: TextSpan(
           text: segments[i].value,
           style: TextStyle(
-            color: Colors.white,
+            color: segments[i].isCorrect ? Colors.black : Colors.white,
             fontSize: radius * 0.15,
             fontWeight: FontWeight.bold,
           ),
@@ -997,9 +1135,49 @@ class _MathWheelPainter extends CustomPainter {
       textPainter.layout();
       textPainter.paint(
         canvas,
-        Offset(textX - textPainter.width / 2, textY - textPainter.height / 2),
+        Offset(-textPainter.width / 2, -textPainter.height / 2),
       );
+      canvas.restore();
+
+      // Draw stars on all segments
+      final starRadius = radius * 0.5;
+      final starX = center.dx + starRadius * math.cos(textAngle);
+      final starY = center.dy + starRadius * math.sin(textAngle);
+      _drawStar(canvas, Offset(starX, starY), 8, Colors.white.withOpacity(0.6));
     }
+
+    // Draw outer circle border
+    final circleBorderPaint = Paint()
+      ..color = Colors.white
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 4;
+
+    canvas.drawCircle(center, radius, circleBorderPaint);
+  }
+
+  void _drawStar(Canvas canvas, Offset center, double radius, Color color) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.fill;
+
+    final path = Path();
+    final numPoints = 5;
+    final angleStep = 2 * math.pi / numPoints;
+
+    for (int i = 0; i < numPoints * 2; i++) {
+      final angle = i * angleStep / 2 - math.pi / 2;
+      final r = i.isEven ? radius : radius * 0.4;
+      final x = center.dx + r * math.cos(angle);
+      final y = center.dy + r * math.sin(angle);
+
+      if (i == 0) {
+        path.moveTo(x, y);
+      } else {
+        path.lineTo(x, y);
+      }
+    }
+    path.close();
+    canvas.drawPath(path, paint);
   }
 
   @override

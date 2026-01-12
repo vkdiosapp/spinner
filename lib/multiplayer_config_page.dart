@@ -88,11 +88,11 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
     if (widget.isMathSpinner) {
       // For single player mode, use a default user
       if (_gameMode == 'single') {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => const MathSpinnerPage(users: ['Player']),
-          ),
-        );
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => const MathSpinnerPage(users: ['Player']),
+        ),
+      );
         return;
       }
 

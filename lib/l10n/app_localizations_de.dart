@@ -88,7 +88,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get singlePlayer => 'Einzelspieler';
 
   @override
-  String get multiplayerMode => 'Drehschlacht';
+  String get multiplayerMode => 'Mehrspieler';
 
   @override
   String get howManyRounds => 'Wie Viele Runden?';

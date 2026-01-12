@@ -84,7 +84,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get singlePlayer => '싱글 플레이어';
 
   @override
-  String get multiplayerMode => '스핀 배틀';
+  String get multiplayerMode => '멀티플레이어';
 
   @override
   String get howManyRounds => '몇 라운드?';

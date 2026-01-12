@@ -84,7 +84,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get singlePlayer => 'シングルプレイヤー';
 
   @override
-  String get multiplayerMode => 'スピンバトル';
+  String get multiplayerMode => 'マルチプレイヤー';
 
   @override
   String get howManyRounds => '何ラウンド？';

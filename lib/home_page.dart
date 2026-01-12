@@ -428,33 +428,33 @@ class _HomePageState extends State<HomePage> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               // Ads toggle button: DO NOT REMOVE THIS COMMENT
-                              // Container(
-                              //   width: 48,
-                              //   height: 48,
-                              //   margin: const EdgeInsets.only(bottom: 12),
-                              //   decoration: BoxDecoration(
-                              //     color: _adsEnabled
-                              //         ? const Color(0xFF6C5CE7)
-                              //         : AppTheme.cardBackgroundColor,
-                              //     shape: BoxShape.circle,
-                              //     border: Border.all(
-                              //       color: Colors.white.withOpacity(0.2),
-                              //       width: 1,
-                              //     ),
-                              //   ),
-                              //   child: IconButton(
-                              //     icon: Icon(
-                              //       _adsEnabled
-                              //           ? Icons.ads_click
-                              //           : Icons.ads_click_outlined,
-                              //       color: Colors.white,
-                              //     ),
-                              //     onPressed: _toggleAds,
-                              //     tooltip: _adsEnabled
-                              //         ? l10n.adsOn
-                              //         : l10n.adsOff,
-                              //   ),
-                              // ),
+                              Container(
+                                width: 48,
+                                height: 48,
+                                margin: const EdgeInsets.only(bottom: 12),
+                                decoration: BoxDecoration(
+                                  color: _adsEnabled
+                                      ? const Color(0xFF6C5CE7)
+                                      : AppTheme.cardBackgroundColor,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Colors.white.withOpacity(0.2),
+                                    width: 1,
+                                  ),
+                                ),
+                                child: IconButton(
+                                  icon: Icon(
+                                    _adsEnabled
+                                        ? Icons.ads_click
+                                        : Icons.ads_click_outlined,
+                                    color: Colors.white,
+                                  ),
+                                  onPressed: _toggleAds,
+                                  tooltip: _adsEnabled
+                                      ? l10n.adsOn
+                                      : l10n.adsOff,
+                                ),
+                              ),
                               // Vibration toggle button
                               Container(
                                 width: 48,

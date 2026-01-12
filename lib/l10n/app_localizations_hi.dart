@@ -87,7 +87,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get singlePlayer => 'सिंगल प्लेयर';
 
   @override
-  String get multiplayerMode => 'स्पिन बैटल';
+  String get multiplayerMode => 'मल्टीप्लेयर';
 
   @override
   String get howManyRounds => 'कितने राउंड?';

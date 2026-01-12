@@ -86,7 +86,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get singlePlayer => 'Single Player';
 
   @override
-  String get multiplayerMode => 'Spin Battle';
+  String get multiplayerMode => 'Multiplayer';
 
   @override
   String get howManyRounds => 'How Many Rounds?';

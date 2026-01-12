@@ -285,7 +285,7 @@ abstract class AppLocalizations {
   /// No description provided for @multiplayerMode.
   ///
   /// In en, this message translates to:
-  /// **'Spin Battle'**
+  /// **'Multiplayer'**
   String get multiplayerMode;
 
   /// No description provided for @howManyRounds.

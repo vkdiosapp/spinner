@@ -84,7 +84,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get singlePlayer => 'لاعب واحد';
 
   @override
-  String get multiplayerMode => 'معركة الدوران';
+  String get multiplayerMode => 'متعدد اللاعبين';
 
   @override
   String get howManyRounds => 'كم عدد الجولات؟';

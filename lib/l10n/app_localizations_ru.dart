@@ -87,7 +87,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get singlePlayer => 'Одиночная Игра';
 
   @override
-  String get multiplayerMode => 'Битва Вращения';
+  String get multiplayerMode => 'Мультиплеер';
 
   @override
   String get howManyRounds => 'Сколько Раундов?';

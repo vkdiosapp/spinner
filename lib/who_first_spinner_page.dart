@@ -9,7 +9,7 @@ import 'sound_vibration_helper.dart';
 import 'multiplayer_results_page.dart';
 import 'app_localizations_helper.dart';
 
-// Global failure probability count - change this value to adjust failure probability
+// Global failure rlity count - change this value to adjust failure probability
 const int WhoFirstfailProbalityCount = 6;
 
 class WhoFirstSpinnerPage extends StatefulWidget {

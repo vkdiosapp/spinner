@@ -87,7 +87,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get singlePlayer => 'Tek Oyunculu';
 
   @override
-  String get multiplayerMode => 'Döndürme Savaşı';
+  String get multiplayerMode => 'Çok Oyunculu';
 
   @override
   String get howManyRounds => 'Kaç Raund?';

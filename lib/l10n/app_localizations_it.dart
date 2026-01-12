@@ -85,7 +85,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get singlePlayer => 'Giocatore Singolo';
 
   @override
-  String get multiplayerMode => 'Battaglia di Rotazione';
+  String get multiplayerMode => 'Multigiocatore';
 
   @override
   String get howManyRounds => 'Quanti Round?';

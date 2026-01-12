@@ -8,7 +8,7 @@ import 'app_localizations_helper.dart';
 import 'multiplayer_results_page.dart';
 
 // Global failure probability count - change this value to adjust failure probability
-const int _failProbabilityCount = 0;
+const int _failProbabilityCount = 6;
 
 class MathSpinnerPage extends StatefulWidget {
   final List<String> users;
@@ -482,6 +482,13 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
         return;
       }
 
+      // Double-check that nextUserIndex is not a winner (safeguard)
+      if (_winners.contains(nextUserIndex)) {
+        // If somehow still a winner, skip to next user recursively
+        _moveToNextUser();
+        return;
+      }
+
       setState(() {
         _currentUserIndex = nextUserIndex;
         _isWaitingForNextTurn = false;
@@ -497,7 +504,8 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
           if (mounted &&
               !_isSpinning &&
               !_isRevealed &&
-              !_isWaitingForNextTurn) {
+              !_isWaitingForNextTurn &&
+              !_winners.contains(_currentUserIndex)) {
             _spin(isAutoSpin: true);
           }
         });
@@ -700,74 +708,99 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
                                 final user = entry.value;
                                 final isCurrentUser =
                                     index == _currentUserIndex;
+                                final isWinner = _winners.contains(index);
 
-                                return Container(
-                                  width:
-                                      (maxWidth - 60) /
-                                          (_displayUsers.length > 3
-                                              ? 3
-                                              : _displayUsers.length) -
-                                      8,
-                                  constraints: const BoxConstraints(
-                                    minWidth: 100,
-                                    maxWidth: 200,
-                                  ),
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 12,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: isCurrentUser
-                                        ? const Color(0xFF6C5CE7)
-                                        : const Color(0xFF3D3D5C),
-                                    borderRadius: BorderRadius.circular(12),
-                                    border: isCurrentUser
-                                        ? Border.all(
-                                            color: Colors.white,
-                                            width: 2,
-                                          )
-                                        : null,
-                                  ),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Text(
-                                        user == 'You'
-                                            ? l10n.you
-                                            : (user == 'Computer'
-                                                  ? l10n.computer
-                                                  : user),
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.bold,
+                                return Opacity(
+                                  opacity: isWinner ? 0.5 : 1.0,
+                                  child: Container(
+                                    width:
+                                        (maxWidth - 60) /
+                                            (_displayUsers.length > 3
+                                                ? 3
+                                                : _displayUsers.length) -
+                                        8,
+                                    constraints: const BoxConstraints(
+                                      minWidth: 100,
+                                      maxWidth: 200,
+                                    ),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 12,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: isWinner
+                                          ? const Color(0xFF2D2D44)
+                                          : (isCurrentUser
+                                                ? const Color(0xFF6C5CE7)
+                                                : const Color(0xFF3D3D5C)),
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: isCurrentUser && !isWinner
+                                          ? Border.all(
+                                              color: Colors.white,
+                                              width: 2,
+                                            )
+                                          : (isWinner
+                                                ? Border.all(
+                                                    color: const Color(
+                                                      0xFF4CAF50,
+                                                    ),
+                                                    width: 2,
+                                                  )
+                                                : null),
+                                    ),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          user == 'You'
+                                              ? l10n.you
+                                              : (user == 'Computer'
+                                                    ? l10n.computer
+                                                    : user),
+                                          style: TextStyle(
+                                            color: isWinner
+                                                ? Colors.white70
+                                                : Colors.white,
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
                                         ),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ],
+                                        if (isWinner) ...[
+                                          const SizedBox(height: 4),
+                                          const Icon(
+                                            Icons.check_circle,
+                                            color: Color(0xFF4CAF50),
+                                            size: 16,
+                                          ),
+                                        ],
+                                      ],
+                                    ),
                                   ),
                                 );
                               }).toList(),
                             ),
                           ),
                           const SizedBox(height: 12),
-                          // Current user turn text
-                          Text(
-                            l10n.turn(
-                              _displayUsers[_currentUserIndex] == 'You'
-                                  ? l10n.you
-                                  : (_displayUsers[_currentUserIndex] ==
-                                            'Computer'
-                                        ? l10n.computer
-                                        : _displayUsers[_currentUserIndex]),
+                          // Current user turn text (only show if current user is not a winner)
+                          if (!_winners.contains(_currentUserIndex))
+                            Text(
+                              l10n.turn(
+                                _displayUsers[_currentUserIndex] == 'You'
+                                    ? l10n.you
+                                    : (_displayUsers[_currentUserIndex] ==
+                                              'Computer'
+                                          ? l10n.computer
+                                          : _displayUsers[_currentUserIndex]),
+                              ),
+                              style: const TextStyle(
+                                color: Colors.white70,
+                                fontSize: 18,
+                              ),
                             ),
-                            style: const TextStyle(
-                              color: Colors.white70,
-                              fontSize: 18,
-                            ),
-                          ),
                           const SizedBox(height: 20),
                           // Math Question Section
                           Container(
@@ -828,6 +861,9 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
                                         (_isRevealed ||
                                             _isSpinning ||
                                             _isWaitingForNextTurn ||
+                                            _winners.contains(
+                                              _currentUserIndex,
+                                            ) ||
                                             (_isSinglePlayer &&
                                                 _displayUsers[_currentUserIndex] ==
                                                     'Computer'))
@@ -838,6 +874,9 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
                                           (_isWaitingForNextTurn ||
                                               _isRevealed ||
                                               _isSpinning ||
+                                              _winners.contains(
+                                                _currentUserIndex,
+                                              ) ||
                                               (_isSinglePlayer &&
                                                   _displayUsers[_currentUserIndex] ==
                                                       'Computer'))

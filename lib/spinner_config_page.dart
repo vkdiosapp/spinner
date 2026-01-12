@@ -78,6 +78,20 @@ class _SpinnerConfigPageState extends State<SpinnerConfigPage> {
   }
 
   void _startSpinner() {
+    final l10n = AppLocalizationsHelper.of(context);
+    
+    // Validate spinner title is mandatory
+    final titleText = _titleController.text.trim();
+    if (titleText.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Please enter spinner title'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     // Update items from controllers
     final updatedItems = <String>[];
     for (var controller in _itemControllers) {
@@ -86,8 +100,6 @@ class _SpinnerConfigPageState extends State<SpinnerConfigPage> {
         updatedItems.add(text);
       }
     }
-
-    final l10n = AppLocalizationsHelper.of(context);
     
     if (updatedItems.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -121,9 +133,7 @@ class _SpinnerConfigPageState extends State<SpinnerConfigPage> {
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
         builder: (context) => SpinnerWheelPage(
-          title: _titleController.text.trim().isEmpty
-              ? l10n.randomPickerTitle
-              : _titleController.text.trim(),
+          title: titleText,
           items: updatedItems,
         ),
       ),

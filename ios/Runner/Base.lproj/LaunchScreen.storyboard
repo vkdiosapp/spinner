@@ -33,7 +33,7 @@
                                         </constraints>
                                     </imageView>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="ou5-Vx-UFY">
-                                        <rect key="frame" x="24" y="188.66666666666663" width="151.66666666666663" height="56.333333333333343"/>
+                                        <rect key="frame" x="24" y="188.66666666666663" width="151.66666666666666" height="56.333333333333343"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="PickSpiN" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XVC-57-qx7">
                                                 <rect key="frame" x="0.0" y="0.0" width="151.66666666666666" height="42"/>
@@ -41,7 +41,7 @@
                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Spin Wheel &amp; Parth Game" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Wo9-oU-LFX">
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Spin Wheel &amp; Party Game" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Wo9-oU-LFX">
                                                 <rect key="frame" x="0.0" y="42.000000000000057" width="151.66666666666666" height="14.333333333333336"/>
                                                 <fontDescription key="fontDescription" name="HelveticaNeue-Bold" family="Helvetica Neue" pointSize="12"/>
                                                 <color key="textColor" red="0.057535700554093322" green="0.082057664896211926" blue="0.31169921874999995" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>

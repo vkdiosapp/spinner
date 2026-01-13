@@ -8,7 +8,7 @@ import 'app_localizations_helper.dart';
 import 'multiplayer_results_page.dart';
 
 // Global failure probability count - change this value to adjust failure probability
-const int _failProbabilityCount = 2;
+const int _failProbabilityCount = 6;
 
 class MathSpinnerPage extends StatefulWidget {
   final List<String> users;

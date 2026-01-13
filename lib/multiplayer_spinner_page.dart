@@ -53,10 +53,6 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
   late ConfettiController _confettiController;
   bool _showJackpotPopup = false;
 
-  // Jackpot timing system
-  int _turnsUntilJackpot = 0; // Counter for turns until jackpot
-  int _targetTurnForJackpot = 0; // Random number 1-10 for when jackpot should appear
-
   @override
   void initState() {
     super.initState();
@@ -184,10 +180,6 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
       duration: const Duration(seconds: 4),
     );
 
-    // Initialize jackpot timing - generate first random number (1-10)
-    _targetTurnForJackpot = _random.nextInt(10) + 1; // 1-10
-    _turnsUntilJackpot = _targetTurnForJackpot;
-
     _controller.addListener(() {
       setState(() {
         final curvedValue = Curves.decelerate.transform(_controller.value);
@@ -269,12 +261,6 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
     final points = int.parse(_segments[segmentIndex].value);
     final selectedNumber = _segments[segmentIndex].value;
     final isJackpot = _segments[segmentIndex].isJackpot;
-
-    // If jackpot was hit, reset counter and generate new random number (1-10)
-    if (isJackpot) {
-      _targetTurnForJackpot = _random.nextInt(10) + 1; // 1-10
-      _turnsUntilJackpot = _targetTurnForJackpot;
-    }
 
     // Show reveal animation first
     setState(() {
@@ -445,56 +431,7 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
   void _spin() {
     if (_isSpinning || _isWaitingForNextTurn) return;
 
-    // Check if it's time for jackpot (when counter reaches 0, this spin should be jackpot)
-    // We check before decrementing to see if THIS turn should be jackpot
-    bool shouldForceJackpot = false;
-    if (_turnsUntilJackpot == 0) {
-      shouldForceJackpot = true;
-      // Don't decrement, we'll reset after jackpot
-    } else {
-      // Decrement turns counter for normal spins
-      _turnsUntilJackpot--;
-    }
-
-    if (shouldForceJackpot) {
-      // Force spinner to land on jackpot
-      // Find the jackpot segment
-      int jackpotIndex = -1;
-      for (int i = 0; i < _segments.length; i++) {
-        if (_segments[i].isJackpot) {
-          jackpotIndex = i;
-          break;
-        }
-      }
-
-      if (jackpotIndex != -1) {
-        // Calculate the center angle of the jackpot segment
-        final jackpotSegment = _segments[jackpotIndex];
-        final jackpotCenterAngle = (jackpotSegment.startAngle + jackpotSegment.endAngle) / 2;
-        
-        // We want the spinner to land so that the jackpot center is at the top (0 degrees)
-        // The rotation formula: targetStartAngle = (360 - normalizedRotation) % 360
-        // We want: jackpotCenterAngle = (360 - normalizedRotation) % 360
-        // So: normalizedRotation = (360 - jackpotCenterAngle) % 360
-        // But we also need to account for the base rotation (6 full rotations = 2160 degrees)
-        final baseRotation = 360 * 6; // 6 full rotations
-        final targetRotation = (360 - jackpotCenterAngle) % 360;
-        final totalRotation = baseRotation + targetRotation;
-        
-        // Set randomOffset to achieve this rotation
-        // The animation goes from 0 to 1, and rotation = curvedValue * 360 * 6 + randomOffset
-        // At completion (value = 1): rotation = 360 * 6 + randomOffset
-        // We want: 360 * 6 + randomOffset = totalRotation
-        // So: randomOffset = totalRotation - 360 * 6 = targetRotation
-        _randomOffset = targetRotation;
-      } else {
-        // Fallback to random if jackpot not found
-        _randomOffset = _random.nextDouble() * 360;
-      }
-    } else {
-      // Normal random spin
-      _randomOffset = _random.nextDouble() * 360;
-    }
+    _randomOffset = _random.nextDouble() * 360;
 
     // Play initial sound and vibration, then start continuous sound
     SoundVibrationHelper.playSpinEffects();

@@ -41,6 +41,7 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
   late List<String> _displayUsers;
   bool _isSinglePlayer = false;
   Set<int> _winners = {}; // Track users who got correct answers (by index)
+  Set<int> _losers = {}; // Track users who got wrong answers (by index)
 
   // Score tracking
   Map<String, int> _scores = {}; // Total scores per user
@@ -277,8 +278,9 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
   void _spin({bool isAutoSpin = false}) {
     if (_isSpinning || _isRevealed || _isWaitingForNextTurn) return;
 
-    // Skip if current user is already a winner
-    if (_winners.contains(_currentUserIndex)) {
+    // Skip if current user is already a winner or loser
+    if (_winners.contains(_currentUserIndex) ||
+        _losers.contains(_currentUserIndex)) {
       _moveToNextUser();
       return;
     }
@@ -402,7 +404,16 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
               (_roundScores[_currentRound]![currentUser] ?? 0) + 1;
 
           // Check if all other users have won (last user loses)
+          // Game should ONLY end when exactly (total_users - 1) users have won
           if (_winners.length == _displayUsers.length - 1) {
+            // All other users won - mark remaining user as loser and end game
+            // Find the user who hasn't won yet and mark them as loser
+            for (int i = 0; i < _displayUsers.length; i++) {
+              if (!_winners.contains(i) && !_losers.contains(i)) {
+                _losers.add(i);
+                break;
+              }
+            }
             // All other users won - last user lost, game ends immediately
             Future.delayed(const Duration(milliseconds: 500), () {
               if (mounted) {
@@ -419,14 +430,28 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
           // Continue game - move to next user (winner will be skipped)
           _moveToNextUser();
         } else {
-          // Wrong answer - increment failure count for this user
-          _userFailureCount[currentUser] =
-              (_userFailureCount[currentUser] ?? 0) + 1;
+          // Wrong answer - move to next user (no loser marking)
+          setState(() {
+            _isRevealed = false;
+            _selectedNumber = null;
+            _isCorrectAnswer = false;
+            _isWaitingForNextTurn =
+                true; // Set waiting flag for move to next user
+            _isSpinning = false; // Ensure spinning state is reset
+            _rotation = 0; // Reset spinner rotation visually
+            _randomOffset = 0; // Reset random offset
+          });
+          _revealController.reset();
+          _controller.reset(); // Reset animation controller
 
-          // Game ends when user gets wrong answer - navigate to results
-          Future.delayed(const Duration(milliseconds: 500), () {
+          // Generate new math question for next user
+          _generateMathQuestion();
+          _generateSpinnerSegments();
+
+          // Move to next user after a delay (no loser marking, just move turn)
+          Future.delayed(const Duration(milliseconds: 800), () {
             if (mounted) {
-              _navigateToResults();
+              _moveToNextUser();
             }
           });
         }
@@ -452,19 +477,29 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
     Future.delayed(const Duration(milliseconds: 800), () {
       if (!mounted) return;
 
-      // Find next user who hasn't won yet
+      // Find next user who hasn't won or lost yet
       int attempts = 0;
       int nextUserIndex = (_currentUserIndex + 1) % _displayUsers.length;
 
-      // Skip winners - find next non-winner user
-      while (_winners.contains(nextUserIndex) &&
+      // Skip winners and losers - find next active user
+      while ((_winners.contains(nextUserIndex) ||
+              _losers.contains(nextUserIndex)) &&
           attempts < _displayUsers.length) {
         nextUserIndex = (nextUserIndex + 1) % _displayUsers.length;
         attempts++;
       }
 
       // If all other users have won, the last user automatically loses
+      // Game should ONLY end when exactly (total_users - 1) users have won
       if (_winners.length == _displayUsers.length - 1) {
+        // All other users won - mark remaining user as loser and end game
+        // Find the user who hasn't won yet and mark them as loser
+        for (int i = 0; i < _displayUsers.length; i++) {
+          if (!_winners.contains(i) && !_losers.contains(i)) {
+            _losers.add(i);
+            break;
+          }
+        }
         // All other users won - last user lost, game ends
         Future.delayed(const Duration(milliseconds: 500), () {
           if (mounted) {
@@ -482,9 +517,9 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
         return;
       }
 
-      // Double-check that nextUserIndex is not a winner (safeguard)
-      if (_winners.contains(nextUserIndex)) {
-        // If somehow still a winner, skip to next user recursively
+      // Double-check that nextUserIndex is not a winner or loser (safeguard)
+      if (_winners.contains(nextUserIndex) || _losers.contains(nextUserIndex)) {
+        // If somehow still a winner/loser, skip to next user recursively
         _moveToNextUser();
         return;
       }
@@ -505,7 +540,8 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
               !_isSpinning &&
               !_isRevealed &&
               !_isWaitingForNextTurn &&
-              !_winners.contains(_currentUserIndex)) {
+              !_winners.contains(_currentUserIndex) &&
+              !_losers.contains(_currentUserIndex)) {
             _spin(isAutoSpin: true);
           }
         });
@@ -709,9 +745,10 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
                                 final isCurrentUser =
                                     index == _currentUserIndex;
                                 final isWinner = _winners.contains(index);
+                                final isLoser = _losers.contains(index);
 
                                 return Opacity(
-                                  opacity: isWinner ? 0.5 : 1.0,
+                                  opacity: (isWinner || isLoser) ? 0.5 : 1.0,
                                   child: Container(
                                     width:
                                         (maxWidth - 60) /
@@ -730,11 +767,16 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
                                     decoration: BoxDecoration(
                                       color: isWinner
                                           ? const Color(0xFF2D2D44)
-                                          : (isCurrentUser
-                                                ? const Color(0xFF6C5CE7)
-                                                : const Color(0xFF3D3D5C)),
+                                          : (isLoser
+                                                ? const Color(0xFF2D2D44)
+                                                : (isCurrentUser
+                                                      ? const Color(0xFF6C5CE7)
+                                                      : const Color(
+                                                          0xFF3D3D5C,
+                                                        ))),
                                       borderRadius: BorderRadius.circular(12),
-                                      border: isCurrentUser && !isWinner
+                                      border:
+                                          isCurrentUser && !isWinner && !isLoser
                                           ? Border.all(
                                               color: Colors.white,
                                               width: 2,
@@ -746,7 +788,14 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
                                                     ),
                                                     width: 2,
                                                   )
-                                                : null),
+                                                : (isLoser
+                                                      ? Border.all(
+                                                          color: const Color(
+                                                            0xFFEF5350,
+                                                          ),
+                                                          width: 2,
+                                                        )
+                                                      : null)),
                                     ),
                                     child: Column(
                                       mainAxisAlignment:
@@ -769,11 +818,11 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                         ),
-                                        if (isWinner) ...[
+                                        if (isLoser) ...[
                                           const SizedBox(height: 4),
                                           const Icon(
-                                            Icons.check_circle,
-                                            color: Color(0xFF4CAF50),
+                                            Icons.cancel,
+                                            color: Color(0xFFEF5350),
                                             size: 16,
                                           ),
                                         ],
@@ -785,8 +834,9 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
                             ),
                           ),
                           const SizedBox(height: 12),
-                          // Current user turn text (only show if current user is not a winner)
-                          if (!_winners.contains(_currentUserIndex))
+                          // Current user turn text (only show if current user is not a winner or loser)
+                          if (!_winners.contains(_currentUserIndex) &&
+                              !_losers.contains(_currentUserIndex))
                             Text(
                               l10n.turn(
                                 _displayUsers[_currentUserIndex] == 'You'
@@ -864,6 +914,9 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
                                             _winners.contains(
                                               _currentUserIndex,
                                             ) ||
+                                            _losers.contains(
+                                              _currentUserIndex,
+                                            ) ||
                                             (_isSinglePlayer &&
                                                 _displayUsers[_currentUserIndex] ==
                                                     'Computer'))
@@ -875,6 +928,9 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
                                               _isRevealed ||
                                               _isSpinning ||
                                               _winners.contains(
+                                                _currentUserIndex,
+                                              ) ||
+                                              _losers.contains(
                                                 _currentUserIndex,
                                               ) ||
                                               (_isSinglePlayer &&

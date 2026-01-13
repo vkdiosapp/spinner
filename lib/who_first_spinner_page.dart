@@ -10,7 +10,7 @@ import 'multiplayer_results_page.dart';
 import 'app_localizations_helper.dart';
 
 // Global failure rlity count - change this value to adjust failure probability
-const int WhoFirstfailProbalityCount = 6;
+const int WhoFirstfailProbalityCount = 5;
 
 class WhoFirstSpinnerPage extends StatefulWidget {
   final List<String> users;
@@ -41,6 +41,8 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
   String? _winner;
   Set<int> _winners =
       {}; // Track user indices who have won (completed all rounds)
+  Set<int> _losers =
+      {}; // Track user indices who have lost (landed on disabled round)
 
   // Track completion order and scores for results page
   List<String> _completionOrder = [];
@@ -216,8 +218,9 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
       return;
     }
 
-    // Skip if current user has already won
-    if (_winners.contains(_currentUserIndex)) {
+    // Skip if current user has already won or lost
+    if (_winners.contains(_currentUserIndex) ||
+        _losers.contains(_currentUserIndex)) {
       setState(() {
         _isWaitingForNextTurn = true;
       });
@@ -410,7 +413,16 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
         });
 
         // Check if all other users have won (last user loses)
+        // Game should ONLY end when exactly (total_users - 1) users have won
         if (_winners.length == _displayUsers.length - 1) {
+          // All other users won - mark remaining user as loser and end game
+          // Find the user who hasn't won yet and mark them as loser
+          for (int i = 0; i < _displayUsers.length; i++) {
+            if (!_winners.contains(i) && !_losers.contains(i)) {
+              _losers.add(i);
+              break;
+            }
+          }
           // All other users won - last user lost, game ends immediately
           Future.delayed(const Duration(milliseconds: 500), () {
             if (mounted) {
@@ -436,39 +448,49 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
         });
       }
     } else {
-      // Landed on already disabled round - increment failure count
+      // Landed on already disabled round - move to next user (no loser marking)
       setState(() {
-        _userFailureCount[currentUser] =
-            (_userFailureCount[currentUser] ?? 0) + 1;
         _isRevealed = false;
         _earnedNumber = null;
         _isSpinning = false; // Ensure spinning state is reset
+        _isWaitingForNextTurn = true; // Set waiting flag for move to next user
       });
       _revealController.reset();
+      _controller.reset(); // Reset spinner rotation
 
-      // Game ends - navigate to results
-      Future.delayed(const Duration(milliseconds: 500), () {
+      // Move to next user after a delay (no loser marking, just move turn)
+      Future.delayed(const Duration(milliseconds: 800), () {
         if (mounted) {
-          _navigateToResults();
+          _moveToNextUser();
         }
       });
     }
   }
 
   void _moveToNextUser() {
-    // Find next user who hasn't won yet
+    // Find next user who hasn't won or lost yet
     int attempts = 0;
     int nextUserIndex = (_currentUserIndex + 1) % _displayUsers.length;
 
-    // Skip winners - find next non-winner user
-    while (_winners.contains(nextUserIndex) &&
+    // Skip winners and losers - find next active user
+    while ((_winners.contains(nextUserIndex) ||
+            _losers.contains(nextUserIndex)) &&
         attempts < _displayUsers.length) {
       nextUserIndex = (nextUserIndex + 1) % _displayUsers.length;
       attempts++;
     }
 
     // Check if all other users have won (last user loses)
+    // Game should ONLY end when exactly (total_users - 1) users have won
     if (_winners.length == _displayUsers.length - 1) {
+      // All other users won - mark remaining user as loser and end game
+      // Find the user who hasn't won yet and mark them as loser
+      for (int i = 0; i < _displayUsers.length; i++) {
+        if (!_winners.contains(i) && !_losers.contains(i)) {
+          _losers.add(i);
+          break;
+        }
+      }
       // All other users won - last user lost, game ends immediately
       Future.delayed(const Duration(milliseconds: 500), () {
         if (mounted) {
@@ -486,9 +508,9 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
       return;
     }
 
-    // Double-check that nextUserIndex is not a winner (safeguard)
-    if (_winners.contains(nextUserIndex)) {
-      // If somehow still a winner, skip to next user recursively
+    // Double-check that nextUserIndex is not a winner or loser (safeguard)
+    if (_winners.contains(nextUserIndex) || _losers.contains(nextUserIndex)) {
+      // If somehow still a winner/loser, skip to next user recursively
       _moveToNextUser();
       return;
     }
@@ -516,7 +538,8 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
             !_isSpinning &&
             !_isRevealed &&
             !_isHighlighting &&
-            !_winners.contains(_currentUserIndex)) {
+            !_winners.contains(_currentUserIndex) &&
+            !_losers.contains(_currentUserIndex)) {
           _spin();
         }
       });
@@ -789,9 +812,12 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
                                                         _currentUserIndex;
                                                     final isWinner = _winners
                                                         .contains(userIndex);
+                                                    final isLoser = _losers
+                                                        .contains(userIndex);
 
                                                     return Opacity(
-                                                      opacity: isWinner
+                                                      opacity:
+                                                          (isWinner || isLoser)
                                                           ? 0.5
                                                           : 1.0,
                                                       child: Container(
@@ -978,13 +1004,15 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
                                                                     ? const Color(
                                                                         0xFF2D2D44,
                                                                       )
-                                                                    : (isCurrentUser
+                                                                    : (isLoser
                                                                           ? const Color(
-                                                                              0xFF6C5CE7,
+                                                                              0xFF2D2D44,
                                                                             )
-                                                                          : const Color(
-                                                                              0xFF3D3D5C,
-                                                                            )),
+                                                                          : (isCurrentUser
+                                                                                ? const Color(
+                                                                                    0xFF6C5CE7,
+                                                                                  )
+                                                                                : const Color(0xFF3D3D5C))),
                                                                 borderRadius:
                                                                     BorderRadius.circular(
                                                                       12,
@@ -995,10 +1023,15 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
                                                                       ? const Color(
                                                                           0xFF4CAF50,
                                                                         )
-                                                                      : (isCurrentUser &&
-                                                                                !isWinner
-                                                                            ? Colors.white
-                                                                            : Colors.transparent),
+                                                                      : (isLoser
+                                                                            ? const Color(
+                                                                                0xFFEF5350,
+                                                                              )
+                                                                            : (isCurrentUser &&
+                                                                                      !isWinner &&
+                                                                                      !isLoser
+                                                                                  ? Colors.white
+                                                                                  : Colors.transparent)),
                                                                   width: 2,
                                                                 ),
                                                               ),
@@ -1015,7 +1048,8 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
                                                                         user,
                                                                         style: TextStyle(
                                                                           color:
-                                                                              isWinner
+                                                                              (isWinner ||
+                                                                                  isLoser)
                                                                               ? Colors.white70
                                                                               : Colors.white,
                                                                           fontSize:
@@ -1046,7 +1080,7 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
                                                                       ),
                                                                     ),
                                                                   ),
-                                                                  if (isWinner)
+                                                                  if (isLoser)
                                                                     Padding(
                                                                       padding: EdgeInsets.only(
                                                                         left:
@@ -1056,20 +1090,22 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
                                                                       ),
                                                                       child: Icon(
                                                                         Icons
-                                                                            .check_circle,
+                                                                            .cancel,
                                                                         color: const Color(
-                                                                          0xFF4CAF50,
+                                                                          0xFFEF5350,
                                                                         ),
                                                                         size:
                                                                             isMobile
                                                                             ? 14.0
                                                                             : 16.0,
                                                                       ),
-                                                                    )
-                                                                  else if (_disabledRounds[userIndex]
-                                                                          .length ==
-                                                                      widget
-                                                                          .rounds)
+                                                                    ),
+                                                                  if (!isWinner &&
+                                                                      !isLoser &&
+                                                                      _disabledRounds[userIndex]
+                                                                              .length ==
+                                                                          widget
+                                                                              .rounds)
                                                                     Padding(
                                                                       padding: EdgeInsets.only(
                                                                         left:
@@ -1160,6 +1196,9 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
                                                       _winners.contains(
                                                         _currentUserIndex,
                                                       ) ||
+                                                      _losers.contains(
+                                                        _currentUserIndex,
+                                                      ) ||
                                                       (_isSinglePlayer &&
                                                           _displayUsers[_currentUserIndex] ==
                                                               'Computer'))
@@ -1173,6 +1212,9 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
                                                         _isHighlighting ||
                                                         _winner != null ||
                                                         _winners.contains(
+                                                          _currentUserIndex,
+                                                        ) ||
+                                                        _losers.contains(
                                                           _currentUserIndex,
                                                         ) ||
                                                         (_isSinglePlayer &&
@@ -1462,9 +1504,12 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
                                                         _currentUserIndex;
                                                     final isWinner = _winners
                                                         .contains(userIndex);
+                                                    final isLoser = _losers
+                                                        .contains(userIndex);
 
                                                     return Opacity(
-                                                      opacity: isWinner
+                                                      opacity:
+                                                          (isWinner || isLoser)
                                                           ? 0.5
                                                           : 1.0,
                                                       child: Container(
@@ -1655,13 +1700,15 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
                                                                     ? const Color(
                                                                         0xFF2D2D44,
                                                                       )
-                                                                    : (isCurrentUser
+                                                                    : (isLoser
                                                                           ? const Color(
-                                                                              0xFF6C5CE7,
+                                                                              0xFF2D2D44,
                                                                             )
-                                                                          : const Color(
-                                                                              0xFF3D3D5C,
-                                                                            )),
+                                                                          : (isCurrentUser
+                                                                                ? const Color(
+                                                                                    0xFF6C5CE7,
+                                                                                  )
+                                                                                : const Color(0xFF3D3D5C))),
                                                                 borderRadius:
                                                                     BorderRadius.circular(
                                                                       12,
@@ -1672,10 +1719,15 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
                                                                       ? const Color(
                                                                           0xFF4CAF50,
                                                                         )
-                                                                      : (isCurrentUser &&
-                                                                                !isWinner
-                                                                            ? Colors.white
-                                                                            : Colors.transparent),
+                                                                      : (isLoser
+                                                                            ? const Color(
+                                                                                0xFFEF5350,
+                                                                              )
+                                                                            : (isCurrentUser &&
+                                                                                      !isWinner &&
+                                                                                      !isLoser
+                                                                                  ? Colors.white
+                                                                                  : Colors.transparent)),
                                                                   width: 2,
                                                                 ),
                                                               ),
@@ -1692,7 +1744,8 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
                                                                         user,
                                                                         style: TextStyle(
                                                                           color:
-                                                                              isWinner
+                                                                              (isWinner ||
+                                                                                  isLoser)
                                                                               ? Colors.white70
                                                                               : Colors.white,
                                                                           fontSize:
@@ -1723,7 +1776,7 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
                                                                       ),
                                                                     ),
                                                                   ),
-                                                                  if (isWinner)
+                                                                  if (isLoser)
                                                                     Padding(
                                                                       padding: EdgeInsets.only(
                                                                         left:
@@ -1733,20 +1786,22 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
                                                                       ),
                                                                       child: Icon(
                                                                         Icons
-                                                                            .check_circle,
+                                                                            .cancel,
                                                                         color: const Color(
-                                                                          0xFF4CAF50,
+                                                                          0xFFEF5350,
                                                                         ),
                                                                         size:
                                                                             isMobile
                                                                             ? 14.0
                                                                             : 16.0,
                                                                       ),
-                                                                    )
-                                                                  else if (_disabledRounds[userIndex]
-                                                                          .length ==
-                                                                      widget
-                                                                          .rounds)
+                                                                    ),
+                                                                  if (!isWinner &&
+                                                                      !isLoser &&
+                                                                      _disabledRounds[userIndex]
+                                                                              .length ==
+                                                                          widget
+                                                                              .rounds)
                                                                     Padding(
                                                                       padding: EdgeInsets.only(
                                                                         left:
@@ -1837,6 +1892,9 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
                                                       _winners.contains(
                                                         _currentUserIndex,
                                                       ) ||
+                                                      _losers.contains(
+                                                        _currentUserIndex,
+                                                      ) ||
                                                       (_isSinglePlayer &&
                                                           _displayUsers[_currentUserIndex] ==
                                                               'Computer'))
@@ -1850,6 +1908,9 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
                                                         _isHighlighting ||
                                                         _winner != null ||
                                                         _winners.contains(
+                                                          _currentUserIndex,
+                                                        ) ||
+                                                        _losers.contains(
                                                           _currentUserIndex,
                                                         ) ||
                                                         (_isSinglePlayer &&

@@ -53,6 +53,10 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
   late ConfettiController _confettiController;
   bool _showJackpotPopup = false;
 
+  // Jackpot probability tracking
+  int _randomJackpotCount = 0; // Random number 1-10, resets when jackpot appears
+  int _jackpotNotShowedCount = 0; // Count of turns without jackpot, resets when jackpot appears
+
   @override
   void initState() {
     super.initState();
@@ -77,6 +81,10 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
     for (var user in _displayUsers) {
       _roundScores[1]![user] = 0;
     }
+
+    // Initialize jackpot probability tracking
+    _randomJackpotCount = _random.nextInt(10) + 1; // Random 1-10
+    _jackpotNotShowedCount = 0;
 
     // Generate random two-digit numbers from specific ranges
     final twoDigitNumbers = <String>[];
@@ -269,6 +277,23 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
       _isRevealed = true;
     });
 
+    // Update jackpot probability tracking
+    if (isJackpot) {
+      // Jackpot appeared: reset both counters
+      final newRandomCount = _random.nextInt(10) + 1; // New random 1-10
+      setState(() {
+        _randomJackpotCount = newRandomCount;
+        _jackpotNotShowedCount = 0; // Reset to 0
+      });
+      debugPrint('JACKPOT APPEARED! Resetting: randomJackpotCount = $newRandomCount, jackpotNotShowedCount = 0');
+    } else {
+      // Jackpot didn't appear: increment counter
+      setState(() {
+        _jackpotNotShowedCount++;
+      });
+      debugPrint('No jackpot. Incrementing: jackpotNotShowedCount = $_jackpotNotShowedCount (target: $_randomJackpotCount)');
+    }
+
     // Start reveal animation
     _revealController.forward(from: 0).then((_) {
       // If jackpot, show celebration confetti animation
@@ -431,7 +456,40 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
   void _spin() {
     if (_isSpinning || _isWaitingForNextTurn) return;
 
-    _randomOffset = _random.nextDouble() * 360;
+    // Check if we need to force jackpot (jackpotNotShowedCount reached RandomJackpotCount)
+    bool shouldForceJackpot = _jackpotNotShowedCount >= _randomJackpotCount;
+
+    if (shouldForceJackpot) {
+      debugPrint('FORCING JACKPOT: jackpotNotShowedCount ($_jackpotNotShowedCount) >= randomJackpotCount ($_randomJackpotCount)');
+      // Force spinner to land on jackpot segment
+      // Find the jackpot segment index
+      int jackpotSegmentIndex = -1;
+      for (int i = 0; i < _segments.length; i++) {
+        if (_segments[i].isJackpot) {
+          jackpotSegmentIndex = i;
+          break;
+        }
+      }
+
+      if (jackpotSegmentIndex != -1) {
+        // Calculate the angle needed to land on the jackpot segment
+        final segment = _segments[jackpotSegmentIndex];
+        final segmentAngle = segment.endAngle - segment.startAngle;
+        // Add a small offset to land in the middle of the segment
+        final targetAngle = segment.startAngle + (segmentAngle / 2);
+        // Convert to rotation offset (accounting for pointer at top)
+        _randomOffset = (360 - targetAngle) % 360;
+        debugPrint('Jackpot segment found at index $jackpotSegmentIndex, targetAngle: $targetAngle, randomOffset: $_randomOffset');
+      } else {
+        // Fallback to random if jackpot segment not found
+        debugPrint('ERROR: Jackpot segment not found! Using random offset.');
+        _randomOffset = _random.nextDouble() * 360;
+      }
+    } else {
+      // Random rotation offset (0-360 degrees) to land on a random segment
+      _randomOffset = _random.nextDouble() * 360;
+      debugPrint('Random spin: jackpotNotShowedCount ($_jackpotNotShowedCount) < randomJackpotCount ($_randomJackpotCount)');
+    }
 
     // Play initial sound and vibration, then start continuous sound
     SoundVibrationHelper.playSpinEffects();

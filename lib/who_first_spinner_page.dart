@@ -10,7 +10,7 @@ import 'multiplayer_results_page.dart';
 import 'app_localizations_helper.dart';
 
 // Global failure rlity count - change this value to adjust failure probability
-const int WhoFirstfailProbalityCount = 5;
+const int WhoFirstfailProbalityCount = 2;
 
 class WhoFirstSpinnerPage extends StatefulWidget {
   final List<String> users;
@@ -448,6 +448,11 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
         });
       }
     } else {
+      // Landed on already disabled round - increment failure count for this user
+      final currentUser = _displayUsers[_currentUserIndex];
+      _userFailureCount[currentUser] =
+          (_userFailureCount[currentUser] ?? 0) + 1;
+
       // Landed on already disabled round - move to next user (no loser marking)
       setState(() {
         _isRevealed = false;

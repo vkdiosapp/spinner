@@ -8,7 +8,7 @@ import 'app_localizations_helper.dart';
 import 'multiplayer_results_page.dart';
 
 // Global failure probability count - change this value to adjust failure probability
-const int _failProbabilityCount = 6;
+const int _failProbabilityCount = 2;
 
 class MathSpinnerPage extends StatefulWidget {
   final List<String> users;
@@ -430,7 +430,13 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
           // Continue game - move to next user (winner will be skipped)
           _moveToNextUser();
         } else {
+          // Wrong answer - increment failure count for this user
+          final currentUser = _displayUsers[_currentUserIndex];
+          _userFailureCount[currentUser] =
+              (_userFailureCount[currentUser] ?? 0) + 1;
+
           // Wrong answer - move to next user (no loser marking)
+          // Math question stays the same - only changes when someone gets correct answer
           setState(() {
             _isRevealed = false;
             _selectedNumber = null;
@@ -444,11 +450,8 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
           _revealController.reset();
           _controller.reset(); // Reset animation controller
 
-          // Generate new math question for next user
-          _generateMathQuestion();
-          _generateSpinnerSegments();
-
           // Move to next user after a delay (no loser marking, just move turn)
+          // Question remains the same until someone gets correct answer
           Future.delayed(const Duration(milliseconds: 800), () {
             if (mounted) {
               _moveToNextUser();

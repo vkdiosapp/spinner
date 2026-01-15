@@ -648,6 +648,67 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
     return _segmentColors[index % _segmentColors.length];
   }
 
+  // Helper widget for glossy card effect
+  Widget _buildGlossyCard({
+    required Widget child,
+    double borderRadius = 16,
+    Color? backgroundColor,
+    Border? border,
+  }) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(borderRadius),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+        child: Container(
+          decoration: BoxDecoration(
+            color: backgroundColor ?? Colors.white.withOpacity(0.45),
+            borderRadius: BorderRadius.circular(borderRadius),
+            border:
+                border ??
+                Border.all(color: Colors.white.withOpacity(0.6), width: 1),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF1F2687).withOpacity(0.07),
+                blurRadius: 32,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: Stack(
+            children: [
+              child,
+              // Glossy overlay effect
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                height: 100,
+                child: IgnorePointer(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.white.withOpacity(0.4),
+                          Colors.white.withOpacity(0),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(borderRadius),
+                        topRight: Radius.circular(borderRadius),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizationsHelper.of(context);
@@ -801,65 +862,72 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
                                               _roundScores[_currentRound]?[user] ??
                                               0;
 
-                                          return Container(
-                                            width:
-                                                (maxWidth - 60) /
-                                                    (_displayUsers.length > 3
-                                                        ? 3
-                                                        : _displayUsers
-                                                              .length) -
-                                                8,
-                                            constraints: const BoxConstraints(
-                                              minWidth: 100,
-                                              maxWidth: 150,
-                                            ),
-                                            padding: const EdgeInsets.all(12),
-                                            decoration: BoxDecoration(
-                                              color: isCurrentUser
-                                                  ? const Color(0xFF6C5CE7)
-                                                  : const Color(0xFF3D3D5C),
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                              border: isCurrentUser
-                                                  ? Border.all(
-                                                      color: Colors.white,
-                                                      width: 2,
-                                                    )
-                                                  : null,
-                                            ),
-                                            child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Text(
-                                                  user == 'You'
-                                                      ? l10n.you
-                                                      : (user == 'Computer'
-                                                            ? l10n.computer
-                                                            : user),
-                                                  style: const TextStyle(
+                                          return _buildGlossyCard(
+                                            borderRadius: 16,
+                                            backgroundColor: isCurrentUser
+                                                ? const Color(
+                                                    0xFF6366F1,
+                                                  ).withOpacity(0.7)
+                                                : Colors.white.withOpacity(0.3),
+                                            border: isCurrentUser
+                                                ? Border.all(
                                                     color: Colors.white,
-                                                    fontSize: 14,
-                                                    fontWeight: FontWeight.bold,
+                                                    width: 2,
+                                                  )
+                                                : Border.all(
+                                                    color: Colors.white
+                                                        .withOpacity(0.6),
+                                                    width: 1,
                                                   ),
-                                                  maxLines: 1,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                ),
-                                                const SizedBox(height: 4),
-                                                Text(
-                                                  l10n.score(
-                                                    currentRoundScore
-                                                        .toString(),
+                                            child: Container(
+                                              width:
+                                                  (maxWidth - 60) /
+                                                      (_displayUsers.length > 3
+                                                          ? 3
+                                                          : _displayUsers
+                                                                .length) -
+                                                  8,
+                                              constraints: const BoxConstraints(
+                                                minWidth: 100,
+                                                maxWidth: 150,
+                                              ),
+                                              padding: const EdgeInsets.all(12),
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Text(
+                                                    user == 'You'
+                                                        ? l10n.you
+                                                        : (user == 'Computer'
+                                                              ? l10n.computer
+                                                              : user),
+                                                    style: const TextStyle(
+                                                      color: Color(0xFF1E293B),
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                    maxLines: 1,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
                                                   ),
-                                                  style: const TextStyle(
-                                                    color: Colors.white70,
-                                                    fontSize: 16,
-                                                    fontWeight: FontWeight.bold,
+                                                  const SizedBox(height: 4),
+                                                  Text(
+                                                    l10n.score(
+                                                      currentRoundScore
+                                                          .toString(),
+                                                    ),
+                                                    style: const TextStyle(
+                                                      color: Color(0xFF475569),
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
                                                   ),
-                                                ),
-                                              ],
+                                                ],
+                                              ),
                                             ),
                                           );
                                         }).toList(),

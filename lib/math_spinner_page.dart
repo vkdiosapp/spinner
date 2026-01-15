@@ -640,6 +640,68 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
     }
   }
 
+  // Helper widget for glossy card effect
+  Widget _buildGlossyCard({
+    required Widget child,
+    double borderRadius = 16,
+    Color? backgroundColor,
+    Border? border,
+  }) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(borderRadius),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+        child: Container(
+          decoration: BoxDecoration(
+            color: backgroundColor ?? Colors.white.withOpacity(0.45),
+            borderRadius: BorderRadius.circular(borderRadius),
+            border: border ?? Border.all(
+              color: Colors.white.withOpacity(0.6),
+              width: 1,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF1F2687).withOpacity(0.07),
+                blurRadius: 32,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: Stack(
+            children: [
+              child,
+              // Glossy overlay effect
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                height: 100,
+                child: IgnorePointer(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.white.withOpacity(0.4),
+                          Colors.white.withOpacity(0),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(borderRadius),
+                        topRight: Radius.circular(borderRadius),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizationsHelper.of(context);
@@ -776,55 +838,50 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
 
                                 return Opacity(
                                   opacity: (isWinner || isLoser) ? 0.5 : 1.0,
-                                  child: Container(
-                                    width:
-                                        (maxWidth - 60) /
-                                            (_displayUsers.length > 3
-                                                ? 3
-                                                : _displayUsers.length) -
-                                        8,
-                                    constraints: const BoxConstraints(
-                                      minWidth: 100,
-                                      maxWidth: 200,
-                                    ),
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                      vertical: 12,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: isWinner
-                                          ? const Color(0xFF2D2D44)
-                                          : (isLoser
-                                                ? const Color(0xFF2D2D44)
-                                                : (isCurrentUser
-                                                      ? const Color(0xFF6C5CE7)
-                                                      : const Color(
-                                                          0xFF3D3D5C,
-                                                        ))),
-                                      borderRadius: BorderRadius.circular(12),
-                                      border:
-                                          isCurrentUser && !isWinner && !isLoser
-                                          ? Border.all(
-                                              color: Colors.white,
-                                              width: 2,
-                                            )
-                                          : (isWinner
-                                                ? Border.all(
-                                                    color: const Color(
-                                                      0xFF4CAF50,
-                                                    ),
-                                                    width: 2,
-                                                  )
-                                                : (isLoser
-                                                      ? Border.all(
-                                                          color: const Color(
-                                                            0xFFEF5350,
-                                                          ),
-                                                          width: 2,
-                                                        )
-                                                      : null)),
-                                    ),
-                                    child: Column(
+                                  child: _buildGlossyCard(
+                                    borderRadius: 16,
+                                    backgroundColor: isWinner
+                                        ? const Color(0xFF2D2D44).withOpacity(0.6)
+                                        : (isLoser
+                                              ? const Color(0xFF2D2D44).withOpacity(0.6)
+                                              : (isCurrentUser
+                                                    ? const Color(0xFF6366F1).withOpacity(0.7)
+                                                    : Colors.white.withOpacity(0.3))),
+                                    border: isCurrentUser && !isWinner && !isLoser
+                                        ? Border.all(
+                                            color: Colors.white,
+                                            width: 2,
+                                          )
+                                        : (isWinner
+                                              ? Border.all(
+                                                  color: const Color(0xFF4CAF50),
+                                                  width: 2,
+                                                )
+                                              : (isLoser
+                                                    ? Border.all(
+                                                        color: const Color(0xFFEF5350),
+                                                        width: 2,
+                                                      )
+                                                    : Border.all(
+                                                        color: Colors.white.withOpacity(0.6),
+                                                        width: 1,
+                                                      ))),
+                                    child: Container(
+                                      width:
+                                          (maxWidth - 60) /
+                                              (_displayUsers.length > 3
+                                                  ? 3
+                                                  : _displayUsers.length) -
+                                              8,
+                                      constraints: const BoxConstraints(
+                                        minWidth: 100,
+                                        maxWidth: 200,
+                                      ),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 16,
+                                        vertical: 12,
+                                      ),
+                                      child: Column(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
                                       mainAxisSize: MainAxisSize.min,
@@ -837,8 +894,8 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
                                                     : user),
                                           style: TextStyle(
                                             color: isWinner
-                                                ? Colors.white70
-                                                : Colors.white,
+                                                ? const Color(0xFF64748B)
+                                                : const Color(0xFF1E293B),
                                             fontSize: 14,
                                             fontWeight: FontWeight.bold,
                                           ),
@@ -856,11 +913,12 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
                                       ],
                                     ),
                                   ),
-                                );
-                              }).toList(),
-                            ),
+                                ),
+                              );
+                            }).toList(),
                           ),
-                          const SizedBox(height: 12),
+                        ),
+                        const SizedBox(height: 12),
                           // Current user turn text (only show if current user is not a winner or loser)
                           if (!_winners.contains(_currentUserIndex) &&
                               !_losers.contains(_currentUserIndex))

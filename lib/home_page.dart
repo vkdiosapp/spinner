@@ -203,13 +203,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 // Main content - no scrolling, fixed layout
                 LayoutBuilder(
                   builder: (context, constraints) {
-                    // Calculate responsive spinner size
-                    final screenHeight = constraints.maxHeight;
-                    final spinnerSize = (screenHeight * 0.35).clamp(
-                      200.0,
-                      280.0,
-                    );
-
                     return Column(
                       children: [
                         const SizedBox(height: 16),
@@ -241,122 +234,121 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 16),
-                        // Spinner Wheel Section - responsive size
-                        SizedBox(
-                          width: spinnerSize,
-                          height: spinnerSize,
-                          child: Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              // Spinner wheel container
-                              Container(
-                                width: spinnerSize * 0.91,
-                                height: spinnerSize * 0.91,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: const Color(
-                                      0xFFFBBF24,
-                                    ), // Amber/Yellow
-                                    width: 8,
-                                  ),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.2),
-                                      blurRadius: 20,
-                                      offset: const Offset(0, 4),
-                                    ),
-                                  ],
-                                ),
-                                child: ClipOval(
-                                  child: Container(
-                                    color: isDark
-                                        ? const Color(0xFF1E293B)
-                                        : Colors.white,
-                                    child: _buildSpinnerWheel(
-                                      spinnerSize * 0.86,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              // Red pointer at top
-                              Positioned(
-                                top: 0,
-                                child: Container(
-                                  width: 24,
-                                  height: 40,
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFFEF4444), // Red
-                                    borderRadius: const BorderRadius.only(
-                                      topLeft: Radius.circular(12),
-                                      topRight: Radius.circular(12),
-                                      bottomLeft: Radius.circular(4),
-                                      bottomRight: Radius.circular(4),
-                                    ),
-                                    border: Border.all(
-                                      color: Colors.white,
-                                      width: 2,
-                                    ),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity(0.3),
-                                        blurRadius: 8,
-                                        offset: const Offset(0, 2),
+                        // Spinner Wheel Section - 50% of available height
+                        Expanded(
+                          flex: 5, // 50% of available space
+                          child: LayoutBuilder(
+                            builder: (context, spinnerConstraints) {
+                              // Use the smaller dimension (width or height) for spinner size
+                              final spinnerAreaHeight =
+                                  spinnerConstraints.maxHeight;
+                              final spinnerAreaWidth =
+                                  spinnerConstraints.maxWidth;
+                              final spinnerSize =
+                                  (spinnerAreaHeight < spinnerAreaWidth
+                                      ? spinnerAreaHeight
+                                      : spinnerAreaWidth) *
+                                  0.9; // 90% of smaller dimension
+
+                              return Center(
+                                child: SizedBox(
+                                  width: spinnerSize,
+                                  height: spinnerSize,
+                                  child: Stack(
+                                    alignment: Alignment.center,
+                                    children: [
+                                      // Spinner wheel container
+                                      Container(
+                                        width: spinnerSize * 0.91,
+                                        height: spinnerSize * 0.91,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          border: Border.all(
+                                            color: const Color(
+                                              0xFFFBBF24,
+                                            ), // Amber/Yellow
+                                            width: 8,
+                                          ),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.black.withOpacity(
+                                                0.2,
+                                              ),
+                                              blurRadius: 20,
+                                              offset: const Offset(0, 4),
+                                            ),
+                                          ],
+                                        ),
+                                        child: ClipOval(
+                                          child: Container(
+                                            color: isDark
+                                                ? const Color(0xFF1E293B)
+                                                : Colors.white,
+                                            child: _buildSpinnerWheel(
+                                              spinnerSize * 0.86,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      // Red pointer at top
+                                      Positioned(
+                                        top: 0,
+                                        child: Container(
+                                          width: 24,
+                                          height: 40,
+                                          decoration: BoxDecoration(
+                                            color: const Color(
+                                              0xFFEF4444,
+                                            ), // Red
+                                            borderRadius:
+                                                const BorderRadius.only(
+                                                  topLeft: Radius.circular(12),
+                                                  topRight: Radius.circular(12),
+                                                  bottomLeft: Radius.circular(
+                                                    4,
+                                                  ),
+                                                  bottomRight: Radius.circular(
+                                                    4,
+                                                  ),
+                                                ),
+                                            border: Border.all(
+                                              color: Colors.white,
+                                              width: 2,
+                                            ),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.black.withOpacity(
+                                                  0.3,
+                                                ),
+                                                blurRadius: 8,
+                                                offset: const Offset(0, 2),
+                                              ),
+                                            ],
+                                          ),
+                                          child: Center(
+                                            child: Container(
+                                              width: 6,
+                                              height: 6,
+                                              decoration: BoxDecoration(
+                                                color: Colors.white.withOpacity(
+                                                  0.5,
+                                                ),
+                                                shape: BoxShape.circle,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
                                       ),
                                     ],
                                   ),
-                                  child: Center(
-                                    child: Container(
-                                      width: 6,
-                                      height: 6,
-                                      decoration: BoxDecoration(
-                                        color: Colors.white.withOpacity(0.5),
-                                        shape: BoxShape.circle,
-                                      ),
-                                    ),
-                                  ),
                                 ),
-                              ),
-                              // Center play button
-                              Container(
-                                width: 64,
-                                height: 64,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: isDark
-                                      ? const Color(0xFF1E293B)
-                                      : Colors.white,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.2),
-                                      blurRadius: 20,
-                                      offset: const Offset(0, 4),
-                                    ),
-                                  ],
-                                ),
-                                child: Container(
-                                  margin: const EdgeInsets.all(4),
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: const Color(
-                                      0xFF6366F1,
-                                    ), // Primary color
-                                  ),
-                                  child: const Icon(
-                                    Icons.play_arrow,
-                                    color: Colors.white,
-                                    size: 32,
-                                  ),
-                                ),
-                              ),
-                            ],
+                              );
+                            },
                           ),
                         ),
-                        // Spacing between spinner and cards
-                        const SizedBox(height: 24),
-                        // Game Mode Cards Grid - Always 2x2 layout using Row/Column
-                        Flexible(
+                        // Game Mode Cards Grid - 50% of available height, Always 2x2 layout
+                        Expanded(
+                          flex: 5, // 50% of available space
                           child: LayoutBuilder(
                             builder: (context, cardConstraints) {
                               // Calculate available space

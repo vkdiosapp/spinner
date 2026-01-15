@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
+import 'dart:ui';
 import 'home_page.dart';
 import 'sound_vibration_helper.dart';
 import 'ad_helper.dart';
@@ -656,54 +657,75 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
           body: SafeArea(
             child: Column(
             children: [
-              // Fixed header with back button and title
+              // Header
               Padding(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
+                  horizontal: 24,
                   vertical: 16,
                 ),
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
-                    // Back button - left aligned
+                    // Back button - left aligned with frosted glass effect
                     Align(
                       alignment: Alignment.centerLeft,
-                      child: Container(
-                        width: 48,
-                        height: 48,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF6C5CE7),
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.3),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
+                      child: GestureDetector(
+                        onTap: () => BackArrowAd.handleBackButton(
+                          context: context,
+                          onBack: () => _goHome(),
                         ),
-                        child: IconButton(
-                          icon: const Icon(
-                            Icons.arrow_back,
-                            color: Colors.white,
+                        child: Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.4),
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.6),
+                              width: 1,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.03),
+                                blurRadius: 12,
+                                offset: const Offset(0, 4),
+                              ),
+                              BoxShadow(
+                                color: Colors.white.withOpacity(0.8),
+                                blurRadius: 1,
+                                offset: const Offset(0, 1),
+                                blurStyle: BlurStyle.inner,
+                              ),
+                            ],
                           ),
-                          onPressed: () => BackArrowAd.handleBackButton(
-                            context: context,
-                            onBack: () => _goHome(),
+                          child: ClipOval(
+                            child: BackdropFilter(
+                              filter: ImageFilter.blur(
+                                sigmaX: 16,
+                                sigmaY: 16,
+                              ),
+                              child: const Icon(
+                                Icons.arrow_back,
+                                color: Color(0xFF475569),
+                                size: 20,
+                              ),
+                            ),
                           ),
                         ),
                       ),
                     ),
-                    // Title - centered on screen
+                    // Title - centered
                     Text(
                       l10n.mathSpinner,
-                      textAlign: TextAlign.center,
                       style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF0F172A),
+                        fontSize: 20,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: -0.5,
                       ),
                     ),
+                    // Spacer for balance
+                    const SizedBox(width: 40),
                   ],
                 ),
               ),

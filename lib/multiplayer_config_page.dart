@@ -467,25 +467,47 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        // Back button - glossy circular
+                        // Back button - left aligned with frosted glass effect
                         GestureDetector(
                           onTap: () => BackArrowAd.handleBackButton(
                             context: context,
                             onBack: () => Navigator.of(context).pop(),
                           ),
-                          child: _buildGlossyCard(
-                            borderRadius: 100,
-                            padding: const EdgeInsets.all(0),
-                            child: Container(
-                              width: 44,
-                              height: 44,
-                              decoration: const BoxDecoration(
-                                shape: BoxShape.circle,
+                          child: Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.4),
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Colors.white.withOpacity(0.6),
+                                width: 1,
                               ),
-                              child: const Icon(
-                                Icons.arrow_back_ios_new,
-                                color: Color(0xFF475569),
-                                size: 20,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.03),
+                                  blurRadius: 12,
+                                  offset: const Offset(0, 4),
+                                ),
+                                BoxShadow(
+                                  color: Colors.white.withOpacity(0.8),
+                                  blurRadius: 1,
+                                  offset: const Offset(0, 1),
+                                  blurStyle: BlurStyle.inner,
+                                ),
+                              ],
+                            ),
+                            child: ClipOval(
+                              child: BackdropFilter(
+                                filter: ImageFilter.blur(
+                                  sigmaX: 16,
+                                  sigmaY: 16,
+                                ),
+                                child: const Icon(
+                                  Icons.arrow_back,
+                                  color: Color(0xFF475569),
+                                  size: 20,
+                                ),
                               ),
                             ),
                           ),

@@ -440,17 +440,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                             ),
                             // Spacing between spinner and cards
                             const SizedBox(height: 24),
-                            // Game Mode Cards Grid - adjusts to remaining space, handles portrait/landscape
+                            // Game Mode Cards Grid - Always 2x2 layout using Row/Column
                             Flexible(
                               child: LayoutBuilder(
                                 builder: (context, cardConstraints) {
-                                  final isLandscape =
-                                      cardConstraints.maxWidth >
-                                      cardConstraints.maxHeight;
-
-                                  // Portrait: 2 columns (2x2 grid), Landscape: 4 columns (1x4 grid)
-                                  final crossAxisCount = isLandscape ? 4 : 2;
-
                                   // Calculate available space
                                   final availableWidth =
                                       cardConstraints.maxWidth -
@@ -458,62 +451,143 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                   final availableHeight =
                                       cardConstraints.maxHeight;
 
-                                  // Calculate card size to fit in remaining space
-                                  // For landscape (4 columns): cardWidth = (availableWidth - 3*spacing) / 4
-                                  // For portrait (2 columns): cardWidth = (availableWidth - 1*spacing) / 2
                                   final spacing = 16.0;
-                                  final totalSpacing =
-                                      (crossAxisCount - 1) * spacing;
-                                  final cardWidth =
-                                      (availableWidth - totalSpacing) /
-                                      crossAxisCount;
 
-                                  // For square cards, height = width
-                                  // Calculate how many rows we need
-                                  final rowCount =
-                                      (items.length / crossAxisCount).ceil();
-                                  final totalRowSpacing =
-                                      (rowCount - 1) * spacing;
-                                  final maxCardHeight =
-                                      (availableHeight - totalRowSpacing) /
-                                      rowCount;
+                                  // Always use smaller dimension for 2x2 grid
+                                  final isHeightSmaller =
+                                      availableHeight < availableWidth;
+                                  final smallerDimension = isHeightSmaller
+                                      ? availableHeight
+                                      : availableWidth;
 
-                                  // Use the smaller dimension to ensure square cards fit
-                                  final cardSize = cardWidth < maxCardHeight
-                                      ? cardWidth
-                                      : maxCardHeight;
+                                  // For 2x2 grid: 2 columns, 2 rows
+                                  // We need: 2 cards + 1 spacing between them
+                                  // cardSize = (smallerDimension - spacing) / 2
+                                  double cardSize =
+                                      (smallerDimension - spacing) / 2;
 
+                                  // Ensure cardSize is positive and reasonable
+                                  if (cardSize <= 0) {
+                                    cardSize = 100.0; // Fallback minimum size
+                                  }
+
+                                  // Calculate exact width needed for 2 columns
+                                  final gridWidth = (2 * cardSize) + spacing;
+
+                                  // Always 2x2 grid using Row/Column
                                   return Center(
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 24,
+                                    child: ConstrainedBox(
+                                      constraints: BoxConstraints(
+                                        maxWidth: gridWidth,
+                                        minWidth: gridWidth,
                                       ),
-                                      child: GridView.builder(
-                                        shrinkWrap: true,
-                                        physics:
-                                            const NeverScrollableScrollPhysics(),
-                                        gridDelegate:
-                                            SliverGridDelegateWithFixedCrossAxisCount(
-                                              crossAxisCount: crossAxisCount,
-                                              crossAxisSpacing: spacing,
-                                              mainAxisSpacing: spacing,
-                                              childAspectRatio:
-                                                  1.0, // Square ratio
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          // ROW 1: Only 2 items
+                                          ConstrainedBox(
+                                            constraints: BoxConstraints(
+                                              maxWidth: gridWidth,
+                                              minWidth: gridWidth,
                                             ),
-                                        itemCount: items.length,
-                                        itemBuilder: (context, index) {
-                                          final item = items[index];
-                                          return _buildGameModeCard(
-                                            context,
-                                            item['title'] as String,
-                                            item['description'] as String,
-                                            item['icon'] as IconData,
-                                            item['gradient'] as Gradient,
-                                            item['route'] as Widget,
-                                            cardSize:
-                                                cardSize, // Pass card size for responsive icons
-                                          );
-                                        },
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                // Item 0
+                                                SizedBox(
+                                                  width: cardSize,
+                                                  height: cardSize,
+                                                  child: _buildGameModeCard(
+                                                    context,
+                                                    items[0]['title'] as String,
+                                                    items[0]['description']
+                                                        as String,
+                                                    items[0]['icon']
+                                                        as IconData,
+                                                    items[0]['gradient']
+                                                        as Gradient,
+                                                    items[0]['route'] as Widget,
+                                                    cardSize: cardSize,
+                                                  ),
+                                                ),
+                                                SizedBox(width: spacing),
+                                                // Item 1
+                                                SizedBox(
+                                                  width: cardSize,
+                                                  height: cardSize,
+                                                  child: _buildGameModeCard(
+                                                    context,
+                                                    items[1]['title'] as String,
+                                                    items[1]['description']
+                                                        as String,
+                                                    items[1]['icon']
+                                                        as IconData,
+                                                    items[1]['gradient']
+                                                        as Gradient,
+                                                    items[1]['route'] as Widget,
+                                                    cardSize: cardSize,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          SizedBox(height: spacing),
+                                          // ROW 2: Only 2 items
+                                          ConstrainedBox(
+                                            constraints: BoxConstraints(
+                                              maxWidth: gridWidth,
+                                              minWidth: gridWidth,
+                                            ),
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                // Item 2
+                                                SizedBox(
+                                                  width: cardSize,
+                                                  height: cardSize,
+                                                  child: _buildGameModeCard(
+                                                    context,
+                                                    items[2]['title'] as String,
+                                                    items[2]['description']
+                                                        as String,
+                                                    items[2]['icon']
+                                                        as IconData,
+                                                    items[2]['gradient']
+                                                        as Gradient,
+                                                    items[2]['route'] as Widget,
+                                                    cardSize: cardSize,
+                                                  ),
+                                                ),
+                                                SizedBox(width: spacing),
+                                                // Item 3
+                                                SizedBox(
+                                                  width: cardSize,
+                                                  height: cardSize,
+                                                  child: _buildGameModeCard(
+                                                    context,
+                                                    items[3]['title'] as String,
+                                                    items[3]['description']
+                                                        as String,
+                                                    items[3]['icon']
+                                                        as IconData,
+                                                    items[3]['gradient']
+                                                        as Gradient,
+                                                    items[3]['route'] as Widget,
+                                                    cardSize: cardSize,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   );

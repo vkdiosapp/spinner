@@ -264,9 +264,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                         decoration: BoxDecoration(
                                           shape: BoxShape.circle,
                                           border: Border.all(
-                                            color: const Color(
-                                              0xFFFBBF24,
-                                            ), // Amber/Yellow
+                                            color: const Color(0xFFFBBF24),
                                             width: 8,
                                           ),
                                           boxShadow: [
@@ -744,6 +742,15 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     final descriptionFontSize = (effectiveCardSize * 0.08).clamp(9.0, 12.0);
     final padding = (effectiveCardSize * 0.13).clamp(12.0, 20.0);
 
+    // Extract the first color from the gradient to use as border color
+    Color borderColor = Colors.black; // Default fallback
+    if (gradient is LinearGradient) {
+      final linearGradient = gradient;
+      if (linearGradient.colors.isNotEmpty) {
+        borderColor = linearGradient.colors[0];
+      }
+    }
+
     return GestureDetector(
       onTap: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) => route));
@@ -752,7 +759,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         decoration: BoxDecoration(
           color: Colors.white.withOpacity(0.6),
           borderRadius: BorderRadius.circular(32),
-          border: Border.all(color: Colors.white.withOpacity(0.3), width: 1),
+          // border: Border.all(color: borderColor, width: 0),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.1),

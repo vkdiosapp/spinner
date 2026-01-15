@@ -380,12 +380,6 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.3),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withOpacity(0.4), width: 1),
-      ),
       child: Row(
         children: [
           // Colored circle (NO profile picture)
@@ -404,16 +398,30 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
                 : null,
           ),
           const SizedBox(width: 16),
-          // Player name text field
+          // Player name text field - styled like a proper text field
           Expanded(
             child: isInvite
-                ? Text(
-                    hintText,
-                    style: TextStyle(
-                      color: Colors.grey[600],
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      fontStyle: FontStyle.italic,
+                ? Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 14,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.3),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: Colors.white.withOpacity(0.4),
+                        width: 1,
+                      ),
+                    ),
+                    child: Text(
+                      hintText,
+                      style: TextStyle(
+                        color: Colors.grey[600],
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        fontStyle: FontStyle.italic,
+                      ),
                     ),
                   )
                 : TextField(
@@ -427,7 +435,8 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
                       fontWeight: FontWeight.bold,
                     ),
                     decoration: InputDecoration(
-                      border: InputBorder.none,
+                      filled: true,
+                      fillColor: Colors.white.withOpacity(0.3),
                       hintText: hintText,
                       hintStyle: TextStyle(
                         color: Colors.grey[600],
@@ -435,7 +444,31 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
                         fontWeight: FontWeight.bold,
                       ),
                       counterText: '',
-                      contentPadding: EdgeInsets.zero,
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 14,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: BorderSide(
+                          color: Colors.white.withOpacity(0.4),
+                          width: 1,
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: BorderSide(
+                          color: Colors.white.withOpacity(0.4),
+                          width: 1,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: BorderSide(
+                          color: const Color(0xFF6366F1).withOpacity(0.6),
+                          width: 2,
+                        ),
+                      ),
                     ),
                   ),
           ),

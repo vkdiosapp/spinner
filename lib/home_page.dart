@@ -772,52 +772,74 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         ),
         child: Padding(
           padding: EdgeInsets.all(padding),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                width: iconSize,
-                height: iconSize,
-                decoration: BoxDecoration(
-                  gradient: gradient,
-                  borderRadius: BorderRadius.circular(
-                    iconSize * 0.29,
-                  ), // ~16px for default
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              // Calculate available height for content
+              final availableHeight = constraints.maxHeight;
+              
+              // Use flexible spacing that adapts to available space
+              final spacing1 = (availableHeight * 0.08).clamp(4.0, 12.0);
+              final spacing2 = (availableHeight * 0.03).clamp(2.0, 6.0);
+              
+              return ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight: availableHeight,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: iconSize,
+                      height: iconSize,
+                      decoration: BoxDecoration(
+                        gradient: gradient,
+                        borderRadius: BorderRadius.circular(
+                          iconSize * 0.29,
+                        ), // ~16px for default
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.2),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Icon(icon, color: Colors.white, size: iconIconSize),
+                    ),
+                    SizedBox(height: spacing1),
+                    Flexible(
+                      child: Text(
+                        title,
+                        style: TextStyle(
+                          fontSize: titleFontSize,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                        textAlign: TextAlign.center,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    SizedBox(height: spacing2),
+                    Flexible(
+                      child: Text(
+                        description,
+                        style: TextStyle(
+                          fontSize: descriptionFontSize,
+                          color: Colors.black.withOpacity(0.6),
+                          height: 1.2,
+                        ),
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   ],
                 ),
-                child: Icon(icon, color: Colors.white, size: iconIconSize),
-              ),
-              SizedBox(height: iconSize * 0.21), // Responsive spacing
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: titleFontSize,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-                textAlign: TextAlign.center,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              SizedBox(height: iconSize * 0.07), // Responsive spacing
-              Text(
-                description,
-                style: TextStyle(
-                  fontSize: descriptionFontSize,
-                  color: Colors.black.withOpacity(0.6),
-                  height: 1.2,
-                ),
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
+              );
+            },
           ),
         ),
       ),

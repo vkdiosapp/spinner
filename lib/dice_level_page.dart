@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dice_page.dart';
 import 'ad_helper.dart';
+import 'animated_gradient_background.dart';
 
 class DiceLevelPage extends StatelessWidget {
   const DiceLevelPage({super.key});
@@ -13,9 +14,10 @@ class DiceLevelPage extends StatelessWidget {
       {'name': 'Multiplication Dice', 'color': const Color(0xFFFF6B35)},
     ];
 
-    return Scaffold(
-      backgroundColor: Colors.transparent, // Transparent so gradient shows through
-      body: SafeArea(
+    return AnimatedGradientBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent, // Transparent so gradient shows through
+        body: SafeArea(
         child: Column(
           children: [
             // Fixed header with back button and title
@@ -166,6 +168,7 @@ class DiceLevelPage extends StatelessWidget {
             ),
           ],
         ),
+      ),
       ),
     );
   }

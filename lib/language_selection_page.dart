@@ -3,6 +3,7 @@ import 'language_settings.dart';
 import 'home_page.dart';
 import 'app_localizations_helper.dart';
 import 'ad_helper.dart';
+import 'animated_gradient_background.dart';
 
 class LanguageSelectionPage extends StatefulWidget {
   const LanguageSelectionPage({super.key});
@@ -76,9 +77,10 @@ class _LanguageSelectionPageState extends State<LanguageSelectionPage> {
     final l10n = AppLocalizationsHelper.of(context);
     final sortedKeys = _groupedLanguages.keys.toList()..sort();
     
-    return Scaffold(
-      backgroundColor: Colors.transparent, // Transparent so gradient shows through
-      body: SafeArea(
+    return AnimatedGradientBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent, // Transparent so gradient shows through
+        body: SafeArea(
         child: Column(
           children: [
             // Header with back button
@@ -241,6 +243,7 @@ class _LanguageSelectionPageState extends State<LanguageSelectionPage> {
             ),
           ],
         ),
+      ),
       ),
     );
   }

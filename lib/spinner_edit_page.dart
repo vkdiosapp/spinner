@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'animated_gradient_background.dart';
 
 class SpinnerEditPage extends StatefulWidget {
   final String title;
@@ -123,9 +124,10 @@ class _SpinnerEditPageState extends State<SpinnerEditPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.transparent, // Transparent so gradient shows through
-      body: SafeArea(
+    return AnimatedGradientBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent, // Transparent so gradient shows through
+        body: SafeArea(
         child: Column(
           children: [
             // Fixed header with back button and title
@@ -334,6 +336,7 @@ class _SpinnerEditPageState extends State<SpinnerEditPage> {
             ),
           ],
         ),
+      ),
       ),
     );
   }

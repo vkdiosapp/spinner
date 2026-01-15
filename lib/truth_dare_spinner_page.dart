@@ -7,6 +7,7 @@ import 'sound_vibration_helper.dart';
 import 'ad_helper.dart';
 import 'spinner_colors.dart';
 import 'app_localizations_helper.dart';
+import 'animated_gradient_background.dart';
 
 class TruthDareSpinnerPage extends StatefulWidget {
   final String level;
@@ -377,9 +378,10 @@ class _TruthDareSpinnerPageState extends State<TruthDareSpinnerPage>
       if (i < _dareItems.length) segments.add('Dare');
     }
 
-    return Scaffold(
-      backgroundColor: Colors.transparent, // Transparent so gradient shows through
-      body: SafeArea(
+    return AnimatedGradientBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent, // Transparent so gradient shows through
+        body: SafeArea(
         child: Column(
           children: [
             // Fixed header with back button and title
@@ -738,6 +740,7 @@ class _TruthDareSpinnerPageState extends State<TruthDareSpinnerPage>
             const BannerAdWidget(),
           ],
         ),
+      ),
       ),
     );
   }

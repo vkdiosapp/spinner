@@ -4,6 +4,7 @@ import 'sound_vibration_helper.dart';
 import 'ad_helper.dart';
 import 'spinner_colors.dart';
 import 'app_localizations_helper.dart';
+import 'animated_gradient_background.dart';
 
 class DicePage extends StatefulWidget {
   final String mode; // 'oneDice', 'twoDice', or 'multiplication'
@@ -308,9 +309,10 @@ class _DicePageState extends State<DicePage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizationsHelper.of(context);
-    return Scaffold(
-      backgroundColor: Colors.transparent, // Transparent so gradient shows through
-      body: Stack(
+    return AnimatedGradientBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent, // Transparent so gradient shows through
+        body: Stack(
         children: [
           SafeArea(
             child: Column(
@@ -893,6 +895,7 @@ class _DicePageState extends State<DicePage> with TickerProviderStateMixin {
               ),
             ),
         ],
+      ),
       ),
     );
   }

@@ -7,6 +7,7 @@ import 'sound_vibration_helper.dart';
 import 'ad_helper.dart';
 import 'spinner_colors.dart';
 import 'app_localizations_helper.dart';
+import 'animated_gradient_background.dart';
 
 class SpinnerWheelPage extends StatefulWidget {
   final List<String> items;
@@ -229,369 +230,383 @@ class _SpinnerWheelPageState extends State<SpinnerWheelPage>
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizationsHelper.of(context);
-    return Scaffold(
-      backgroundColor:
-          Colors.transparent, // Transparent so gradient shows through
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Fixed header with back button, title, and share button
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  // Back button - left aligned
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Container(
-                      width: 48,
-                      height: 48,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF6C5CE7),
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.3),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
+    return AnimatedGradientBackground(
+      child: Scaffold(
+        backgroundColor:
+            Colors.transparent, // Transparent so gradient shows through
+        body: SafeArea(
+          child: Column(
+            children: [
+              // Fixed header with back button, title, and share button
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 16,
+                ),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    // Back button - left aligned
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Container(
+                        width: 48,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF6C5CE7),
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.3),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: IconButton(
+                          icon: const Icon(
+                            Icons.arrow_back,
+                            color: Colors.white,
                           ),
-                        ],
-                      ),
-                      child: IconButton(
-                        icon: const Icon(Icons.arrow_back, color: Colors.white),
-                        onPressed: () => BackArrowAd.handleBackButton(
-                          context: context,
-                          onBack: () {
-                            if (Navigator.of(context).canPop()) {
-                              Navigator.of(context).pop();
-                            } else {
-                              Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      const SpinnerConfigPage(),
-                                ),
-                              );
-                            }
-                          },
+                          onPressed: () => BackArrowAd.handleBackButton(
+                            context: context,
+                            onBack: () {
+                              if (Navigator.of(context).canPop()) {
+                                Navigator.of(context).pop();
+                              } else {
+                                Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const SpinnerConfigPage(),
+                                  ),
+                                );
+                              }
+                            },
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  // Title - centered on screen
-                  Text(
-                    _currentTitle,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  // Edit button - right aligned
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: Container(
-                      width: 48,
-                      height: 48,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF6C5CE7),
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.3),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
+                    // Title - centered on screen
+                    Text(
+                      _currentTitle,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
                       ),
-                      child: IconButton(
-                        icon: const Icon(
-                          Icons.edit,
-                          color: Colors.white,
-                          size: 24,
+                    ),
+                    // Edit button - right aligned
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Container(
+                        width: 48,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF6C5CE7),
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.3),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
                         ),
-                        onPressed: _editSpinner,
+                        child: IconButton(
+                          icon: const Icon(
+                            Icons.edit,
+                            color: Colors.white,
+                            size: 24,
+                          ),
+                          onPressed: _editSpinner,
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            // Spinner content - no scrolling
-            Expanded(
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  // Get screen orientation
-                  final screenSize = MediaQuery.of(context).size;
-                  final isLandscape = screenSize.width > screenSize.height;
+              // Spinner content - no scrolling
+              Expanded(
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    // Get screen orientation
+                    final screenSize = MediaQuery.of(context).size;
+                    final isLandscape = screenSize.width > screenSize.height;
 
-                  // Calculate available space
-                  final availableHeight = constraints.maxHeight;
-                  final availableWidth = constraints.maxWidth;
+                    // Calculate available space
+                    final availableHeight = constraints.maxHeight;
+                    final availableWidth = constraints.maxWidth;
 
-                  // Account for popup size (can be 1.2x spinner size) and minimal padding
-                  final popupMultiplier = 1.2;
-                  final padding = 20.0; // 10px padding on each side
+                    // Account for popup size (can be 1.2x spinner size) and minimal padding
+                    final popupMultiplier = 1.2;
+                    final padding = 20.0; // 10px padding on each side
 
-                  // Calculate maximum spinner size that fits
-                  // Account for popup overflow in calculations
-                  final maxSpinnerWidth =
-                      (availableWidth - padding) / popupMultiplier;
-                  final maxSpinnerHeight =
-                      (availableHeight - padding) / popupMultiplier;
+                    // Calculate maximum spinner size that fits
+                    // Account for popup overflow in calculations
+                    final maxSpinnerWidth =
+                        (availableWidth - padding) / popupMultiplier;
+                    final maxSpinnerHeight =
+                        (availableHeight - padding) / popupMultiplier;
 
-                  // Use more aggressive sizing to fill available space
-                  final widthMultiplier = isLandscape ? 0.9 : 0.95;
-                  final heightMultiplier = isLandscape ? 0.9 : 0.95;
+                    // Use more aggressive sizing to fill available space
+                    final widthMultiplier = isLandscape ? 0.9 : 0.95;
+                    final heightMultiplier = isLandscape ? 0.9 : 0.95;
 
-                  final maxSpinnerSize = math.min(
-                    maxSpinnerWidth * widthMultiplier,
-                    maxSpinnerHeight * heightMultiplier,
-                  );
+                    final maxSpinnerSize = math.min(
+                      maxSpinnerWidth * widthMultiplier,
+                      maxSpinnerHeight * heightMultiplier,
+                    );
 
-                  // Ensure minimum size but use more of available space
-                  final finalSize = math.max(200.0, maxSpinnerSize);
+                    // Ensure minimum size but use more of available space
+                    final finalSize = math.max(200.0, maxSpinnerSize);
 
-                  // Calculate button size proportionally
-                  final buttonSize = finalSize * 0.27;
+                    // Calculate button size proportionally
+                    final buttonSize = finalSize * 0.27;
 
-                  return Screenshot(
-                    controller: _screenshotController,
-                    child: Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            // Wheel
-                            Transform.rotate(
-                              angle: _rotation * math.pi / 180,
-                              child: CustomPaint(
-                                size: Size(finalSize, finalSize),
-                                painter: WheelPainter(
-                                  items: _items,
-                                  getSegmentColor: _getSegmentColor,
+                    return Screenshot(
+                      controller: _screenshotController,
+                      child: Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              // Wheel
+                              Transform.rotate(
+                                angle: _rotation * math.pi / 180,
+                                child: CustomPaint(
+                                  size: Size(finalSize, finalSize),
+                                  painter: WheelPainter(
+                                    items: _items,
+                                    getSegmentColor: _getSegmentColor,
+                                  ),
                                 ),
                               ),
-                            ),
-                            // Center Spin Button
-                            GestureDetector(
-                              onTap: (_isSpinning || _isRevealed)
-                                  ? null
-                                  : _spin,
-                              child: Opacity(
-                                opacity: (_isSpinning || _isRevealed)
-                                    ? 0.5
-                                    : 1.0,
-                                child: Image.asset(
-                                  'assets/images/spin_logo.png',
-                                  width: buttonSize,
-                                  height: buttonSize,
-                                  fit: BoxFit.contain,
+                              // Center Spin Button
+                              GestureDetector(
+                                onTap: (_isSpinning || _isRevealed)
+                                    ? null
+                                    : _spin,
+                                child: Opacity(
+                                  opacity: (_isSpinning || _isRevealed)
+                                      ? 0.5
+                                      : 1.0,
+                                  child: Image.asset(
+                                    'assets/images/spin_logo.png',
+                                    width: buttonSize,
+                                    height: buttonSize,
+                                    fit: BoxFit.contain,
+                                  ),
                                 ),
                               ),
-                            ),
-                            // Reveal animation overlay on spinner (copied from Truth and Dare)
-                            if (_isRevealed && _selectedItem != null)
-                              AnimatedBuilder(
-                                animation: _revealController,
-                                builder: (context, child) {
-                                  return FadeTransition(
-                                    opacity: _revealController,
-                                    child: ScaleTransition(
-                                      scale: Tween<double>(begin: 0.0, end: 1.0)
-                                          .animate(
-                                            CurvedAnimation(
-                                              parent: _revealController,
-                                              curve: Curves.elasticOut,
+                              // Reveal animation overlay on spinner (copied from Truth and Dare)
+                              if (_isRevealed && _selectedItem != null)
+                                AnimatedBuilder(
+                                  animation: _revealController,
+                                  builder: (context, child) {
+                                    return FadeTransition(
+                                      opacity: _revealController,
+                                      child: ScaleTransition(
+                                        scale:
+                                            Tween<double>(
+                                              begin: 0.0,
+                                              end: 1.0,
+                                            ).animate(
+                                              CurvedAnimation(
+                                                parent: _revealController,
+                                                curve: Curves.elasticOut,
+                                              ),
+                                            ),
+                                        child: ConstrainedBox(
+                                          constraints: BoxConstraints(
+                                            maxWidth: math.min(
+                                              finalSize * 1.2,
+                                              availableWidth - padding,
+                                            ),
+                                            maxHeight: math.min(
+                                              finalSize * 1.2,
+                                              availableHeight - padding,
                                             ),
                                           ),
-                                      child: ConstrainedBox(
-                                        constraints: BoxConstraints(
-                                          maxWidth: math.min(
-                                            finalSize * 1.2,
-                                            availableWidth - padding,
-                                          ),
-                                          maxHeight: math.min(
-                                            finalSize * 1.2,
-                                            availableHeight - padding,
-                                          ),
-                                        ),
-                                        child: Container(
-                                          width: math.min(
-                                            finalSize * 1.2,
-                                            availableWidth - padding,
-                                          ),
-                                          height: math.min(
-                                            finalSize * 1.2,
-                                            availableHeight - padding,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            gradient: RadialGradient(
-                                              colors: [
-                                                SpinnerColors.segmentColors[0]
-                                                    .withOpacity(0.95),
-                                                SpinnerColors.segmentColors[0]
-                                                    .withOpacity(0.8),
+                                          child: Container(
+                                            width: math.min(
+                                              finalSize * 1.2,
+                                              availableWidth - padding,
+                                            ),
+                                            height: math.min(
+                                              finalSize * 1.2,
+                                              availableHeight - padding,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              gradient: RadialGradient(
+                                                colors: [
+                                                  SpinnerColors.segmentColors[0]
+                                                      .withOpacity(0.95),
+                                                  SpinnerColors.segmentColors[0]
+                                                      .withOpacity(0.8),
+                                                ],
+                                              ),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: SpinnerColors
+                                                      .segmentColors[0]
+                                                      .withOpacity(0.5),
+                                                  blurRadius: 30,
+                                                  spreadRadius: 10,
+                                                ),
                                               ],
                                             ),
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: SpinnerColors
-                                                    .segmentColors[0]
-                                                    .withOpacity(0.5),
-                                                blurRadius: 30,
-                                                spreadRadius: 10,
-                                              ),
-                                            ],
-                                          ),
-                                          child: Center(
-                                            child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                // Animated emoji
-                                                ScaleTransition(
-                                                  scale:
-                                                      Tween<double>(
-                                                        begin: 0.0,
-                                                        end: 1.0,
-                                                      ).animate(
-                                                        CurvedAnimation(
-                                                          parent:
-                                                              _revealController,
-                                                          curve: const Interval(
-                                                            0.0,
-                                                            0.5,
-                                                            curve: Curves
-                                                                .elasticOut,
+                                            child: Center(
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  // Animated emoji
+                                                  ScaleTransition(
+                                                    scale:
+                                                        Tween<double>(
+                                                          begin: 0.0,
+                                                          end: 1.0,
+                                                        ).animate(
+                                                          CurvedAnimation(
+                                                            parent:
+                                                                _revealController,
+                                                            curve: const Interval(
+                                                              0.0,
+                                                              0.5,
+                                                              curve: Curves
+                                                                  .elasticOut,
+                                                            ),
                                                           ),
-                                                        ),
-                                                      ),
-                                                  child: Text(
-                                                    '🎯',
-                                                    style: TextStyle(
-                                                      fontSize:
-                                                          finalSize * 0.15,
-                                                    ),
-                                                  ),
-                                                ),
-                                                const SizedBox(height: 16),
-                                                // Selected item text with animation
-                                                FadeTransition(
-                                                  opacity:
-                                                      Tween<double>(
-                                                        begin: 0.0,
-                                                        end: 1.0,
-                                                      ).animate(
-                                                        CurvedAnimation(
-                                                          parent:
-                                                              _revealController,
-                                                          curve: const Interval(
-                                                            0.5,
-                                                            1.0,
-                                                            curve:
-                                                                Curves.easeIn,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                  child: Padding(
-                                                    padding:
-                                                        const EdgeInsets.symmetric(
-                                                          horizontal: 20,
                                                         ),
                                                     child: Text(
-                                                      _selectedItem!,
+                                                      '🎯',
                                                       style: TextStyle(
-                                                        color: Colors.white,
                                                         fontSize:
-                                                            finalSize * 0.06,
-                                                        fontWeight:
-                                                            FontWeight.w600,
+                                                            finalSize * 0.15,
                                                       ),
-                                                      textAlign:
-                                                          TextAlign.center,
-                                                      maxLines: 3,
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
                                                     ),
                                                   ),
-                                                ),
-                                                const SizedBox(height: 16),
-                                                // Close button
-                                                FadeTransition(
-                                                  opacity:
-                                                      Tween<double>(
-                                                        begin: 0.0,
-                                                        end: 1.0,
-                                                      ).animate(
-                                                        CurvedAnimation(
-                                                          parent:
-                                                              _revealController,
-                                                          curve: const Interval(
-                                                            0.7,
-                                                            1.0,
+                                                  const SizedBox(height: 16),
+                                                  // Selected item text with animation
+                                                  FadeTransition(
+                                                    opacity:
+                                                        Tween<double>(
+                                                          begin: 0.0,
+                                                          end: 1.0,
+                                                        ).animate(
+                                                          CurvedAnimation(
+                                                            parent:
+                                                                _revealController,
                                                             curve:
-                                                                Curves.easeIn,
+                                                                const Interval(
+                                                                  0.5,
+                                                                  1.0,
+                                                                  curve: Curves
+                                                                      .easeIn,
+                                                                ),
                                                           ),
                                                         ),
-                                                      ),
-                                                  child: Material(
-                                                    color: Colors.white,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          20,
+                                                    child: Padding(
+                                                      padding:
+                                                          const EdgeInsets.symmetric(
+                                                            horizontal: 20,
+                                                          ),
+                                                      child: Text(
+                                                        _selectedItem!,
+                                                        style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontSize:
+                                                              finalSize * 0.06,
+                                                          fontWeight:
+                                                              FontWeight.w600,
                                                         ),
-                                                    child: InkWell(
-                                                      onTap: _resetReveal,
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                        maxLines: 3,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  const SizedBox(height: 16),
+                                                  // Close button
+                                                  FadeTransition(
+                                                    opacity:
+                                                        Tween<double>(
+                                                          begin: 0.0,
+                                                          end: 1.0,
+                                                        ).animate(
+                                                          CurvedAnimation(
+                                                            parent:
+                                                                _revealController,
+                                                            curve:
+                                                                const Interval(
+                                                                  0.7,
+                                                                  1.0,
+                                                                  curve: Curves
+                                                                      .easeIn,
+                                                                ),
+                                                          ),
+                                                        ),
+                                                    child: Material(
+                                                      color: Colors.white,
                                                       borderRadius:
                                                           BorderRadius.circular(
                                                             20,
                                                           ),
-                                                      child: Container(
-                                                        padding:
-                                                            const EdgeInsets.symmetric(
-                                                              horizontal: 24,
-                                                              vertical: 10,
+                                                      child: InkWell(
+                                                        onTap: _resetReveal,
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              20,
                                                             ),
-                                                        child: Text(
-                                                          l10n.close,
-                                                          style: TextStyle(
-                                                            color: SpinnerColors
-                                                                .segmentColors[0],
-                                                            fontSize:
-                                                                finalSize *
-                                                                0.05,
-                                                            fontWeight:
-                                                                FontWeight.bold,
+                                                        child: Container(
+                                                          padding:
+                                                              const EdgeInsets.symmetric(
+                                                                horizontal: 24,
+                                                                vertical: 10,
+                                                              ),
+                                                          child: Text(
+                                                            l10n.close,
+                                                            style: TextStyle(
+                                                              color: SpinnerColors
+                                                                  .segmentColors[0],
+                                                              fontSize:
+                                                                  finalSize *
+                                                                  0.05,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                            ),
                                                           ),
                                                         ),
                                                       ),
                                                     ),
                                                   ),
-                                                ),
-                                              ],
+                                                ],
+                                              ),
                                             ),
                                           ),
                                         ),
                                       ),
-                                    ),
-                                  );
-                                },
-                              ),
-                          ],
+                                    );
+                                  },
+                                ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
-            ),
-            // Banner Ad at bottom
-            const BannerAdWidget(),
-          ],
+              // Banner Ad at bottom
+              const BannerAdWidget(),
+            ],
+          ),
         ),
       ),
     );

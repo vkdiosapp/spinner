@@ -5,6 +5,7 @@ import 'math_spinner_page.dart';
 import 'ad_helper.dart';
 import 'app_localizations_helper.dart';
 import 'app_theme.dart';
+import 'animated_gradient_background.dart';
 
 class MultiplayerConfigPage extends StatefulWidget {
   final bool isWhoFirst;
@@ -246,9 +247,10 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
     return ValueListenableBuilder<bool>(
       valueListenable: AppTheme.themeNotifier,
       builder: (context, isDark, _) {
-        return Scaffold(
-          backgroundColor: Colors.transparent, // Transparent so gradient shows through
-          body: SafeArea(
+        return AnimatedGradientBackground(
+          child: Scaffold(
+            backgroundColor: Colors.transparent, // Transparent so gradient shows through
+            body: SafeArea(
         child: Column(
           children: [
             // Fixed header with back button and title
@@ -656,6 +658,7 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
           ],
         ),
       ),
+          ),
         );
       },
     );

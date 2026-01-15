@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'truth_dare_spinner_page.dart';
 import 'ad_helper.dart';
+import 'animated_gradient_background.dart';
 
 class TruthDareLevelPage extends StatelessWidget {
   final List<String> users;
@@ -20,9 +21,10 @@ class TruthDareLevelPage extends StatelessWidget {
       {'name': 'Insane', 'color': const Color(0xFF5F27CD)},
     ];
 
-    return Scaffold(
-      backgroundColor: Colors.transparent, // Transparent so gradient shows through
-      body: SafeArea(
+    return AnimatedGradientBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent, // Transparent so gradient shows through
+        body: SafeArea(
         child: Column(
           children: [
             // Fixed header with back button and title
@@ -166,6 +168,7 @@ class TruthDareLevelPage extends StatelessWidget {
             ),
           ],
         ),
+      ),
       ),
     );
   }

@@ -8,6 +8,7 @@ import 'spinner_colors.dart';
 import 'app_localizations_helper.dart';
 import 'app_theme.dart';
 import 'package:confetti/confetti.dart';
+import 'animated_gradient_background.dart';
 
 class MultiplayerSpinnerPage extends StatefulWidget {
   final List<String> users;
@@ -54,8 +55,10 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
   bool _showJackpotPopup = false;
 
   // Jackpot probability tracking
-  int _randomJackpotCount = 0; // Random number 1-10, resets when jackpot appears
-  int _jackpotNotShowedCount = 0; // Count of turns without jackpot, resets when jackpot appears
+  int _randomJackpotCount =
+      0; // Random number 1-10, resets when jackpot appears
+  int _jackpotNotShowedCount =
+      0; // Count of turns without jackpot, resets when jackpot appears
 
   @override
   void initState() {
@@ -285,13 +288,17 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
         _randomJackpotCount = newRandomCount;
         _jackpotNotShowedCount = 0; // Reset to 0
       });
-      debugPrint('JACKPOT APPEARED! Resetting: randomJackpotCount = $newRandomCount, jackpotNotShowedCount = 0');
+      debugPrint(
+        'JACKPOT APPEARED! Resetting: randomJackpotCount = $newRandomCount, jackpotNotShowedCount = 0',
+      );
     } else {
       // Jackpot didn't appear: increment counter
       setState(() {
         _jackpotNotShowedCount++;
       });
-      debugPrint('No jackpot. Incrementing: jackpotNotShowedCount = $_jackpotNotShowedCount (target: $_randomJackpotCount)');
+      debugPrint(
+        'No jackpot. Incrementing: jackpotNotShowedCount = $_jackpotNotShowedCount (target: $_randomJackpotCount)',
+      );
     }
 
     // Start reveal animation
@@ -460,7 +467,9 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
     bool shouldForceJackpot = _jackpotNotShowedCount >= _randomJackpotCount;
 
     if (shouldForceJackpot) {
-      debugPrint('FORCING JACKPOT: jackpotNotShowedCount ($_jackpotNotShowedCount) >= randomJackpotCount ($_randomJackpotCount)');
+      debugPrint(
+        'FORCING JACKPOT: jackpotNotShowedCount ($_jackpotNotShowedCount) >= randomJackpotCount ($_randomJackpotCount)',
+      );
       // Force spinner to land on jackpot segment
       // Find the jackpot segment index
       int jackpotSegmentIndex = -1;
@@ -479,7 +488,9 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
         final targetAngle = segment.startAngle + (segmentAngle / 2);
         // Convert to rotation offset (accounting for pointer at top)
         _randomOffset = (360 - targetAngle) % 360;
-        debugPrint('Jackpot segment found at index $jackpotSegmentIndex, targetAngle: $targetAngle, randomOffset: $_randomOffset');
+        debugPrint(
+          'Jackpot segment found at index $jackpotSegmentIndex, targetAngle: $targetAngle, randomOffset: $_randomOffset',
+        );
       } else {
         // Fallback to random if jackpot segment not found
         debugPrint('ERROR: Jackpot segment not found! Using random offset.');
@@ -488,7 +499,9 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
     } else {
       // Random rotation offset (0-360 degrees) to land on a random segment
       _randomOffset = _random.nextDouble() * 360;
-      debugPrint('Random spin: jackpotNotShowedCount ($_jackpotNotShowedCount) < randomJackpotCount ($_randomJackpotCount)');
+      debugPrint(
+        'Random spin: jackpotNotShowedCount ($_jackpotNotShowedCount) < randomJackpotCount ($_randomJackpotCount)',
+      );
     }
 
     // Play initial sound and vibration, then start continuous sound
@@ -648,491 +661,512 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
       child: ValueListenableBuilder<bool>(
         valueListenable: AppTheme.themeNotifier,
         builder: (context, isDark, _) {
-          return Scaffold(
-            backgroundColor: Colors.transparent, // Transparent so gradient shows through
-            body: Stack(
-              children: [
-                SafeArea(
-                  child: Column(
-                    children: [
-                      // Fixed header with back button and title
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 16,
-                        ),
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            // Back button - left aligned
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: Container(
-                                width: 48,
-                                height: 48,
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFF6C5CE7),
-                                  shape: BoxShape.circle,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.3),
-                                      blurRadius: 8,
-                                      offset: const Offset(0, 2),
-                                    ),
-                                  ],
-                                ),
-                                child: IconButton(
-                                  icon: const Icon(
-                                    Icons.arrow_back,
-                                    color: Colors.white,
+          return AnimatedGradientBackground(
+            child: Scaffold(
+              backgroundColor:
+                  Colors.transparent, // Transparent so gradient shows through
+              body: Stack(
+                children: [
+                  SafeArea(
+                    child: Column(
+                      children: [
+                        // Fixed header with back button and title
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 16,
+                          ),
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              // Back button - left aligned
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: Container(
+                                  width: 48,
+                                  height: 48,
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF6C5CE7),
+                                    shape: BoxShape.circle,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.3),
+                                        blurRadius: 8,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ],
                                   ),
-                                  onPressed: _goHome,
+                                  child: IconButton(
+                                    icon: const Icon(
+                                      Icons.arrow_back,
+                                      color: Colors.white,
+                                    ),
+                                    onPressed: _goHome,
+                                  ),
                                 ),
                               ),
-                            ),
-                            // Title - centered on screen
-                            Text(
-                              'Round $_currentRound / ${widget.rounds}',
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
+                              // Title - centered on screen
+                              Text(
+                                'Round $_currentRound / ${widget.rounds}',
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                      // Scrollable content
-                      Expanded(
-                        child: LayoutBuilder(
-                          builder: (context, constraints) {
-                            final maxWidth = constraints.maxWidth;
-                            final maxHeight = constraints.maxHeight;
-                            final screenSize = math.min(maxWidth, maxHeight);
-                            final isLargeScreen = screenSize > 600;
-                            final margin = isLargeScreen ? 20.0 : 12.0;
-                            final arrowHeight = isLargeScreen ? 40.0 : 28.0;
+                        // Scrollable content
+                        Expanded(
+                          child: LayoutBuilder(
+                            builder: (context, constraints) {
+                              final maxWidth = constraints.maxWidth;
+                              final maxHeight = constraints.maxHeight;
+                              final screenSize = math.min(maxWidth, maxHeight);
+                              final isLargeScreen = screenSize > 600;
+                              final margin = isLargeScreen ? 20.0 : 12.0;
+                              final arrowHeight = isLargeScreen ? 40.0 : 28.0;
 
-                            // Calculate available space
-                            final availableWidth = maxWidth - (margin * 2);
-                            final availableHeight =
-                                maxHeight - arrowHeight - (margin * 2);
+                              // Calculate available space
+                              final availableWidth = maxWidth - (margin * 2);
+                              final availableHeight =
+                                  maxHeight - arrowHeight - (margin * 2);
 
-                            // Use more of the screen for better coverage
-                            final widthMultiplier = isLargeScreen ? 0.8 : 0.95;
-                            final heightMultiplier = isLargeScreen ? 0.8 : 0.95;
+                              // Use more of the screen for better coverage
+                              final widthMultiplier = isLargeScreen
+                                  ? 0.8
+                                  : 0.95;
+                              final heightMultiplier = isLargeScreen
+                                  ? 0.8
+                                  : 0.95;
 
-                            final spinnerSize = math.min(
-                              availableWidth * widthMultiplier,
-                              availableHeight * heightMultiplier,
-                            );
-                            final finalSize = math.max(230.0, spinnerSize);
+                              final spinnerSize = math.min(
+                                availableWidth * widthMultiplier,
+                                availableHeight * heightMultiplier,
+                              );
+                              final finalSize = math.max(230.0, spinnerSize);
 
-                            final buttonSize = finalSize * 0.27;
+                              final buttonSize = finalSize * 0.27;
 
-                            return SingleChildScrollView(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: isLargeScreen ? 80 : 16,
-                              ),
-                              child: Column(
-                                children: [
-                                  const SizedBox(height: 20),
-                                  // Users list - similar to multiplayer
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 20,
-                                    ),
-                                    child: Wrap(
-                                      spacing: 12,
-                                      runSpacing: 12,
-                                      alignment: WrapAlignment.center,
-                                      children: _displayUsers.asMap().entries.map((
-                                        entry,
-                                      ) {
-                                        final index = entry.key;
-                                        final user = entry.value;
-                                        final isCurrentUser =
-                                            index == _currentUserIndex;
+                              return SingleChildScrollView(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: isLargeScreen ? 80 : 16,
+                                ),
+                                child: Column(
+                                  children: [
+                                    const SizedBox(height: 20),
+                                    // Users list - similar to multiplayer
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 20,
+                                      ),
+                                      child: Wrap(
+                                        spacing: 12,
+                                        runSpacing: 12,
+                                        alignment: WrapAlignment.center,
+                                        children: _displayUsers.asMap().entries.map((
+                                          entry,
+                                        ) {
+                                          final index = entry.key;
+                                          final user = entry.value;
+                                          final isCurrentUser =
+                                              index == _currentUserIndex;
 
-                                        // Get current round score for this user
-                                        final currentRoundScore =
-                                            _roundScores[_currentRound]?[user] ??
-                                            0;
+                                          // Get current round score for this user
+                                          final currentRoundScore =
+                                              _roundScores[_currentRound]?[user] ??
+                                              0;
 
-                                        return Container(
-                                          width:
-                                              (maxWidth - 60) /
-                                                  (_displayUsers.length > 3
-                                                      ? 3
-                                                      : _displayUsers.length) -
-                                              8,
-                                          constraints: const BoxConstraints(
-                                            minWidth: 100,
-                                            maxWidth: 150,
-                                          ),
-                                          padding: const EdgeInsets.all(12),
-                                          decoration: BoxDecoration(
-                                            color: isCurrentUser
-                                                ? const Color(0xFF6C5CE7)
-                                                : const Color(0xFF3D3D5C),
-                                            borderRadius: BorderRadius.circular(
-                                              12,
+                                          return Container(
+                                            width:
+                                                (maxWidth - 60) /
+                                                    (_displayUsers.length > 3
+                                                        ? 3
+                                                        : _displayUsers
+                                                              .length) -
+                                                8,
+                                            constraints: const BoxConstraints(
+                                              minWidth: 100,
+                                              maxWidth: 150,
                                             ),
-                                            border: isCurrentUser
-                                                ? Border.all(
+                                            padding: const EdgeInsets.all(12),
+                                            decoration: BoxDecoration(
+                                              color: isCurrentUser
+                                                  ? const Color(0xFF6C5CE7)
+                                                  : const Color(0xFF3D3D5C),
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                              border: isCurrentUser
+                                                  ? Border.all(
+                                                      color: Colors.white,
+                                                      width: 2,
+                                                    )
+                                                  : null,
+                                            ),
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Text(
+                                                  user == 'You'
+                                                      ? l10n.you
+                                                      : (user == 'Computer'
+                                                            ? l10n.computer
+                                                            : user),
+                                                  style: const TextStyle(
                                                     color: Colors.white,
-                                                    width: 2,
-                                                  )
-                                                : null,
-                                          ),
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Text(
-                                                user == 'You'
-                                                    ? l10n.you
-                                                    : (user == 'Computer'
-                                                          ? l10n.computer
-                                                          : user),
-                                                style: const TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.bold,
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                  maxLines: 1,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
                                                 ),
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                              const SizedBox(height: 4),
-                                              Text(
-                                                l10n.score(
-                                                  currentRoundScore.toString(),
+                                                const SizedBox(height: 4),
+                                                Text(
+                                                  l10n.score(
+                                                    currentRoundScore
+                                                        .toString(),
+                                                  ),
+                                                  style: const TextStyle(
+                                                    color: Colors.white70,
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
                                                 ),
-                                                style: const TextStyle(
-                                                  color: Colors.white70,
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.bold,
+                                              ],
+                                            ),
+                                          );
+                                        }).toList(),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 12),
+                                    // Current user turn text
+                                    Text(
+                                      l10n.turn(
+                                        _displayUsers[_currentUserIndex] ==
+                                                'You'
+                                            ? l10n.you
+                                            : (_displayUsers[_currentUserIndex] ==
+                                                      'Computer'
+                                                  ? l10n.computer
+                                                  : _displayUsers[_currentUserIndex]),
+                                      ),
+                                      style: const TextStyle(
+                                        color: Colors.white70,
+                                        fontSize: 18,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 20),
+                                    // Spinner Wheel
+                                    Center(
+                                      child: Container(
+                                        height:
+                                            finalSize +
+                                            50, // Fixed height to prevent cropping
+                                        width: finalSize,
+                                        margin: const EdgeInsets.all(20),
+                                        child: Stack(
+                                          alignment: Alignment.center,
+                                          children: [
+                                            // Wheel
+                                            Transform.rotate(
+                                              angle: _rotation * math.pi / 180,
+                                              child: CustomPaint(
+                                                size: Size(
+                                                  finalSize,
+                                                  finalSize,
                                                 ),
-                                              ),
-                                            ],
-                                          ),
-                                        );
-                                      }).toList(),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 12),
-                                  // Current user turn text
-                                  Text(
-                                    l10n.turn(
-                                      _displayUsers[_currentUserIndex] == 'You'
-                                          ? l10n.you
-                                          : (_displayUsers[_currentUserIndex] ==
-                                                    'Computer'
-                                                ? l10n.computer
-                                                : _displayUsers[_currentUserIndex]),
-                                    ),
-                                    style: const TextStyle(
-                                      color: Colors.white70,
-                                      fontSize: 18,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 20),
-                                  // Spinner Wheel
-                                  Center(
-                                    child: Container(
-                                      height:
-                                          finalSize +
-                                          50, // Fixed height to prevent cropping
-                                      width: finalSize,
-                                      margin: const EdgeInsets.all(20),
-                                      child: Stack(
-                                        alignment: Alignment.center,
-                                        children: [
-                                          // Wheel
-                                          Transform.rotate(
-                                            angle: _rotation * math.pi / 180,
-                                            child: CustomPaint(
-                                              size: Size(finalSize, finalSize),
-                                              painter: MultiplayerWheelPainter(
-                                                segments: _segments,
-                                                getSegmentColor:
-                                                    _getSegmentColor,
+                                                painter:
+                                                    MultiplayerWheelPainter(
+                                                      segments: _segments,
+                                                      getSegmentColor:
+                                                          _getSegmentColor,
+                                                    ),
                                               ),
                                             ),
-                                          ),
-                                          // Center Spin Button
-                                          GestureDetector(
-                                            onTap:
-                                                (_isWaitingForNextTurn ||
-                                                    _isRevealed ||
-                                                    _isSpinning ||
-                                                    (_isSinglePlayer &&
-                                                        _displayUsers[_currentUserIndex] ==
-                                                            'Computer'))
-                                                ? null
-                                                : _spin,
-                                            child: Opacity(
-                                              opacity:
+                                            // Center Spin Button
+                                            GestureDetector(
+                                              onTap:
                                                   (_isWaitingForNextTurn ||
                                                       _isRevealed ||
                                                       _isSpinning ||
                                                       (_isSinglePlayer &&
                                                           _displayUsers[_currentUserIndex] ==
                                                               'Computer'))
-                                                  ? 0.5
-                                                  : 1.0,
-                                              child: Image.asset(
-                                                'assets/images/spin_logo.png',
-                                                width: buttonSize,
-                                                height: buttonSize,
-                                                fit: BoxFit.contain,
+                                                  ? null
+                                                  : _spin,
+                                              child: Opacity(
+                                                opacity:
+                                                    (_isWaitingForNextTurn ||
+                                                        _isRevealed ||
+                                                        _isSpinning ||
+                                                        (_isSinglePlayer &&
+                                                            _displayUsers[_currentUserIndex] ==
+                                                                'Computer'))
+                                                    ? 0.5
+                                                    : 1.0,
+                                                child: Image.asset(
+                                                  'assets/images/spin_logo.png',
+                                                  width: buttonSize,
+                                                  height: buttonSize,
+                                                  fit: BoxFit.contain,
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                          // Reveal animation overlay on spinner
-                                          if (_isRevealed &&
-                                              _earnedPoints != null &&
-                                              _earnedNumber != null)
-                                            AnimatedBuilder(
-                                              animation: _revealController,
-                                              builder: (context, child) {
-                                                return FadeTransition(
-                                                  opacity: _revealController,
-                                                  child: ScaleTransition(
-                                                    scale:
-                                                        Tween<double>(
-                                                          begin: 0.0,
-                                                          end: 1.0,
-                                                        ).animate(
-                                                          CurvedAnimation(
-                                                            parent:
-                                                                _revealController,
-                                                            curve: Curves
-                                                                .elasticOut,
+                                            // Reveal animation overlay on spinner
+                                            if (_isRevealed &&
+                                                _earnedPoints != null &&
+                                                _earnedNumber != null)
+                                              AnimatedBuilder(
+                                                animation: _revealController,
+                                                builder: (context, child) {
+                                                  return FadeTransition(
+                                                    opacity: _revealController,
+                                                    child: ScaleTransition(
+                                                      scale:
+                                                          Tween<double>(
+                                                            begin: 0.0,
+                                                            end: 1.0,
+                                                          ).animate(
+                                                            CurvedAnimation(
+                                                              parent:
+                                                                  _revealController,
+                                                              curve: Curves
+                                                                  .elasticOut,
+                                                            ),
                                                           ),
-                                                        ),
-                                                    child: Container(
-                                                      width: finalSize * 1.2,
-                                                      height: finalSize * 1.2,
-                                                      decoration: BoxDecoration(
-                                                        shape: BoxShape.circle,
-                                                        gradient: RadialGradient(
-                                                          colors: [
-                                                            const Color(
-                                                              0xFFFFF9C4,
-                                                            ).withOpacity(
-                                                              0.95,
-                                                            ), // Light yellow
-                                                            const Color(
-                                                              0xFFFFF59D,
-                                                            ).withOpacity(
-                                                              0.9,
-                                                            ), // Slightly darker yellow
+                                                      child: Container(
+                                                        width: finalSize * 1.2,
+                                                        height: finalSize * 1.2,
+                                                        decoration: BoxDecoration(
+                                                          shape:
+                                                              BoxShape.circle,
+                                                          gradient: RadialGradient(
+                                                            colors: [
+                                                              const Color(
+                                                                0xFFFFF9C4,
+                                                              ).withOpacity(
+                                                                0.95,
+                                                              ), // Light yellow
+                                                              const Color(
+                                                                0xFFFFF59D,
+                                                              ).withOpacity(
+                                                                0.9,
+                                                              ), // Slightly darker yellow
+                                                            ],
+                                                          ),
+                                                          boxShadow: [
+                                                            BoxShadow(
+                                                              color:
+                                                                  const Color(
+                                                                    0xFFFFF59D,
+                                                                  ).withOpacity(
+                                                                    0.5,
+                                                                  ),
+                                                              blurRadius: 30,
+                                                              spreadRadius: 10,
+                                                            ),
                                                           ],
                                                         ),
-                                                        boxShadow: [
-                                                          BoxShadow(
-                                                            color: const Color(
-                                                              0xFFFFF59D,
-                                                            ).withOpacity(0.5),
-                                                            blurRadius: 30,
-                                                            spreadRadius: 10,
+                                                        child: Center(
+                                                          child: Column(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .center,
+                                                            children: [
+                                                              // Points label with animation
+                                                              FadeTransition(
+                                                                opacity:
+                                                                    Tween<double>(
+                                                                      begin:
+                                                                          0.0,
+                                                                      end: 1.0,
+                                                                    ).animate(
+                                                                      CurvedAnimation(
+                                                                        parent:
+                                                                            _revealController,
+                                                                        curve: const Interval(
+                                                                          0.0,
+                                                                          0.5,
+                                                                          curve:
+                                                                              Curves.easeIn,
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                child: Text(
+                                                                  l10n.earned,
+                                                                  style: TextStyle(
+                                                                    color: Colors
+                                                                        .black87,
+                                                                    fontSize:
+                                                                        finalSize *
+                                                                        0.08,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
+                                                                    letterSpacing:
+                                                                        3,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                              const SizedBox(
+                                                                height: 12,
+                                                              ),
+                                                              // Number with animation
+                                                              ScaleTransition(
+                                                                scale:
+                                                                    Tween<double>(
+                                                                      begin:
+                                                                          0.0,
+                                                                      end: 1.0,
+                                                                    ).animate(
+                                                                      CurvedAnimation(
+                                                                        parent:
+                                                                            _revealController,
+                                                                        curve: const Interval(
+                                                                          0.2,
+                                                                          0.7,
+                                                                          curve:
+                                                                              Curves.elasticOut,
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                child: Text(
+                                                                  _earnedNumber!,
+                                                                  style: TextStyle(
+                                                                    color: Colors
+                                                                        .black,
+                                                                    fontSize:
+                                                                        finalSize *
+                                                                        0.25,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
+                                                                    shadows: [
+                                                                      Shadow(
+                                                                        color: Colors
+                                                                            .black
+                                                                            .withOpacity(
+                                                                              0.2,
+                                                                            ),
+                                                                        blurRadius:
+                                                                            10,
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                              const SizedBox(
+                                                                height: 8,
+                                                              ),
+                                                              // Points text with animation
+                                                              FadeTransition(
+                                                                opacity:
+                                                                    Tween<double>(
+                                                                      begin:
+                                                                          0.0,
+                                                                      end: 1.0,
+                                                                    ).animate(
+                                                                      CurvedAnimation(
+                                                                        parent:
+                                                                            _revealController,
+                                                                        curve: const Interval(
+                                                                          0.5,
+                                                                          0.8,
+                                                                          curve:
+                                                                              Curves.easeIn,
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                child: Text(
+                                                                  '${_earnedPoints} Points',
+                                                                  style: TextStyle(
+                                                                    color: Colors
+                                                                        .black87,
+                                                                    fontSize:
+                                                                        finalSize *
+                                                                        0.07,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w600,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ],
                                                           ),
-                                                        ],
-                                                      ),
-                                                      child: Center(
-                                                        child: Column(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .center,
-                                                          children: [
-                                                            // Points label with animation
-                                                            FadeTransition(
-                                                              opacity:
-                                                                  Tween<double>(
-                                                                    begin: 0.0,
-                                                                    end: 1.0,
-                                                                  ).animate(
-                                                                    CurvedAnimation(
-                                                                      parent:
-                                                                          _revealController,
-                                                                      curve: const Interval(
-                                                                        0.0,
-                                                                        0.5,
-                                                                        curve: Curves
-                                                                            .easeIn,
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                              child: Text(
-                                                                l10n.earned,
-                                                                style: TextStyle(
-                                                                  color: Colors
-                                                                      .black87,
-                                                                  fontSize:
-                                                                      finalSize *
-                                                                      0.08,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
-                                                                  letterSpacing:
-                                                                      3,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                            const SizedBox(
-                                                              height: 12,
-                                                            ),
-                                                            // Number with animation
-                                                            ScaleTransition(
-                                                              scale:
-                                                                  Tween<double>(
-                                                                    begin: 0.0,
-                                                                    end: 1.0,
-                                                                  ).animate(
-                                                                    CurvedAnimation(
-                                                                      parent:
-                                                                          _revealController,
-                                                                      curve: const Interval(
-                                                                        0.2,
-                                                                        0.7,
-                                                                        curve: Curves
-                                                                            .elasticOut,
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                              child: Text(
-                                                                _earnedNumber!,
-                                                                style: TextStyle(
-                                                                  color: Colors
-                                                                      .black,
-                                                                  fontSize:
-                                                                      finalSize *
-                                                                      0.25,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
-                                                                  shadows: [
-                                                                    Shadow(
-                                                                      color: Colors
-                                                                          .black
-                                                                          .withOpacity(
-                                                                            0.2,
-                                                                          ),
-                                                                      blurRadius:
-                                                                          10,
-                                                                    ),
-                                                                  ],
-                                                                ),
-                                                              ),
-                                                            ),
-                                                            const SizedBox(
-                                                              height: 8,
-                                                            ),
-                                                            // Points text with animation
-                                                            FadeTransition(
-                                                              opacity:
-                                                                  Tween<double>(
-                                                                    begin: 0.0,
-                                                                    end: 1.0,
-                                                                  ).animate(
-                                                                    CurvedAnimation(
-                                                                      parent:
-                                                                          _revealController,
-                                                                      curve: const Interval(
-                                                                        0.5,
-                                                                        0.8,
-                                                                        curve: Curves
-                                                                            .easeIn,
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                              child: Text(
-                                                                '${_earnedPoints} Points',
-                                                                style: TextStyle(
-                                                                  color: Colors
-                                                                      .black87,
-                                                                  fontSize:
-                                                                      finalSize *
-                                                                      0.07,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w600,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ],
                                                         ),
                                                       ),
                                                     ),
-                                                  ),
-                                                );
-                                              },
-                                            ),
-                                        ],
+                                                  );
+                                                },
+                                              ),
+                                          ],
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  const SizedBox(height: 20),
-                                ],
-                              ),
-                            );
-                          },
+                                    const SizedBox(height: 20),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                // Banner Ad at bottom
-                Positioned(
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  child: const BannerAdWidget(),
-                ),
-                // Confetti overlay - starts from spinner center
-                if (_showJackpotPopup)
-                  Positioned.fill(
-                    child: IgnorePointer(
-                      child: Align(
-                        alignment: Alignment.center,
-                        child: ConfettiWidget(
-                          confettiController: _confettiController,
-                          blastDirection:
-                              0, // Start from center, will blast in all directions
-                          blastDirectionality: BlastDirectionality
-                              .explosive, // Blast in all directions
-                          maxBlastForce: 10,
-                          minBlastForce: 5,
-                          emissionFrequency: 0.02,
-                          numberOfParticles: 50,
-                          gravity: 0.2,
-                          shouldLoop: false,
-                          colors: [
-                            const Color(0xFFFFD700), // Gold
-                            Colors.orange,
-                            Colors.yellow,
-                            Colors.amber,
-                            Colors.deepOrange,
-                            Colors.red,
-                            Colors.pink,
-                            Colors.purple,
-                            Colors.blue,
-                            Colors.cyan,
-                            Colors.green,
-                            Colors.lime,
-                            Colors.teal,
-                            Colors.indigo,
-                            Colors.brown,
-                            Colors.white,
-                          ],
+                  // Banner Ad at bottom
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: const BannerAdWidget(),
+                  ),
+                  // Confetti overlay - starts from spinner center
+                  if (_showJackpotPopup)
+                    Positioned.fill(
+                      child: IgnorePointer(
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: ConfettiWidget(
+                            confettiController: _confettiController,
+                            blastDirection:
+                                0, // Start from center, will blast in all directions
+                            blastDirectionality: BlastDirectionality
+                                .explosive, // Blast in all directions
+                            maxBlastForce: 10,
+                            minBlastForce: 5,
+                            emissionFrequency: 0.02,
+                            numberOfParticles: 50,
+                            gravity: 0.2,
+                            shouldLoop: false,
+                            colors: [
+                              const Color(0xFFFFD700), // Gold
+                              Colors.orange,
+                              Colors.yellow,
+                              Colors.amber,
+                              Colors.deepOrange,
+                              Colors.red,
+                              Colors.pink,
+                              Colors.purple,
+                              Colors.blue,
+                              Colors.cyan,
+                              Colors.green,
+                              Colors.lime,
+                              Colors.teal,
+                              Colors.indigo,
+                              Colors.brown,
+                              Colors.white,
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
-              ],
+                ],
+              ),
             ),
           );
         },

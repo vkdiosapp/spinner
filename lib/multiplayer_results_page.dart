@@ -7,6 +7,7 @@ import 'package:path_provider/path_provider.dart';
 import 'home_page.dart';
 import 'app_localizations_helper.dart';
 import 'ad_helper.dart';
+import 'animated_gradient_background.dart';
 
 class MultiplayerResultsPage extends StatefulWidget {
   final List<String> users;
@@ -165,9 +166,10 @@ class _MultiplayerResultsPageState extends State<MultiplayerResultsPage> {
     return ValueListenableBuilder<bool>(
       valueListenable: AppTheme.themeNotifier,
       builder: (context, isDark, _) {
-        return Scaffold(
-          backgroundColor: Colors.transparent, // Transparent so gradient shows through
-          body: SafeArea(
+        return AnimatedGradientBackground(
+          child: Scaffold(
+            backgroundColor: Colors.transparent, // Transparent so gradient shows through
+            body: SafeArea(
         child: Column(
           children: [
             // Fixed header with back button, title, and share button
@@ -387,6 +389,7 @@ class _MultiplayerResultsPageState extends State<MultiplayerResultsPage> {
           ],
         ),
       ),
+          ),
         );
       },
     );

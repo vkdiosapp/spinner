@@ -8,6 +8,7 @@ import 'spinner_colors.dart';
 import 'sound_vibration_helper.dart';
 import 'multiplayer_results_page.dart';
 import 'app_localizations_helper.dart';
+import 'animated_gradient_background.dart';
 
 // Global failure rlity count - change this value to adjust failure probability
 const int WhoFirstfailProbalityCount = 2;
@@ -655,9 +656,10 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
       child: ValueListenableBuilder<bool>(
         valueListenable: AppTheme.themeNotifier,
         builder: (context, isDark, _) {
-          return Scaffold(
-            backgroundColor: Colors.transparent, // Transparent so gradient shows through
-            body: SafeArea(
+          return AnimatedGradientBackground(
+            child: Scaffold(
+              backgroundColor: Colors.transparent, // Transparent so gradient shows through
+              body: SafeArea(
               child: Column(
                 children: [
                   // Header
@@ -2098,6 +2100,7 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
                   const BannerAdWidget(),
                 ],
               ),
+            ),
             ),
           );
         },

@@ -6,6 +6,7 @@ import 'ad_helper.dart';
 import 'spinner_colors.dart';
 import 'app_localizations_helper.dart';
 import 'multiplayer_results_page.dart';
+import 'animated_gradient_background.dart';
 
 // Global failure probability count - change this value to adjust failure probability
 const int _failProbabilityCount = 6;
@@ -649,10 +650,11 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
           _goHome();
         }
       },
-      child: Scaffold(
-        backgroundColor: Colors.transparent, // Transparent so gradient shows through
-        body: SafeArea(
-          child: Column(
+      child: AnimatedGradientBackground(
+        child: Scaffold(
+          backgroundColor: Colors.transparent, // Transparent so gradient shows through
+          body: SafeArea(
+            child: Column(
             children: [
               // Fixed header with back button and title
               Padding(
@@ -1158,6 +1160,7 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
               // Banner Ad at bottom
               const BannerAdWidget(),
             ],
+            ),
           ),
         ),
       ),

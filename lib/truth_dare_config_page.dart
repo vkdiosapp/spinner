@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'truth_dare_level_page.dart';
 import 'ad_helper.dart';
 import 'app_localizations_helper.dart';
+import 'animated_gradient_background.dart';
 
 class TruthDareConfigPage extends StatefulWidget {
   const TruthDareConfigPage({super.key});
@@ -134,9 +135,10 @@ class _TruthDareConfigPageState extends State<TruthDareConfigPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizationsHelper.of(context);
     
-    return Scaffold(
-      backgroundColor: Colors.transparent, // Transparent so gradient shows through
-      body: SafeArea(
+    return AnimatedGradientBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent, // Transparent so gradient shows through
+        body: SafeArea(
         child: Column(
           children: [
             // Fixed header with back button and title
@@ -334,6 +336,7 @@ class _TruthDareConfigPageState extends State<TruthDareConfigPage> {
             ),
           ],
         ),
+      ),
       ),
     );
   }

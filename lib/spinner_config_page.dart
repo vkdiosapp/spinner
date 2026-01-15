@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'spinner_wheel_page.dart';
 import 'ad_helper.dart';
 import 'app_localizations_helper.dart';
+import 'animated_gradient_background.dart';
 
 class SpinnerConfigPage extends StatefulWidget {
   final String? initialTitle;
@@ -78,7 +79,7 @@ class _SpinnerConfigPageState extends State<SpinnerConfigPage> {
 
   void _startSpinner() {
     final l10n = AppLocalizationsHelper.of(context);
-    
+
     // Validate spinner title is mandatory
     final titleText = _titleController.text.trim();
     if (titleText.isEmpty) {
@@ -99,7 +100,7 @@ class _SpinnerConfigPageState extends State<SpinnerConfigPage> {
         updatedItems.add(text);
       }
     }
-    
+
     if (updatedItems.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -117,9 +118,7 @@ class _SpinnerConfigPageState extends State<SpinnerConfigPage> {
       if (seenNames.contains(lowerItem)) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              l10n.duplicateItemName(item),
-            ),
+            content: Text(l10n.duplicateItemName(item)),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 3),
           ),
@@ -131,10 +130,8 @@ class _SpinnerConfigPageState extends State<SpinnerConfigPage> {
 
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
-        builder: (context) => SpinnerWheelPage(
-          title: titleText,
-          items: updatedItems,
-        ),
+        builder: (context) =>
+            SpinnerWheelPage(title: titleText, items: updatedItems),
       ),
     );
   }
@@ -142,251 +139,265 @@ class _SpinnerConfigPageState extends State<SpinnerConfigPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizationsHelper.of(context);
-    
-    return Scaffold(
-      backgroundColor: Colors.transparent, // Transparent so gradient shows through
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Fixed header with back button and title
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  // Back button - left aligned
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Container(
-                      width: 48,
-                      height: 48,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF6C5CE7),
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.3),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: IconButton(
-                        icon: const Icon(Icons.arrow_back, color: Colors.white),
-                        onPressed: () => BackArrowAd.handleBackButton(
-                          context: context,
-                          onBack: () => Navigator.of(context).pop(),
-                        ),
-                      ),
-                    ),
-                  ),
-                  // Title - centered on screen
-                  Text(
-                    l10n.spinner,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  // Start button - right aligned
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF6C5CE7),
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.3),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          onTap: _startSpinner,
-                          borderRadius: BorderRadius.circular(12),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                            child: Text(
-                              l10n.start,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            // Scrollable form content
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 20,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    // Title Input Section
-                    Card(
-                      color: const Color(0xFF3D3D5C),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              l10n.spinnerTitle,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            TextField(
-                              controller: _titleController,
-                              textCapitalization: TextCapitalization.words,
-                              style: const TextStyle(color: Colors.white),
-                              decoration: InputDecoration(
-                                hintText: l10n.enterSpinnerTitle,
-                                hintStyle: TextStyle(
-                                  color: Colors.white.withOpacity(0.5),
-                                ),
-                                filled: true,
-                                fillColor: const Color(0xFF2D2D44),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide.none,
-                                ),
-                                contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 14,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 24),
 
-                    // Items List Section
-                    Card(
-                      color: const Color(0xFF3D3D5C),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              l10n.spinnerItems,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            ...List.generate(_items.length, (index) {
-                              return Container(
-                                margin: const EdgeInsets.only(bottom: 12),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: TextField(
-                                        controller: _itemControllers[index],
-                                        focusNode: _itemFocusNodes[index],
-                                        textCapitalization:
-                                            TextCapitalization.words,
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                        ),
-                                        decoration: InputDecoration(
-                                          hintText: l10n.enterItemName,
-                                          hintStyle: TextStyle(
-                                            color: Colors.white.withOpacity(
-                                              0.5,
-                                            ),
-                                          ),
-                                          filled: true,
-                                          fillColor: const Color(0xFF2D2D44),
-                                          border: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              12,
-                                            ),
-                                            borderSide: BorderSide.none,
-                                          ),
-                                          contentPadding:
-                                              const EdgeInsets.symmetric(
-                                                horizontal: 16,
-                                                vertical: 14,
-                                              ),
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 12),
-                                    IconButton(
-                                      onPressed: () => _removeItem(index),
-                                      icon: const Icon(
-                                        Icons.delete_outline,
-                                        color: Colors.red,
-                                        size: 28,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            }),
-                            if (_items.isEmpty)
-                              Padding(
-                                padding: const EdgeInsets.all(24),
-                                child: Center(
-                                  child: Text(
-                                    l10n.noItems,
-                                    style: TextStyle(
-                                      color: Colors.white.withOpacity(0.6),
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            const SizedBox(height: 12),
-                            // Add Item button at bottom
-                            TextButton.icon(
-                              onPressed: _addNewItem,
-                              icon: const Icon(Icons.add, color: Colors.white),
-                              label: Text(
-                                l10n.addItem,
-                                style: const TextStyle(color: Colors.white),
-                              ),
-                              style: TextButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 12,
-                                ),
-                              ),
+    return AnimatedGradientBackground(
+      child: Scaffold(
+        backgroundColor:
+            Colors.transparent, // Transparent so gradient shows through
+        body: SafeArea(
+          child: Column(
+            children: [
+              // Fixed header with back button and title
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 16,
+                ),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    // Back button - left aligned
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Container(
+                        width: 48,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF6C5CE7),
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.3),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
                             ),
                           ],
                         ),
+                        child: IconButton(
+                          icon: const Icon(
+                            Icons.arrow_back,
+                            color: Colors.white,
+                          ),
+                          onPressed: () => BackArrowAd.handleBackButton(
+                            context: context,
+                            onBack: () => Navigator.of(context).pop(),
+                          ),
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 24),
+                    // Title - centered on screen
+                    Text(
+                      l10n.spinner,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    // Start button - right aligned
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF6C5CE7),
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.3),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            onTap: _startSpinner,
+                            borderRadius: BorderRadius.circular(12),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 10,
+                              ),
+                              child: Text(
+                                l10n.start,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
-            ),
-          ],
+              // Scrollable form content
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 20,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      // Title Input Section
+                      Card(
+                        color: const Color(0xFF3D3D5C),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                l10n.spinnerTitle,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              TextField(
+                                controller: _titleController,
+                                textCapitalization: TextCapitalization.words,
+                                style: const TextStyle(color: Colors.white),
+                                decoration: InputDecoration(
+                                  hintText: l10n.enterSpinnerTitle,
+                                  hintStyle: TextStyle(
+                                    color: Colors.white.withOpacity(0.5),
+                                  ),
+                                  filled: true,
+                                  fillColor: const Color(0xFF2D2D44),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: BorderSide.none,
+                                  ),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 14,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+
+                      // Items List Section
+                      Card(
+                        color: const Color(0xFF3D3D5C),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                l10n.spinnerItems,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              ...List.generate(_items.length, (index) {
+                                return Container(
+                                  margin: const EdgeInsets.only(bottom: 12),
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: TextField(
+                                          controller: _itemControllers[index],
+                                          focusNode: _itemFocusNodes[index],
+                                          textCapitalization:
+                                              TextCapitalization.words,
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                          ),
+                                          decoration: InputDecoration(
+                                            hintText: l10n.enterItemName,
+                                            hintStyle: TextStyle(
+                                              color: Colors.white.withOpacity(
+                                                0.5,
+                                              ),
+                                            ),
+                                            filled: true,
+                                            fillColor: const Color(0xFF2D2D44),
+                                            border: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                              borderSide: BorderSide.none,
+                                            ),
+                                            contentPadding:
+                                                const EdgeInsets.symmetric(
+                                                  horizontal: 16,
+                                                  vertical: 14,
+                                                ),
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 12),
+                                      IconButton(
+                                        onPressed: () => _removeItem(index),
+                                        icon: const Icon(
+                                          Icons.delete_outline,
+                                          color: Colors.red,
+                                          size: 28,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }),
+                              if (_items.isEmpty)
+                                Padding(
+                                  padding: const EdgeInsets.all(24),
+                                  child: Center(
+                                    child: Text(
+                                      l10n.noItems,
+                                      style: TextStyle(
+                                        color: Colors.white.withOpacity(0.6),
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              const SizedBox(height: 12),
+                              // Add Item button at bottom
+                              TextButton.icon(
+                                onPressed: _addNewItem,
+                                icon: const Icon(
+                                  Icons.add,
+                                  color: Colors.white,
+                                ),
+                                label: Text(
+                                  l10n.addItem,
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                                style: TextButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 12,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

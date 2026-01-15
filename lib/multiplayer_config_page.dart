@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:ui';
 import 'multiplayer_spinner_page.dart';
 import 'who_first_spinner_page.dart';
 import 'math_spinner_page.dart';
@@ -26,7 +27,7 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
   final List<FocusNode> _userFocusNodes = [];
   final List<String> _users = [];
   int _rounds = 3;
-  String _gameMode = 'single'; // 'single' or 'multiplayer'
+  String _gameMode = 'multiplayer'; // 'single' or 'multiplayer'
   int _playerCount = 2; // Default to 2P
 
   @override
@@ -89,11 +90,11 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
     if (widget.isMathSpinner) {
       // For single player mode, use a default user
       if (_gameMode == 'single') {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (context) => const MathSpinnerPage(users: ['Player']),
-        ),
-      );
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => const MathSpinnerPage(users: ['Player']),
+          ),
+        );
         return;
       }
 
@@ -240,6 +241,210 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
     );
   }
 
+  // Helper widget for glossy card effect
+  Widget _buildGlossyCard({
+    required Widget child,
+    double borderRadius = 24,
+    EdgeInsets? padding,
+  }) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(borderRadius),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+        child: Container(
+          padding: padding,
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.45),
+            borderRadius: BorderRadius.circular(borderRadius),
+            border: Border.all(color: Colors.white.withOpacity(0.6), width: 1),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF1F2687).withOpacity(0.07),
+                blurRadius: 32,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: Stack(
+            children: [
+              child,
+              // Glossy overlay effect - ignore pointer events so taps pass through
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                height: 100,
+                child: IgnorePointer(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.white.withOpacity(0.4),
+                          Colors.white.withOpacity(0),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(borderRadius),
+                        topRight: Radius.circular(borderRadius),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Helper widget for vibrant button
+  Widget _buildVibrantButton({
+    required String text,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFF6366F1), Color(0xFF4F46E5)],
+          ),
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF6366F1).withOpacity(0.35),
+              blurRadius: 15,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Stack(
+          children: [
+            Text(
+              text,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            // Shine effect
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              height: 20,
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.white.withOpacity(0.15),
+                      Colors.transparent,
+                    ],
+                  ),
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(24),
+                    topRight: Radius.circular(24),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Helper widget for player item (NO profile pic, NO drag icon)
+  Widget _buildPlayerItem({
+    required int index,
+    required TextEditingController controller,
+    required FocusNode focusNode,
+    required String hintText,
+    bool isInvite = false,
+  }) {
+    final playerColors = [
+      const Color(0xFFFCE7F3), // Pink
+      const Color(0xFFDBEAFE), // Blue
+      const Color(0xFFD1FAE5), // Emerald
+      const Color(0xFFE5E7EB), // Slate
+    ];
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.3),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white.withOpacity(0.4), width: 1),
+      ),
+      child: Row(
+        children: [
+          // Colored circle (NO profile picture)
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: isInvite
+                  ? const Color(0xFFF3F4F6)
+                  : playerColors[index % playerColors.length],
+              shape: BoxShape.circle,
+              border: Border.all(color: Colors.white, width: 2),
+            ),
+            child: isInvite
+                ? Icon(Icons.person_add, color: Colors.grey[400], size: 20)
+                : null,
+          ),
+          const SizedBox(width: 16),
+          // Player name text field
+          Expanded(
+            child: isInvite
+                ? Text(
+                    hintText,
+                    style: TextStyle(
+                      color: Colors.grey[600],
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      fontStyle: FontStyle.italic,
+                    ),
+                  )
+                : TextField(
+                    controller: controller,
+                    focusNode: focusNode,
+                    textCapitalization: TextCapitalization.words,
+                    maxLength: 15,
+                    style: const TextStyle(
+                      color: Color(0xFF1E293B),
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      hintText: hintText,
+                      hintStyle: TextStyle(
+                        color: Colors.grey[600],
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      counterText: '',
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                  ),
+          ),
+          // NO drag indicator here
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizationsHelper.of(context);
@@ -249,415 +454,462 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
       builder: (context, isDark, _) {
         return AnimatedGradientBackground(
           child: Scaffold(
-            backgroundColor: Colors.transparent, // Transparent so gradient shows through
+            backgroundColor: Colors.transparent,
             body: SafeArea(
-        child: Column(
-          children: [
-            // Fixed header with back button and title
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-              child: Stack(
-                alignment: Alignment.center,
+              child: Column(
                 children: [
-                  // Back button - left aligned
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Container(
-                      width: 48,
-                      height: 48,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF6C5CE7),
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.3),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: IconButton(
-                        icon: const Icon(Icons.arrow_back, color: Colors.white),
-                        onPressed: () => BackArrowAd.handleBackButton(
-                          context: context,
-                          onBack: () => Navigator.of(context).pop(),
-                        ),
-                      ),
+                  // Header
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 16,
                     ),
-                  ),
-                  // Title - centered on screen
-                  Text(
-                    widget.isMathSpinner
-                        ? l10n.mathSpinner
-                        : (widget.isWhoFirst
-                              ? l10n.whoFirst
-                              : l10n.multiplayer),
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  // Start button - right aligned
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF6C5CE7),
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.3),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        // Back button - glossy circular
+                        GestureDetector(
+                          onTap: () => BackArrowAd.handleBackButton(
+                            context: context,
+                            onBack: () => Navigator.of(context).pop(),
                           ),
-                        ],
-                      ),
-                      child: Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          onTap: _startMultiplayer,
-                          borderRadius: BorderRadius.circular(12),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 10,
-                            ),
-                            child: Text(
-                              l10n.start,
-                              style: TextStyle(
-                                color: AppTheme.textColor,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
+                          child: _buildGlossyCard(
+                            borderRadius: 100,
+                            padding: const EdgeInsets.all(0),
+                            child: Container(
+                              width: 44,
+                              height: 44,
+                              decoration: const BoxDecoration(
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.arrow_back_ios_new,
+                                color: Color(0xFF475569),
+                                size: 20,
                               ),
                             ),
                           ),
                         ),
+                        // Title
+                        Text(
+                          widget.isMathSpinner
+                              ? l10n.mathSpinner
+                              : (widget.isWhoFirst
+                                    ? l10n.whoFirst
+                                    : l10n.multiplayer),
+                          style: const TextStyle(
+                            color: Color(0xFF0F172A),
+                            fontSize: 20,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: -0.5,
+                          ),
+                        ),
+                        // Start button - vibrant gradient
+                        _buildVibrantButton(
+                          text: l10n.start,
+                          onTap: _startMultiplayer,
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Scrollable content
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 16),
+                          // Game Mode Section
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                  left: 4,
+                                  bottom: 12,
+                                ),
+                                child: Text(
+                                  l10n.gameMode.toUpperCase(),
+                                  style: TextStyle(
+                                    color: Colors.grey[400],
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w800,
+                                    letterSpacing: 1.2,
+                                  ),
+                                ),
+                              ),
+                              _buildGlossyCard(
+                                borderRadius: 28,
+                                padding: const EdgeInsets.all(6),
+                                child: Row(
+                                  children: [
+                                    // Single Player
+                                    Expanded(
+                                      child: GestureDetector(
+                                        behavior: HitTestBehavior.opaque,
+                                        onTap: () {
+                                          setState(() {
+                                            _gameMode = 'single';
+                                          });
+                                        },
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 12,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: _gameMode == 'single'
+                                                ? Colors.white
+                                                : Colors.transparent,
+                                            borderRadius: BorderRadius.circular(
+                                              22,
+                                            ),
+                                            boxShadow: _gameMode == 'single'
+                                                ? [
+                                                    BoxShadow(
+                                                      color: Colors.black
+                                                          .withOpacity(0.1),
+                                                      blurRadius: 3,
+                                                      offset: const Offset(
+                                                        0,
+                                                        1,
+                                                      ),
+                                                    ),
+                                                  ]
+                                                : null,
+                                          ),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Icon(
+                                                Icons.person,
+                                                color: _gameMode == 'single'
+                                                    ? const Color(0xFF6366F1)
+                                                    : Colors.grey[500],
+                                                size: 20,
+                                              ),
+                                              const SizedBox(width: 8),
+                                              Text(
+                                                l10n.singlePlayer,
+                                                style: TextStyle(
+                                                  color: _gameMode == 'single'
+                                                      ? const Color(0xFF1E293B)
+                                                      : Colors.grey[500],
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    // Multiplayer
+                                    Expanded(
+                                      child: GestureDetector(
+                                        behavior: HitTestBehavior.opaque,
+                                        onTap: () {
+                                          setState(() {
+                                            _gameMode = 'multiplayer';
+                                            _initializeUsers();
+                                          });
+                                        },
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 12,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: _gameMode == 'multiplayer'
+                                                ? Colors.white
+                                                : Colors.transparent,
+                                            borderRadius: BorderRadius.circular(
+                                              22,
+                                            ),
+                                            boxShadow:
+                                                _gameMode == 'multiplayer'
+                                                ? [
+                                                    BoxShadow(
+                                                      color: Colors.black
+                                                          .withOpacity(0.1),
+                                                      blurRadius: 3,
+                                                      offset: const Offset(
+                                                        0,
+                                                        1,
+                                                      ),
+                                                    ),
+                                                  ]
+                                                : null,
+                                          ),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Icon(
+                                                Icons.group,
+                                                color:
+                                                    _gameMode == 'multiplayer'
+                                                    ? const Color(0xFF6366F1)
+                                                    : Colors.grey[500],
+                                                size: 20,
+                                              ),
+                                              const SizedBox(width: 8),
+                                              Text(
+                                                l10n.multiplayerMode,
+                                                style: TextStyle(
+                                                  color:
+                                                      _gameMode == 'multiplayer'
+                                                      ? const Color(0xFF1E293B)
+                                                      : Colors.grey[500],
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 24),
+                          // Rounds Selection (for Spin Battle game - both single and multiplayer, not WhoFirst or Math)
+                          if (!widget.isWhoFirst && !widget.isMathSpinner) ...[
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                    left: 4,
+                                    bottom: 12,
+                                  ),
+                                  child: Text(
+                                    l10n.howManyRounds.toUpperCase(),
+                                    style: TextStyle(
+                                      color: Colors.grey[400],
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w800,
+                                      letterSpacing: 1.2,
+                                    ),
+                                  ),
+                                ),
+                                _buildGlossyCard(
+                                  borderRadius: 24,
+                                  padding: const EdgeInsets.all(6),
+                                  child: Row(
+                                    children: List.generate(10, (index) {
+                                      final roundNumber = index + 1;
+                                      final isSelected = _rounds == roundNumber;
+                                      return Expanded(
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 2,
+                                          ),
+                                          child: GestureDetector(
+                                            behavior: HitTestBehavior.opaque,
+                                            onTap: () {
+                                              setState(() {
+                                                _rounds = roundNumber;
+                                              });
+                                            },
+                                            child: Container(
+                                              height: 50,
+                                              decoration: BoxDecoration(
+                                                color: isSelected
+                                                    ? Colors.white
+                                                    : Colors.transparent,
+                                                borderRadius:
+                                                    BorderRadius.circular(18),
+                                                boxShadow: isSelected
+                                                    ? [
+                                                        BoxShadow(
+                                                          color: Colors.black
+                                                              .withOpacity(0.1),
+                                                          blurRadius: 3,
+                                                          offset: const Offset(
+                                                            0,
+                                                            1,
+                                                          ),
+                                                        ),
+                                                      ]
+                                                    : null,
+                                              ),
+                                              child: Center(
+                                                child: Text(
+                                                  '$roundNumber',
+                                                  style: TextStyle(
+                                                    color: isSelected
+                                                        ? const Color(
+                                                            0xFF6366F1,
+                                                          )
+                                                        : Colors.grey[500],
+                                                    fontSize: 16,
+                                                    fontWeight: isSelected
+                                                        ? FontWeight.w800
+                                                        : FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    }),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 24),
+                          ],
+                          // Users Section (only show in multiplayer mode)
+                          if (_gameMode == 'multiplayer') ...[
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                    left: 4,
+                                    bottom: 12,
+                                  ),
+                                  child: Text(
+                                    l10n.users.toUpperCase(),
+                                    style: TextStyle(
+                                      color: Colors.grey[400],
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w800,
+                                      letterSpacing: 1.2,
+                                    ),
+                                  ),
+                                ),
+                                // Player count buttons - horizontal scrollable
+                                SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                  child: Row(
+                                    children: List.generate(5, (index) {
+                                      final playerCount =
+                                          index + 2; // 2P, 3P, 4P, 5P, 6P
+                                      final isSelected =
+                                          _playerCount == playerCount;
+                                      return Padding(
+                                        padding: const EdgeInsets.only(
+                                          right: 10,
+                                        ),
+                                        child: GestureDetector(
+                                          behavior: HitTestBehavior.opaque,
+                                          onTap: () =>
+                                              _updatePlayerCount(playerCount),
+                                          child: _buildGlossyCard(
+                                            borderRadius: 16,
+                                            padding: EdgeInsets.zero,
+                                            child: Container(
+                                              width: 56,
+                                              height: 56,
+                                              decoration: BoxDecoration(
+                                                color: isSelected
+                                                    ? const Color(0xFF6366F1)
+                                                    : Colors.transparent,
+                                                borderRadius:
+                                                    BorderRadius.circular(16),
+                                                border: isSelected
+                                                    ? Border.all(
+                                                        color: Colors.white
+                                                            .withOpacity(0.3),
+                                                        width: 2,
+                                                      )
+                                                    : null,
+                                                boxShadow: isSelected
+                                                    ? [
+                                                        BoxShadow(
+                                                          color: const Color(
+                                                            0xFF6366F1,
+                                                          ).withOpacity(0.2),
+                                                          blurRadius: 8,
+                                                          offset: const Offset(
+                                                            0,
+                                                            4,
+                                                          ),
+                                                        ),
+                                                      ]
+                                                    : null,
+                                              ),
+                                              child: Center(
+                                                child: Text(
+                                                  '${playerCount}P',
+                                                  style: TextStyle(
+                                                    color: isSelected
+                                                        ? Colors.white
+                                                        : Colors.grey[500],
+                                                    fontSize: 14,
+                                                    fontWeight: isSelected
+                                                        ? FontWeight.w800
+                                                        : FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    }),
+                                  ),
+                                ),
+                                const SizedBox(height: 20),
+                                // Players list - glossy card container
+                                _buildGlossyCard(
+                                  borderRadius: 32,
+                                  padding: const EdgeInsets.all(20),
+                                  child: Column(
+                                    children: [
+                                      // Existing players (NO profile pics, NO drag icons)
+                                      ...List.generate(_users.length, (index) {
+                                        return _buildPlayerItem(
+                                          index: index,
+                                          controller: _userControllers[index],
+                                          focusNode: _userFocusNodes[index],
+                                          hintText: 'Player ${index + 1}',
+                                        );
+                                      }),
+                                      // Invite player option (if not at max)
+                                      // if (_playerCount < 6)
+                                      //   Opacity(
+                                      //     opacity: 0.6,
+                                      //     child: _buildPlayerItem(
+                                      //       index: _users.length,
+                                      //       controller: TextEditingController(),
+                                      //       focusNode: FocusNode(),
+                                      //       hintText: 'Invite Player ${_users.length + 1}...',
+                                      //       isInvite: true,
+                                      //     ),
+                                      //   ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                          const SizedBox(height: 40),
+                        ],
+                      ),
+                    ),
+                  ),
+                  // Bottom indicator
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 16),
+                    child: Container(
+                      width: 128,
+                      height: 6,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[400]?.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(3),
                       ),
                     ),
                   ),
                 ],
               ),
             ),
-            // Scrollable form content
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 20,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    // Game Mode Selection Section
-                    Card(
-                      color: AppTheme.cardBackgroundColor,
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              l10n.gameMode,
-                              style: TextStyle(
-                                color: AppTheme.textColor,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            Row(
-                              children: [
-                                // Single Player Radio
-                                Expanded(
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        _gameMode = 'single';
-                                      });
-                                    },
-                                    child: Container(
-                                      height: 50,
-                                      decoration: BoxDecoration(
-                                        color: _gameMode == 'single'
-                                            ? const Color(0xFF6C5CE7)
-                                            : const Color(0xFF2D2D44),
-                                        borderRadius: BorderRadius.circular(12),
-                                        border: Border.all(
-                                          color: _gameMode == 'single'
-                                              ? Colors.white
-                                              : Colors.transparent,
-                                          width: 2,
-                                        ),
-                                      ),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Icon(
-                                            _gameMode == 'single'
-                                                ? Icons.radio_button_checked
-                                                : Icons.radio_button_unchecked,
-                                            color: AppTheme.textColor,
-                                            size: 24,
-                                          ),
-                                          const SizedBox(width: 8),
-                                          Text(
-                                            l10n.singlePlayer,
-                                            style: TextStyle(
-                                              color: AppTheme.textColor,
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                                // Multiplayer Radio
-                                Expanded(
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        _gameMode = 'multiplayer';
-                                        _initializeUsers();
-                                      });
-                                    },
-                                    child: Container(
-                                      height: 50,
-                                      decoration: BoxDecoration(
-                                        color: _gameMode == 'multiplayer'
-                                            ? const Color(0xFF6C5CE7)
-                                            : const Color(0xFF2D2D44),
-                                        borderRadius: BorderRadius.circular(12),
-                                        border: Border.all(
-                                          color: _gameMode == 'multiplayer'
-                                              ? Colors.white
-                                              : Colors.transparent,
-                                          width: 2,
-                                        ),
-                                      ),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Icon(
-                                            _gameMode == 'multiplayer'
-                                                ? Icons.radio_button_checked
-                                                : Icons.radio_button_unchecked,
-                                            color: AppTheme.textColor,
-                                            size: 24,
-                                          ),
-                                          const SizedBox(width: 8),
-                                          Text(
-                                            l10n.multiplayerMode,
-                                            style: TextStyle(
-                                              color: AppTheme.textColor,
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    // Rounds Selection Section (hide for WhoFirst and Math Spinner)
-                    if (!widget.isWhoFirst && !widget.isMathSpinner)
-                      Card(
-                        color: AppTheme.cardBackgroundColor,
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                l10n.howManyRounds,
-                                style: TextStyle(
-                                  color: AppTheme.textColor,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 12),
-                              Row(
-                                children: List.generate(10, (index) {
-                                  final roundNumber = index + 1;
-                                  final isSelected = _rounds == roundNumber;
-                                  return Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 4,
-                                      ),
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          setState(() {
-                                            _rounds = roundNumber;
-                                          });
-                                        },
-                                        child: Container(
-                                          height: 50,
-                                          decoration: BoxDecoration(
-                                            color: isSelected
-                                                ? const Color(0xFF6C5CE7)
-                                                : const Color(0xFF2D2D44),
-                                            borderRadius: BorderRadius.circular(
-                                              12,
-                                            ),
-                                            border: Border.all(
-                                              color: isSelected
-                                                  ? Colors.white
-                                                  : Colors.transparent,
-                                              width: 2,
-                                            ),
-                                          ),
-                                          child: Center(
-                                            child: Text(
-                                              '$roundNumber',
-                                              style: TextStyle(
-                                                color: AppTheme.textColor,
-                                                fontSize: 18,
-                                                fontWeight: isSelected
-                                                    ? FontWeight.bold
-                                                    : FontWeight.normal,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                }),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    if (!widget.isWhoFirst) const SizedBox(height: 24),
-
-                    // Users List Section (only show if multiplayer mode)
-                    if (_gameMode == 'multiplayer')
-                      Card(
-                        color: AppTheme.cardBackgroundColor,
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                l10n.users,
-                                style: TextStyle(
-                                  color: AppTheme.textColor,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 12),
-                              // Player Count Selection
-                              Row(
-                                children: List.generate(5, (index) {
-                                  final playerCount =
-                                      index + 2; // 2P, 3P, 4P, 5P, 6P
-                                  final isSelected =
-                                      _playerCount == playerCount;
-                                  return Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 4,
-                                      ),
-                                      child: GestureDetector(
-                                        onTap: () =>
-                                            _updatePlayerCount(playerCount),
-                                        child: Container(
-                                          height: 50,
-                                          decoration: BoxDecoration(
-                                            color: isSelected
-                                                ? const Color(0xFF6C5CE7)
-                                                : const Color(0xFF2D2D44),
-                                            borderRadius: BorderRadius.circular(
-                                              12,
-                                            ),
-                                            border: Border.all(
-                                              color: isSelected
-                                                  ? Colors.white
-                                                  : Colors.transparent,
-                                              width: 2,
-                                            ),
-                                          ),
-                                          child: Center(
-                                            child: Text(
-                                              '${playerCount}P',
-                                              style: TextStyle(
-                                                color: AppTheme.textColor,
-                                                fontSize: 16,
-                                                fontWeight: isSelected
-                                                    ? FontWeight.bold
-                                                    : FontWeight.normal,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                }),
-                              ),
-                              const SizedBox(height: 20),
-                              // Users List
-                              ...List.generate(_users.length, (index) {
-                                return Container(
-                                  margin: const EdgeInsets.only(bottom: 12),
-                                  child: TextField(
-                                    controller: _userControllers[index],
-                                    focusNode: _userFocusNodes[index],
-                                    textCapitalization:
-                                        TextCapitalization.words,
-                                    maxLength: 15,
-                                    style: const TextStyle(color: Colors.white),
-                                    decoration: InputDecoration(
-                                      hintText: l10n.enterUserName,
-                                      hintStyle: TextStyle(
-                                        color: Colors.white.withOpacity(0.5),
-                                      ),
-                                      filled: true,
-                                      fillColor: const Color(0xFF2D2D44), // Same as spinner items
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                        borderSide: BorderSide.none,
-                                      ),
-                                      contentPadding:
-                                          const EdgeInsets.symmetric(
-                                            horizontal: 16,
-                                            vertical: 14,
-                                          ),
-                                      counterText: '', // Hide character counter
-                                    ),
-                                  ),
-                                );
-                              }),
-                            ],
-                          ),
-                        ),
-                      ),
-                    if (_gameMode == 'multiplayer') const SizedBox(height: 24),
-                    if (_gameMode == 'single') const SizedBox(height: 32),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
           ),
         );
       },

@@ -276,71 +276,77 @@ class _SpinnerConfigPageState extends State<SpinnerConfigPage> {
                   horizontal: 24,
                   vertical: 16,
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    // Back button - left aligned with frosted glass effect
-                    GestureDetector(
-                      onTap: () => BackArrowAd.handleBackButton(
-                        context: context,
-                        onBack: () => Navigator.of(context).pop(),
-                      ),
-                      child: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.4),
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: Colors.white.withOpacity(0.6),
-                            width: 1,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      // Back button - left aligned with frosted glass effect
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: GestureDetector(
+                          onTap: () => BackArrowAd.handleBackButton(
+                            context: context,
+                            onBack: () => Navigator.of(context).pop(),
                           ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.03),
-                              blurRadius: 12,
-                              offset: const Offset(0, 4),
+                          child: Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.4),
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Colors.white.withOpacity(0.6),
+                                width: 1,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.03),
+                                  blurRadius: 12,
+                                  offset: const Offset(0, 4),
+                                ),
+                                BoxShadow(
+                                  color: Colors.white.withOpacity(0.8),
+                                  blurRadius: 1,
+                                  offset: const Offset(0, 1),
+                                  blurStyle: BlurStyle.inner,
+                                ),
+                              ],
                             ),
-                            BoxShadow(
-                              color: Colors.white.withOpacity(0.8),
-                              blurRadius: 1,
-                              offset: const Offset(0, 1),
-                              blurStyle: BlurStyle.inner,
-                            ),
-                          ],
-                        ),
-                        child: ClipOval(
-                          child: BackdropFilter(
-                            filter: ImageFilter.blur(
-                              sigmaX: 16,
-                              sigmaY: 16,
-                            ),
-                            child: const Icon(
-                              Icons.arrow_back,
-                              color: Color(0xFF475569),
-                              size: 20,
+                            child: ClipOval(
+                              child: BackdropFilter(
+                                filter: ImageFilter.blur(
+                                  sigmaX: 16,
+                                  sigmaY: 16,
+                                ),
+                                child: const Icon(
+                                  Icons.arrow_back,
+                                  color: Color(0xFF475569),
+                                  size: 20,
+                                ),
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                    // Title
-                    Text(
-                      l10n.spinner,
-                      style: const TextStyle(
-                        color: Color(0xFF0F172A),
-                        fontSize: 20,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: -0.5,
+                      // Title - centered
+                      Text(
+                        l10n.spinner,
+                        style: const TextStyle(
+                          color: Color(0xFF0F172A),
+                          fontSize: 20,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: -0.5,
+                        ),
                       ),
-                    ),
-                    // Start button - vibrant gradient
-                    _buildVibrantButton(
-                      text: l10n.start,
-                      onTap: _startSpinner,
-                    ),
-                  ],
-                ),
+                      // Start button - right aligned
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: _buildVibrantButton(
+                          text: l10n.start,
+                          onTap: _startSpinner,
+                        ),
+                      ),
+                    ],
+                  ),
               ),
               // Scrollable content
               Expanded(
@@ -362,7 +368,7 @@ class _SpinnerConfigPageState extends State<SpinnerConfigPage> {
                             child: Text(
                               l10n.spinnerTitle.toUpperCase(),
                               style: TextStyle(
-                                color: Colors.grey[400],
+                                color: const Color(0xFF475569),
                                 fontSize: 12,
                                 fontWeight: FontWeight.w800,
                                 letterSpacing: 1.2,
@@ -432,7 +438,7 @@ class _SpinnerConfigPageState extends State<SpinnerConfigPage> {
                             child: Text(
                               l10n.spinnerItems.toUpperCase(),
                               style: TextStyle(
-                                color: Colors.grey[400],
+                                color: const Color(0xFF475569),
                                 fontSize: 12,
                                 fontWeight: FontWeight.w800,
                                 letterSpacing: 1.2,

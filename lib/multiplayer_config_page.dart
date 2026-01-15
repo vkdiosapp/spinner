@@ -417,7 +417,7 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
                     child: Text(
                       hintText,
                       style: TextStyle(
-                        color: Colors.grey[600],
+                        color: const Color(0xFF64748B),
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         fontStyle: FontStyle.italic,
@@ -439,7 +439,7 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
                       fillColor: Colors.white.withOpacity(0.3),
                       hintText: hintText,
                       hintStyle: TextStyle(
-                        color: Colors.grey[600],
+                        color: const Color(0xFF64748B),
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
@@ -656,7 +656,7 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
                                                 style: TextStyle(
                                                   color: _gameMode == 'single'
                                                       ? const Color(0xFF1E293B)
-                                                      : Colors.grey[500],
+                                                      : const Color(0xFF475569),
                                                   fontSize: 14,
                                                   fontWeight: FontWeight.bold,
                                                 ),
@@ -721,7 +721,7 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
                                                   color:
                                                       _gameMode == 'multiplayer'
                                                       ? const Color(0xFF1E293B)
-                                                      : Colors.grey[500],
+                                                      : const Color(0xFF475569),
                                                   fontSize: 14,
                                                   fontWeight: FontWeight.bold,
                                                 ),
@@ -806,7 +806,9 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
                                                         ? const Color(
                                                             0xFF6366F1,
                                                           )
-                                                        : Colors.grey[500],
+                                                        : const Color(
+                                                            0xFF475569,
+                                                          ),
                                                     fontSize: 16,
                                                     fontWeight: isSelected
                                                         ? FontWeight.w800
@@ -902,7 +904,9 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
                                                   style: TextStyle(
                                                     color: isSelected
                                                         ? Colors.white
-                                                        : Colors.grey[500],
+                                                        : const Color(
+                                                            0xFF475569,
+                                                          ),
                                                     fontSize: 14,
                                                     fontWeight: isSelected
                                                         ? FontWeight.w800

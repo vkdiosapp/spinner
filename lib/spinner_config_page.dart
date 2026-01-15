@@ -391,7 +391,7 @@ class _SpinnerConfigPageState extends State<SpinnerConfigPage> {
                                 fillColor: Colors.white.withOpacity(0.3),
                                 hintText: l10n.enterSpinnerTitle,
                                 hintStyle: TextStyle(
-                                  color: Colors.grey[600],
+                                  color: const Color(0xFF64748B),
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -540,7 +540,7 @@ class _SpinnerConfigPageState extends State<SpinnerConfigPage> {
                                       child: Text(
                                         l10n.noItems,
                                         style: TextStyle(
-                                          color: Colors.grey[600],
+                                          color: const Color(0xFF64748B),
                                           fontSize: 14,
                                         ),
                                       ),

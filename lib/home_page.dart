@@ -208,27 +208,27 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       return Column(
                         children: [
                           const SizedBox(height: 16),
-                          // Decision Hub Title
+                          // PickSpiN Title
                           Column(
                             children: [
                               ShaderMask(
                                 shaderCallback: (bounds) =>
                                     const LinearGradient(
                                       colors: [
-                                        Color(0xFF6366F1),
-                                        Color(0xFFA855F7),
+                                        Color.fromARGB(255, 41, 44, 232),
+                                        Color.fromARGB(255, 136, 16, 248),
                                       ],
                                     ).createShader(bounds),
                                 child: const Text(
-                                  'Decision Hub',
+                                  'PickSpiN',
                                   style: TextStyle(
-                                    fontSize: 18,
+                                    fontSize: 26,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white,
                                   ),
                                 ),
                               ),
-                              const SizedBox(height: 4),
+                              const SizedBox(height: 2),
                               Text(
                                 'MODE SELECTION',
                                 style: TextStyle(
@@ -655,7 +655,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                       _adsEnabled
                                           ? Icons.ads_click
                                           : Icons.ads_click_outlined,
-                                      color: Colors.white,
+                                      color: _adsEnabled
+                                          ? Colors.white
+                                          : const Color(0xFF6366F1),
                                     ),
                                     onPressed: _toggleAds,
                                     tooltip: _adsEnabled
@@ -683,7 +685,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                       _vibrationEnabled
                                           ? Icons.vibration
                                           : Icons.vibration_outlined,
-                                      color: Colors.white,
+                                      color: _vibrationEnabled
+                                          ? Colors.white
+                                          : const Color(0xFF6366F1),
                                     ),
                                     onPressed: _toggleVibration,
                                     tooltip: _vibrationEnabled
@@ -710,7 +714,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                       _soundEnabled
                                           ? Icons.volume_up
                                           : Icons.volume_off,
-                                      color: Colors.white,
+                                      color: _soundEnabled
+                                          ? Colors.white
+                                          : const Color(0xFF6366F1),
                                     ),
                                     onPressed: _toggleSound,
                                     tooltip: _soundEnabled
@@ -776,15 +782,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             builder: (context, constraints) {
               // Calculate available height for content
               final availableHeight = constraints.maxHeight;
-              
+
               // Use flexible spacing that adapts to available space
               final spacing1 = (availableHeight * 0.08).clamp(4.0, 12.0);
               final spacing2 = (availableHeight * 0.03).clamp(2.0, 6.0);
-              
+
               return ConstrainedBox(
-                constraints: BoxConstraints(
-                  maxHeight: availableHeight,
-                ),
+                constraints: BoxConstraints(maxHeight: availableHeight),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -806,7 +810,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           ),
                         ],
                       ),
-                      child: Icon(icon, color: Colors.white, size: iconIconSize),
+                      child: Icon(
+                        icon,
+                        color: Colors.white,
+                        size: iconIconSize,
+                      ),
                     ),
                     SizedBox(height: spacing1),
                     Flexible(

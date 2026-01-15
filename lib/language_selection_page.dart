@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:ui' as ui;
 import 'language_settings.dart';
 import 'home_page.dart';
 import 'app_localizations_helper.dart';
@@ -25,21 +26,24 @@ class _LanguageSelectionPageState extends State<LanguageSelectionPage> {
 
   void _groupLanguages() {
     final languages = LanguageSettings.getSupportedLanguageCodes();
-    
+
     for (final code in languages) {
       final name = LanguageSettings.getLanguageName(code);
       final firstLetter = name[0].toUpperCase();
-      
+
       if (!_groupedLanguages.containsKey(firstLetter)) {
         _groupedLanguages[firstLetter] = [];
       }
       _groupedLanguages[firstLetter]!.add(code);
     }
-    
+
     // Sort each group
     _groupedLanguages.forEach((key, value) {
-      value.sort((a, b) => LanguageSettings.getLanguageName(a)
-          .compareTo(LanguageSettings.getLanguageName(b)));
+      value.sort(
+        (a, b) => LanguageSettings.getLanguageName(
+          a,
+        ).compareTo(LanguageSettings.getLanguageName(b)),
+      );
     });
   }
 
@@ -51,9 +55,9 @@ class _LanguageSelectionPageState extends State<LanguageSelectionPage> {
 
   Future<void> _saveAndContinue() async {
     if (_selectedLanguageCode == null) return;
-    
+
     await LanguageSettings.setLanguage(_selectedLanguageCode!);
-    
+
     // If this is first launch, mark it complete and navigate to home
     if (LanguageSettings.isFirstLaunch) {
       await LanguageSettings.markFirstLaunchComplete();
@@ -72,178 +76,372 @@ class _LanguageSelectionPageState extends State<LanguageSelectionPage> {
     }
   }
 
+  Widget _buildFrostedCard({
+    required Widget child,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.4),
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(
+            color: isSelected
+                ? const Color(0xFF6366F1)
+                : Colors.white.withOpacity(0.6),
+            width: isSelected ? 2 : 1,
+          ),
+          boxShadow: [
+            if (isSelected)
+              BoxShadow(
+                color: const Color(0xFF6366F1).withOpacity(0.3),
+                blurRadius: 15,
+                spreadRadius: 0,
+              ),
+            BoxShadow(
+              color: Colors.black.withOpacity(0.03),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
+            BoxShadow(
+              color: Colors.white.withOpacity(0.8),
+              blurRadius: 1,
+              offset: const Offset(0, 1),
+              blurStyle: BlurStyle.inner,
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(24),
+          child: BackdropFilter(
+            filter: ui.ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+            child: child,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCustomRadio({required bool isSelected}) {
+    return Container(
+      width: 24,
+      height: 24,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: isSelected ? const Color(0xFF6366F1) : const Color(0xFFCBD5E1),
+          width: 2,
+        ),
+        color: isSelected ? const Color(0xFF6366F1) : Colors.transparent,
+        boxShadow: isSelected
+            ? [
+                BoxShadow(
+                  color: const Color(0xFF6366F1).withOpacity(0.5),
+                  blurRadius: 8,
+                  spreadRadius: 0,
+                ),
+              ]
+            : null,
+      ),
+      child: isSelected
+          ? Center(
+              child: Container(
+                width: 10,
+                height: 10,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white,
+                ),
+              ),
+            )
+          : null,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizationsHelper.of(context);
     final sortedKeys = _groupedLanguages.keys.toList()..sort();
-    
+
     return AnimatedGradientBackground(
       child: Scaffold(
-        backgroundColor: Colors.transparent, // Transparent so gradient shows through
+        backgroundColor: Colors.transparent,
         body: SafeArea(
-        child: Column(
-          children: [
-            // Header with back button
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  // Back button - left aligned
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Container(
-                      width: 48,
-                      height: 48,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF6C5CE7),
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.3),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: IconButton(
-                        icon: const Icon(Icons.arrow_back, color: Colors.white),
-                        onPressed: () => BackArrowAd.handleBackButton(
+          child: Column(
+            children: [
+              // Header with back button
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 16,
+                ),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    // Back button - left aligned with frosted glass effect
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: GestureDetector(
+                        onTap: () => BackArrowAd.handleBackButton(
                           context: context,
                           onBack: () {
                             if (Navigator.of(context).canPop()) {
                               Navigator.of(context).pop();
                             } else {
-                              // If no previous route, navigate to home
                               Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(builder: (context) => const HomePage()),
+                                MaterialPageRoute(
+                                  builder: (context) => const HomePage(),
+                                ),
                               );
                             }
                           },
                         ),
-                      ),
-                    ),
-                  ),
-                  // Title - centered on screen
-                  Text(
-                    l10n.languages,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            // Language list
-            Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                itemCount: sortedKeys.length,
-                itemBuilder: (context, index) {
-                  final letter = sortedKeys[index];
-                  final languages = _groupedLanguages[letter]!;
-                  
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Section header
-                      Padding(
-                        padding: const EdgeInsets.only(top: 16, bottom: 8),
-                        child: Text(
-                          letter,
-                          style: const TextStyle(
-                            color: Colors.white70,
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
+                        child: Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.4),
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.6),
+                              width: 1,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.03),
+                                blurRadius: 12,
+                                offset: const Offset(0, 4),
+                              ),
+                              BoxShadow(
+                                color: Colors.white.withOpacity(0.8),
+                                blurRadius: 1,
+                                offset: const Offset(0, 1),
+                                blurStyle: BlurStyle.inner,
+                              ),
+                            ],
+                          ),
+                          child: ClipOval(
+                            child: BackdropFilter(
+                              filter: ui.ImageFilter.blur(
+                                sigmaX: 16,
+                                sigmaY: 16,
+                              ),
+                              child: const Icon(
+                                Icons.arrow_back,
+                                color: Color(0xFF475569),
+                                size: 20,
+                              ),
+                            ),
                           ),
                         ),
                       ),
-                      // Language items
-                      ...languages.map((code) {
-                        final name = LanguageSettings.getLanguageName(code);
-                        final native = LanguageSettings.getNativeLanguageName(code);
-                        final isSelected = _selectedLanguageCode == code;
-                        
-                        return Container(
-                          margin: const EdgeInsets.only(bottom: 8),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF3D3D5C),
-                            borderRadius: BorderRadius.circular(12),
-                            border: isSelected
-                                ? Border.all(
-                                    color: const Color(0xFF6C5CE7),
-                                    width: 2,
-                                  )
-                                : null,
-                          ),
-                          child: RadioListTile<String>(
-                            value: code,
-                            groupValue: _selectedLanguageCode,
-                            onChanged: (value) {
-                              if (value != null) {
-                                _selectLanguage(value);
-                              }
-                            },
-                            title: Text(
-                              name,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                              ),
-                            ),
-                            subtitle: name != native
-                                ? Text(
-                                    native,
-                                    style: const TextStyle(
-                                      color: Colors.white70,
-                                      fontSize: 14,
-                                    ),
-                                  )
-                                : null,
-                            activeColor: const Color(0xFF6C5CE7),
-                            selected: isSelected,
-                          ),
-                        );
-                      }),
-                    ],
-                  );
-                },
-              ),
-            ),
-            // Continue/Save button
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: ElevatedButton(
-                  onPressed: _selectedLanguageCode != null ? _saveAndContinue : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: _selectedLanguageCode != null
-                        ? const Color(0xFF6C5CE7)
-                        : const Color(0xFF3D3D5C),
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
                     ),
-                    elevation: 4,
-                  ),
-                  child: Text(
-                    LanguageSettings.isFirstLaunch ? l10n.continueButton : l10n.save,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                    // Title - centered
+                    Padding(
+                      padding: const EdgeInsets.only(right: 40),
+                      child: Text(
+                        l10n.languages,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: Color(0xFF0F172A),
+                          fontSize: 20,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: -0.5,
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               ),
-            ),
-          ],
+              // Language list
+              Expanded(
+                child: ListView.builder(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 16,
+                  ),
+                  itemCount: sortedKeys.length,
+                  itemBuilder: (context, index) {
+                    final letter = sortedKeys[index];
+                    final languages = _groupedLanguages[letter]!;
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Section header
+                        Padding(
+                          padding: const EdgeInsets.only(
+                            left: 8,
+                            top: 24,
+                            bottom: 12,
+                          ),
+                          child: Text(
+                            letter,
+                            style: const TextStyle(
+                              color: Color(0xFF94A3B8),
+                              fontSize: 12,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 2.0,
+                            ),
+                          ),
+                        ),
+                        // Language items
+                        ...languages.map((code) {
+                          final name = LanguageSettings.getLanguageName(code);
+                          final native = LanguageSettings.getNativeLanguageName(
+                            code,
+                          );
+                          final isSelected = _selectedLanguageCode == code;
+
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: _buildFrostedCard(
+                              isSelected: isSelected,
+                              onTap: () => _selectLanguage(code),
+                              child: Row(
+                                children: [
+                                  _buildCustomRadio(isSelected: isSelected),
+                                  const SizedBox(width: 16),
+                                  Expanded(
+                                    child: name != native
+                                        ? Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                name,
+                                                style: TextStyle(
+                                                  color: isSelected
+                                                      ? const Color(0xFF6366F1)
+                                                      : const Color(0xFF334155),
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w700,
+                                                  height: 1.0,
+                                                ),
+                                              ),
+                                              const SizedBox(height: 4),
+                                              Text(
+                                                native,
+                                                style: const TextStyle(
+                                                  color: Color(0xFF94A3B8),
+                                                  fontSize: 10,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                            ],
+                                          )
+                                        : Text(
+                                            name,
+                                            style: TextStyle(
+                                              color: isSelected
+                                                  ? const Color(0xFF6366F1)
+                                                  : const Color(0xFF334155),
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w700,
+                                            ),
+                                          ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        }),
+                      ],
+                    );
+                  },
+                ),
+              ),
+              // Save button at bottom with gradient fade
+              Container(
+                padding: const EdgeInsets.fromLTRB(24, 24, 24, 40),
+
+                child: Column(
+                  children: [
+                    // Glossy Save button
+                    Container(
+                      width: double.infinity,
+                      height: 64,
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [Color(0xFF818CF8), Color(0xFF6366F1)],
+                        ),
+                        borderRadius: BorderRadius.circular(24),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF6366F1).withOpacity(0.4),
+                            blurRadius: 25,
+                            offset: const Offset(0, -5),
+                          ),
+                          BoxShadow(
+                            color: Colors.white.withOpacity(0.3),
+                            blurRadius: 2,
+                            offset: const Offset(0, 2),
+                            blurStyle: BlurStyle.inner,
+                          ),
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 2,
+                            offset: const Offset(0, -2),
+                            blurStyle: BlurStyle.inner,
+                          ),
+                        ],
+                      ),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: _selectedLanguageCode != null
+                              ? _saveAndContinue
+                              : null,
+                          borderRadius: BorderRadius.circular(24),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.center,
+                                colors: [
+                                  Colors.white.withOpacity(0.2),
+                                  Colors.transparent,
+                                ],
+                              ),
+                              borderRadius: BorderRadius.circular(24),
+                            ),
+                            child: Center(
+                              child: Text(
+                                LanguageSettings.isFirstLaunch
+                                    ? l10n.continueButton
+                                    : l10n.save,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    // Indicator bar
+                    // Container(
+                    //   margin: const EdgeInsets.only(top: 24),
+                    //   width: 128,
+                    //   height: 6,
+                    //   decoration: BoxDecoration(
+                    //     color: const Color(0xFF94A3B8).withOpacity(0.3),
+                    //     borderRadius: BorderRadius.circular(3),
+                    //   ),
+                    // ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
       ),
     );
   }

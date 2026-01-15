@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'app_theme.dart';
 import 'dart:math' as math;
 import 'package:screenshot/screenshot.dart';
 import 'spinner_edit_page.dart';
@@ -45,7 +44,7 @@ class _SpinnerWheelPageState extends State<SpinnerWheelPage>
         ? ['100', '20', '15', '5', '50', '20', '10', '2']
         : List.from(widget.items);
     _currentTitle = widget.title;
-    
+
     // Initialize colors without duplicates
     _initializeColors();
 
@@ -65,7 +64,7 @@ class _SpinnerWheelPageState extends State<SpinnerWheelPage>
         final curvedValue = Curves.decelerate.transform(_controller.value);
         // 6 full rotations + random offset for random stopping position
         _rotation = (curvedValue * 360 * 6) + _randomOffset;
-        
+
         // Calculate speed based on curve derivative (rate of change)
         // Decelerate curve: starts fast, ends slow
         // Speed is proportional to the derivative of the curve
@@ -101,9 +100,10 @@ class _SpinnerWheelPageState extends State<SpinnerWheelPage>
     final normalizedRotation = _rotation % 360;
     final segmentAngle = 360.0 / _items.length;
     final targetStartAngle = (360 - normalizedRotation) % 360;
-    
+
     // Find the segment index
-    int segmentIndex = ((targetStartAngle / segmentAngle).floor()) % _items.length;
+    int segmentIndex =
+        ((targetStartAngle / segmentAngle).floor()) % _items.length;
 
     // Show reveal animation
     setState(() {
@@ -181,13 +181,13 @@ class _SpinnerWheelPageState extends State<SpinnerWheelPage>
 
   void _initializeColors() {
     _segmentColors = [];
-    
+
     // Assign colors sequentially (line-wise) from SpinnerColors
     // Colors repeat if there are more segments than available colors
     for (int i = 0; i < _items.length; i++) {
       // Get color by index, which will cycle through the color list
       Color assignedColor = SpinnerColors.getColor(i);
-      
+
       // Ensure no adjacent duplicates (including circular - last to first)
       if (i > 0) {
         final prevColor = _segmentColors[i - 1];
@@ -196,10 +196,10 @@ class _SpinnerWheelPageState extends State<SpinnerWheelPage>
           assignedColor = SpinnerColors.getColor(i + 1);
         }
       }
-      
+
       _segmentColors.add(assignedColor);
     }
-    
+
     // Ensure last segment doesn't match first (circular adjacency)
     if (_segmentColors.length > 1) {
       final lastIndex = _segmentColors.length - 1;
@@ -207,11 +207,12 @@ class _SpinnerWheelPageState extends State<SpinnerWheelPage>
         // Find a different color for the last segment
         final firstColor = _segmentColors[0];
         final secondToLastColor = _segmentColors[lastIndex - 1];
-        
+
         // Try to find a color that's different from both first and second-to-last
         for (int i = 0; i < SpinnerColors.segmentColors.length; i++) {
           final candidateColor = SpinnerColors.segmentColors[i];
-          if (candidateColor != firstColor && candidateColor != secondToLastColor) {
+          if (candidateColor != firstColor &&
+              candidateColor != secondToLastColor) {
             _segmentColors[lastIndex] = candidateColor;
             break;
           }
@@ -229,7 +230,8 @@ class _SpinnerWheelPageState extends State<SpinnerWheelPage>
   Widget build(BuildContext context) {
     final l10n = AppLocalizationsHelper.of(context);
     return Scaffold(
-      backgroundColor: const Color(0xFF2D2D44), // Dark purple background
+      backgroundColor:
+          Colors.transparent, // Transparent so gradient shows through
       body: SafeArea(
         child: Column(
           children: [
@@ -266,7 +268,8 @@ class _SpinnerWheelPageState extends State<SpinnerWheelPage>
                             } else {
                               Navigator.of(context).pushReplacement(
                                 MaterialPageRoute(
-                                  builder: (context) => const SpinnerConfigPage(),
+                                  builder: (context) =>
+                                      const SpinnerConfigPage(),
                                 ),
                               );
                             }
@@ -303,7 +306,11 @@ class _SpinnerWheelPageState extends State<SpinnerWheelPage>
                         ],
                       ),
                       child: IconButton(
-                        icon: const Icon(Icons.edit, color: Colors.white, size: 24),
+                        icon: const Icon(
+                          Icons.edit,
+                          color: Colors.white,
+                          size: 24,
+                        ),
                         onPressed: _editSpinner,
                       ),
                     ),
@@ -318,29 +325,31 @@ class _SpinnerWheelPageState extends State<SpinnerWheelPage>
                   // Get screen orientation
                   final screenSize = MediaQuery.of(context).size;
                   final isLandscape = screenSize.width > screenSize.height;
-                  
+
                   // Calculate available space
                   final availableHeight = constraints.maxHeight;
                   final availableWidth = constraints.maxWidth;
-                  
+
                   // Account for popup size (can be 1.2x spinner size) and minimal padding
                   final popupMultiplier = 1.2;
                   final padding = 20.0; // 10px padding on each side
-                  
+
                   // Calculate maximum spinner size that fits
                   // Account for popup overflow in calculations
-                  final maxSpinnerWidth = (availableWidth - padding) / popupMultiplier;
-                  final maxSpinnerHeight = (availableHeight - padding) / popupMultiplier;
-                  
+                  final maxSpinnerWidth =
+                      (availableWidth - padding) / popupMultiplier;
+                  final maxSpinnerHeight =
+                      (availableHeight - padding) / popupMultiplier;
+
                   // Use more aggressive sizing to fill available space
                   final widthMultiplier = isLandscape ? 0.9 : 0.95;
                   final heightMultiplier = isLandscape ? 0.9 : 0.95;
-                  
+
                   final maxSpinnerSize = math.min(
                     maxSpinnerWidth * widthMultiplier,
                     maxSpinnerHeight * heightMultiplier,
                   );
-                  
+
                   // Ensure minimum size but use more of available space
                   final finalSize = math.max(200.0, maxSpinnerSize);
 
@@ -355,63 +364,84 @@ class _SpinnerWheelPageState extends State<SpinnerWheelPage>
                         child: Stack(
                           alignment: Alignment.center,
                           children: [
-                              // Wheel
-                              Transform.rotate(
-                                angle: _rotation * math.pi / 180,
-                                child: CustomPaint(
-                                  size: Size(finalSize, finalSize),
-                                  painter: WheelPainter(
-                                    items: _items,
-                                    getSegmentColor: _getSegmentColor,
-                                  ),
+                            // Wheel
+                            Transform.rotate(
+                              angle: _rotation * math.pi / 180,
+                              child: CustomPaint(
+                                size: Size(finalSize, finalSize),
+                                painter: WheelPainter(
+                                  items: _items,
+                                  getSegmentColor: _getSegmentColor,
                                 ),
                               ),
-                              // Center Spin Button
-                              GestureDetector(
-                                onTap: (_isSpinning || _isRevealed) ? null : _spin,
-                                child: Opacity(
-                                  opacity: (_isSpinning || _isRevealed) ? 0.5 : 1.0,
-                                  child: Image.asset(
-                                    'assets/images/spin_logo.png',
-                                    width: buttonSize,
-                                    height: buttonSize,
-                                    fit: BoxFit.contain,
-                                  ),
+                            ),
+                            // Center Spin Button
+                            GestureDetector(
+                              onTap: (_isSpinning || _isRevealed)
+                                  ? null
+                                  : _spin,
+                              child: Opacity(
+                                opacity: (_isSpinning || _isRevealed)
+                                    ? 0.5
+                                    : 1.0,
+                                child: Image.asset(
+                                  'assets/images/spin_logo.png',
+                                  width: buttonSize,
+                                  height: buttonSize,
+                                  fit: BoxFit.contain,
                                 ),
                               ),
-                              // Reveal animation overlay on spinner (copied from Truth and Dare)
-                              if (_isRevealed && _selectedItem != null)
-                                AnimatedBuilder(
-                                  animation: _revealController,
-                                  builder: (context, child) {
-                                    return FadeTransition(
-                                      opacity: _revealController,
-                                      child: ScaleTransition(
-                                        scale: Tween<double>(begin: 0.0, end: 1.0).animate(
-                                          CurvedAnimation(
-                                            parent: _revealController,
-                                            curve: Curves.elasticOut,
+                            ),
+                            // Reveal animation overlay on spinner (copied from Truth and Dare)
+                            if (_isRevealed && _selectedItem != null)
+                              AnimatedBuilder(
+                                animation: _revealController,
+                                builder: (context, child) {
+                                  return FadeTransition(
+                                    opacity: _revealController,
+                                    child: ScaleTransition(
+                                      scale: Tween<double>(begin: 0.0, end: 1.0)
+                                          .animate(
+                                            CurvedAnimation(
+                                              parent: _revealController,
+                                              curve: Curves.elasticOut,
+                                            ),
+                                          ),
+                                      child: ConstrainedBox(
+                                        constraints: BoxConstraints(
+                                          maxWidth: math.min(
+                                            finalSize * 1.2,
+                                            availableWidth - padding,
+                                          ),
+                                          maxHeight: math.min(
+                                            finalSize * 1.2,
+                                            availableHeight - padding,
                                           ),
                                         ),
-                                        child: ConstrainedBox(
-                                          constraints: BoxConstraints(
-                                            maxWidth: math.min(finalSize * 1.2, availableWidth - padding),
-                                            maxHeight: math.min(finalSize * 1.2, availableHeight - padding),
+                                        child: Container(
+                                          width: math.min(
+                                            finalSize * 1.2,
+                                            availableWidth - padding,
                                           ),
-                                          child: Container(
-                                            width: math.min(finalSize * 1.2, availableWidth - padding),
-                                            height: math.min(finalSize * 1.2, availableHeight - padding),
-                                            decoration: BoxDecoration(
+                                          height: math.min(
+                                            finalSize * 1.2,
+                                            availableHeight - padding,
+                                          ),
+                                          decoration: BoxDecoration(
                                             shape: BoxShape.circle,
                                             gradient: RadialGradient(
                                               colors: [
-                                                SpinnerColors.segmentColors[0].withOpacity(0.95),
-                                                SpinnerColors.segmentColors[0].withOpacity(0.8),
+                                                SpinnerColors.segmentColors[0]
+                                                    .withOpacity(0.95),
+                                                SpinnerColors.segmentColors[0]
+                                                    .withOpacity(0.8),
                                               ],
                                             ),
                                             boxShadow: [
                                               BoxShadow(
-                                                color: SpinnerColors.segmentColors[0].withOpacity(0.5),
+                                                color: SpinnerColors
+                                                    .segmentColors[0]
+                                                    .withOpacity(0.5),
                                                 blurRadius: 30,
                                                 spreadRadius: 10,
                                               ),
@@ -419,71 +449,123 @@ class _SpinnerWheelPageState extends State<SpinnerWheelPage>
                                           ),
                                           child: Center(
                                             child: Column(
-                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
                                               children: [
                                                 // Animated emoji
                                                 ScaleTransition(
-                                                  scale: Tween<double>(begin: 0.0, end: 1.0).animate(
-                                                    CurvedAnimation(
-                                                      parent: _revealController,
-                                                      curve: const Interval(0.0, 0.5, curve: Curves.elasticOut),
-                                                    ),
-                                                  ),
+                                                  scale:
+                                                      Tween<double>(
+                                                        begin: 0.0,
+                                                        end: 1.0,
+                                                      ).animate(
+                                                        CurvedAnimation(
+                                                          parent:
+                                                              _revealController,
+                                                          curve: const Interval(
+                                                            0.0,
+                                                            0.5,
+                                                            curve: Curves
+                                                                .elasticOut,
+                                                          ),
+                                                        ),
+                                                      ),
                                                   child: Text(
                                                     '🎯',
-                                                    style: TextStyle(fontSize: finalSize * 0.15),
+                                                    style: TextStyle(
+                                                      fontSize:
+                                                          finalSize * 0.15,
+                                                    ),
                                                   ),
                                                 ),
                                                 const SizedBox(height: 16),
                                                 // Selected item text with animation
                                                 FadeTransition(
-                                                  opacity: Tween<double>(begin: 0.0, end: 1.0).animate(
-                                                    CurvedAnimation(
-                                                      parent: _revealController,
-                                                      curve: const Interval(0.5, 1.0, curve: Curves.easeIn),
-                                                    ),
-                                                  ),
+                                                  opacity:
+                                                      Tween<double>(
+                                                        begin: 0.0,
+                                                        end: 1.0,
+                                                      ).animate(
+                                                        CurvedAnimation(
+                                                          parent:
+                                                              _revealController,
+                                                          curve: const Interval(
+                                                            0.5,
+                                                            1.0,
+                                                            curve:
+                                                                Curves.easeIn,
+                                                          ),
+                                                        ),
+                                                      ),
                                                   child: Padding(
-                                                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                                                    padding:
+                                                        const EdgeInsets.symmetric(
+                                                          horizontal: 20,
+                                                        ),
                                                     child: Text(
                                                       _selectedItem!,
                                                       style: TextStyle(
                                                         color: Colors.white,
-                                                        fontSize: finalSize * 0.06,
-                                                        fontWeight: FontWeight.w600,
+                                                        fontSize:
+                                                            finalSize * 0.06,
+                                                        fontWeight:
+                                                            FontWeight.w600,
                                                       ),
-                                                      textAlign: TextAlign.center,
+                                                      textAlign:
+                                                          TextAlign.center,
                                                       maxLines: 3,
-                                                      overflow: TextOverflow.ellipsis,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
                                                     ),
                                                   ),
                                                 ),
                                                 const SizedBox(height: 16),
                                                 // Close button
                                                 FadeTransition(
-                                                  opacity: Tween<double>(begin: 0.0, end: 1.0).animate(
-                                                    CurvedAnimation(
-                                                      parent: _revealController,
-                                                      curve: const Interval(0.7, 1.0, curve: Curves.easeIn),
-                                                    ),
-                                                  ),
+                                                  opacity:
+                                                      Tween<double>(
+                                                        begin: 0.0,
+                                                        end: 1.0,
+                                                      ).animate(
+                                                        CurvedAnimation(
+                                                          parent:
+                                                              _revealController,
+                                                          curve: const Interval(
+                                                            0.7,
+                                                            1.0,
+                                                            curve:
+                                                                Curves.easeIn,
+                                                          ),
+                                                        ),
+                                                      ),
                                                   child: Material(
                                                     color: Colors.white,
-                                                    borderRadius: BorderRadius.circular(20),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          20,
+                                                        ),
                                                     child: InkWell(
                                                       onTap: _resetReveal,
-                                                      borderRadius: BorderRadius.circular(20),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            20,
+                                                          ),
                                                       child: Container(
-                                                        padding: const EdgeInsets.symmetric(
-                                                          horizontal: 24,
-                                                          vertical: 10,
-                                                        ),
+                                                        padding:
+                                                            const EdgeInsets.symmetric(
+                                                              horizontal: 24,
+                                                              vertical: 10,
+                                                            ),
                                                         child: Text(
                                                           l10n.close,
                                                           style: TextStyle(
-                                                            color: SpinnerColors.segmentColors[0],
-                                                            fontSize: finalSize * 0.05,
-                                                            fontWeight: FontWeight.bold,
+                                                            color: SpinnerColors
+                                                                .segmentColors[0],
+                                                            fontSize:
+                                                                finalSize *
+                                                                0.05,
+                                                            fontWeight:
+                                                                FontWeight.bold,
                                                           ),
                                                         ),
                                                       ),
@@ -497,8 +579,8 @@ class _SpinnerWheelPageState extends State<SpinnerWheelPage>
                                       ),
                                     ),
                                   );
-                                  },
-                                ),
+                                },
+                              ),
                           ],
                         ),
                       ),
@@ -748,10 +830,7 @@ class PointerPainter extends CustomPainter {
       ..shader = LinearGradient(
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
-        colors: [
-          const Color(0xFFFF69B4),
-          const Color(0xFFFF1493),
-        ],
+        colors: [const Color(0xFFFF69B4), const Color(0xFFFF1493)],
       ).createShader(Rect.fromLTWH(0, 0, size.width, size.height))
       ..style = PaintingStyle.fill;
 

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'app_theme.dart';
 import 'spinner_wheel_page.dart';
 import 'ad_helper.dart';
 import 'app_localizations_helper.dart';
@@ -145,7 +144,7 @@ class _SpinnerConfigPageState extends State<SpinnerConfigPage> {
     final l10n = AppLocalizationsHelper.of(context);
     
     return Scaffold(
-      backgroundColor: const Color(0xFF2D2D44),
+      backgroundColor: Colors.transparent, // Transparent so gradient shows through
       body: SafeArea(
         child: Column(
           children: [

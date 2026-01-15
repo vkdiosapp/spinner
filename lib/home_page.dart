@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:math' as math;
-import 'dart:ui' as ui;
 import 'package:vibration/vibration.dart';
 import 'spinner_config_page.dart';
 import 'multiplayer_config_page.dart';
@@ -24,8 +23,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   bool _adsEnabled = true;
   bool _showSettingsPopup = false;
   late AnimationController _spinnerController;
-  late AnimationController _gradientController;
-  late Animation<double> _gradientAnimation;
 
   @override
   void initState() {
@@ -36,24 +33,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       vsync: this,
       duration: const Duration(seconds: 12),
     )..repeat();
-    // Initialize gradient animation controller (15s like HTML)
-    // Use repeat(reverse: true) with easeInOut to match HTML's "ease-in-out infinite alternate"
-    _gradientController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 15),
-    )..repeat(reverse: true);
-
-    // Create curved animation matching HTML's ease-in-out
-    _gradientAnimation = CurvedAnimation(
-      parent: _gradientController,
-      curve: Curves.easeInOut,
-    );
   }
 
   @override
   void dispose() {
     _spinnerController.dispose();
-    _gradientController.dispose();
     super.dispose();
   }
 
@@ -211,615 +195,537 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       valueListenable: AppTheme.themeNotifier,
       builder: (context, isDark, _) {
         return Scaffold(
-          backgroundColor: const Color(
-            0xFFF8FAFC,
-          ), // Light background like HTML
-          body: Stack(
-            children: [
-              // Animated mesh gradient background (matching HTML)
-              Positioned.fill(
-                child: RepaintBoundary(
-                  child: AnimatedBuilder(
-                    animation: _gradientAnimation,
-                    builder: (context, child) {
-                      // Match HTML exactly: backgroundPosition animates from 0% 50% to 100% 50%
-                      // HTML uses background-size: 400% 400% with ease-in-out infinite alternate
-                      // The CurvedAnimation with easeInOut + reverse ensures smooth transitions
-                      final offset = _gradientAnimation
-                          .value; // 0.0 to 1.0 and back smoothly
+          backgroundColor:
+              Colors.transparent, // Transparent so gradient shows through
+          body: SafeArea(
+            child: Stack(
+              children: [
+                // Main content - no scrolling, fixed layout
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    // Calculate responsive spinner size
+                    final screenHeight = constraints.maxHeight;
+                    final spinnerSize = (screenHeight * 0.35).clamp(
+                      200.0,
+                      280.0,
+                    );
 
-                      // HTML animates backgroundPosition horizontally from 0% to 100%
-                      // With 400% background-size, we simulate this by panning the gradient
-                      // The easeInOut curve ensures smooth acceleration/deceleration at endpoints
-                      // This prevents any visible jump when the animation reverses
-                      final beginX =
-                          -2.0 + (offset * 4.0); // Smooth pan from -2 to 2
-                      final beginY =
-                          -1.0; // Keep vertical at center (50% in HTML)
-                      final endX = 2.0 - (offset * 4.0);
-                      final endY = 1.0;
-
-                      return IgnorePointer(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              // Create larger gradient area (4x) and animate position
-                              begin: Alignment(beginX, beginY),
-                              end: Alignment(endX, endY),
-                              colors: const [
-                                Color(0xFFF093FB), // #f093fb - Light pink
-                                Color(0xFFF5576C), // #f5576C - Pink
-                                Color(0xFF4FACFE), // #4facfe - Light blue
-                                Color(0xFF00F2FE), // #00f2fe - Cyan
-                                Color(0xFFA8EDEA), // #a8edea - Light teal
-                              ],
-                              stops: const [0.0, 0.25, 0.5, 0.75, 1.0],
-                              transform: GradientRotation(
-                                math.pi / 4,
-                              ), // 45deg like HTML
-                              tileMode: TileMode.clamp,
+                    return Column(
+                      children: [
+                        const SizedBox(height: 16),
+                        // Decision Hub Title
+                        Column(
+                          children: [
+                            ShaderMask(
+                              shaderCallback: (bounds) => const LinearGradient(
+                                colors: [Color(0xFF6366F1), Color(0xFFA855F7)],
+                              ).createShader(bounds),
+                              child: const Text(
+                                'Decision Hub',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
                             ),
-                          ),
-                          child: BackdropFilter(
-                            filter: ui.ImageFilter.blur(sigmaX: 80, sigmaY: 80),
-                            child: Container(
-                              color: Colors.white.withOpacity(
-                                0.4,
-                              ), // Match HTML opacity 0.4
+                            const SizedBox(height: 4),
+                            Text(
+                              'MODE SELECTION',
+                              style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 2,
+                                color: Colors.black.withOpacity(0.4),
+                              ),
                             ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        // Spinner Wheel Section - responsive size
+                        SizedBox(
+                          width: spinnerSize,
+                          height: spinnerSize,
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              // Spinner wheel container
+                              Container(
+                                width: spinnerSize * 0.91,
+                                height: spinnerSize * 0.91,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: const Color(
+                                      0xFFFBBF24,
+                                    ), // Amber/Yellow
+                                    width: 8,
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.2),
+                                      blurRadius: 20,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
+                                ),
+                                child: ClipOval(
+                                  child: Container(
+                                    color: isDark
+                                        ? const Color(0xFF1E293B)
+                                        : Colors.white,
+                                    child: _buildSpinnerWheel(
+                                      spinnerSize * 0.86,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              // Red pointer at top
+                              Positioned(
+                                top: 0,
+                                child: Container(
+                                  width: 24,
+                                  height: 40,
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFEF4444), // Red
+                                    borderRadius: const BorderRadius.only(
+                                      topLeft: Radius.circular(12),
+                                      topRight: Radius.circular(12),
+                                      bottomLeft: Radius.circular(4),
+                                      bottomRight: Radius.circular(4),
+                                    ),
+                                    border: Border.all(
+                                      color: Colors.white,
+                                      width: 2,
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.3),
+                                        blurRadius: 8,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Center(
+                                    child: Container(
+                                      width: 6,
+                                      height: 6,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withOpacity(0.5),
+                                        shape: BoxShape.circle,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              // Center play button
+                              Container(
+                                width: 64,
+                                height: 64,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: isDark
+                                      ? const Color(0xFF1E293B)
+                                      : Colors.white,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.2),
+                                      blurRadius: 20,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
+                                ),
+                                child: Container(
+                                  margin: const EdgeInsets.all(4),
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: const Color(
+                                      0xFF6366F1,
+                                    ), // Primary color
+                                  ),
+                                  child: const Icon(
+                                    Icons.play_arrow,
+                                    color: Colors.white,
+                                    size: 32,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      );
-                    },
+                        // Spacing between spinner and cards
+                        const SizedBox(height: 24),
+                        // Game Mode Cards Grid - Always 2x2 layout using Row/Column
+                        Flexible(
+                          child: LayoutBuilder(
+                            builder: (context, cardConstraints) {
+                              // Calculate available space
+                              final availableWidth =
+                                  cardConstraints.maxWidth -
+                                  48; // 24px padding each side
+                              final availableHeight = cardConstraints.maxHeight;
+
+                              final spacing = 16.0;
+
+                              // Always use smaller dimension for 2x2 grid
+                              final isHeightSmaller =
+                                  availableHeight < availableWidth;
+                              final smallerDimension = isHeightSmaller
+                                  ? availableHeight
+                                  : availableWidth;
+
+                              // For 2x2 grid: 2 columns, 2 rows
+                              // We need: 2 cards + 1 spacing between them
+                              // cardSize = (smallerDimension - spacing) / 2
+                              double cardSize =
+                                  (smallerDimension - spacing) / 2;
+
+                              // Ensure cardSize is positive and reasonable
+                              if (cardSize <= 0) {
+                                cardSize = 100.0; // Fallback minimum size
+                              }
+
+                              // Calculate exact width needed for 2 columns
+                              final gridWidth = (2 * cardSize) + spacing;
+
+                              // Always 2x2 grid using Row/Column
+                              return Center(
+                                child: ConstrainedBox(
+                                  constraints: BoxConstraints(
+                                    maxWidth: gridWidth,
+                                    minWidth: gridWidth,
+                                  ),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      // ROW 1: Only 2 items
+                                      ConstrainedBox(
+                                        constraints: BoxConstraints(
+                                          maxWidth: gridWidth,
+                                          minWidth: gridWidth,
+                                        ),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            // Item 0
+                                            SizedBox(
+                                              width: cardSize,
+                                              height: cardSize,
+                                              child: _buildGameModeCard(
+                                                context,
+                                                items[0]['title'] as String,
+                                                items[0]['description']
+                                                    as String,
+                                                items[0]['icon'] as IconData,
+                                                items[0]['gradient']
+                                                    as Gradient,
+                                                items[0]['route'] as Widget,
+                                                cardSize: cardSize,
+                                              ),
+                                            ),
+                                            SizedBox(width: spacing),
+                                            // Item 1
+                                            SizedBox(
+                                              width: cardSize,
+                                              height: cardSize,
+                                              child: _buildGameModeCard(
+                                                context,
+                                                items[1]['title'] as String,
+                                                items[1]['description']
+                                                    as String,
+                                                items[1]['icon'] as IconData,
+                                                items[1]['gradient']
+                                                    as Gradient,
+                                                items[1]['route'] as Widget,
+                                                cardSize: cardSize,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      SizedBox(height: spacing),
+                                      // ROW 2: Only 2 items
+                                      ConstrainedBox(
+                                        constraints: BoxConstraints(
+                                          maxWidth: gridWidth,
+                                          minWidth: gridWidth,
+                                        ),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            // Item 2
+                                            SizedBox(
+                                              width: cardSize,
+                                              height: cardSize,
+                                              child: _buildGameModeCard(
+                                                context,
+                                                items[2]['title'] as String,
+                                                items[2]['description']
+                                                    as String,
+                                                items[2]['icon'] as IconData,
+                                                items[2]['gradient']
+                                                    as Gradient,
+                                                items[2]['route'] as Widget,
+                                                cardSize: cardSize,
+                                              ),
+                                            ),
+                                            SizedBox(width: spacing),
+                                            // Item 3
+                                            SizedBox(
+                                              width: cardSize,
+                                              height: cardSize,
+                                              child: _buildGameModeCard(
+                                                context,
+                                                items[3]['title'] as String,
+                                                items[3]['description']
+                                                    as String,
+                                                items[3]['icon'] as IconData,
+                                                items[3]['gradient']
+                                                    as Gradient,
+                                                items[3]['route'] as Widget,
+                                                cardSize: cardSize,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                      ],
+                    );
+                  },
+                ),
+                // Language icon - top left (glassmorphic style)
+                Positioned(
+                  top: 16,
+                  left: 16,
+                  child: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.6),
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Colors.white.withOpacity(0.3),
+                        width: 1,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 16,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: IconButton(
+                      icon: const Icon(
+                        Icons.language,
+                        color: Color(0xFF6366F1),
+                        size: 20,
+                      ),
+                      onPressed: () async {
+                        final result = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const LanguageSelectionPage(),
+                          ),
+                        );
+                        // Reload page if language changed
+                        if (result == true) {
+                          setState(() {});
+                        }
+                      },
+                      tooltip: l10n.changeLanguage,
+                      padding: EdgeInsets.zero,
+                    ),
                   ),
                 ),
-              ),
-              SafeArea(
-                child: Stack(
-                  children: [
-                    // Main content - no scrolling, fixed layout
-                    LayoutBuilder(
-                      builder: (context, constraints) {
-                        // Calculate responsive spinner size
-                        final screenHeight = constraints.maxHeight;
-                        final spinnerSize = (screenHeight * 0.35).clamp(
-                          200.0,
-                          280.0,
-                        );
-
-                        return Column(
-                          children: [
-                            const SizedBox(height: 16),
-                            // Decision Hub Title
-                            Column(
-                              children: [
-                                ShaderMask(
-                                  shaderCallback: (bounds) =>
-                                      const LinearGradient(
-                                        colors: [
-                                          Color(0xFF6366F1),
-                                          Color(0xFFA855F7),
-                                        ],
-                                      ).createShader(bounds),
-                                  child: const Text(
-                                    'Decision Hub',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  'MODE SELECTION',
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w600,
-                                    letterSpacing: 2,
-                                    color: Colors.black.withOpacity(0.4),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 16),
-                            // Spinner Wheel Section - responsive size
-                            SizedBox(
-                              width: spinnerSize,
-                              height: spinnerSize,
-                              child: Stack(
-                                alignment: Alignment.center,
-                                children: [
-                                  // Spinner wheel container
-                                  Container(
-                                    width: spinnerSize * 0.91,
-                                    height: spinnerSize * 0.91,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                        color: const Color(
-                                          0xFFFBBF24,
-                                        ), // Amber/Yellow
-                                        width: 8,
-                                      ),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black.withOpacity(0.2),
-                                          blurRadius: 20,
-                                          offset: const Offset(0, 4),
-                                        ),
-                                      ],
-                                    ),
-                                    child: ClipOval(
-                                      child: Container(
-                                        color: isDark
-                                            ? const Color(0xFF1E293B)
-                                            : Colors.white,
-                                        child: _buildSpinnerWheel(
-                                          spinnerSize * 0.86,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  // Red pointer at top
-                                  Positioned(
-                                    top: 0,
-                                    child: Container(
-                                      width: 24,
-                                      height: 40,
-                                      decoration: BoxDecoration(
-                                        color: const Color(0xFFEF4444), // Red
-                                        borderRadius: const BorderRadius.only(
-                                          topLeft: Radius.circular(12),
-                                          topRight: Radius.circular(12),
-                                          bottomLeft: Radius.circular(4),
-                                          bottomRight: Radius.circular(4),
-                                        ),
-                                        border: Border.all(
-                                          color: Colors.white,
-                                          width: 2,
-                                        ),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.black.withOpacity(
-                                              0.3,
-                                            ),
-                                            blurRadius: 8,
-                                            offset: const Offset(0, 2),
-                                          ),
-                                        ],
-                                      ),
-                                      child: Center(
-                                        child: Container(
-                                          width: 6,
-                                          height: 6,
-                                          decoration: BoxDecoration(
-                                            color: Colors.white.withOpacity(
-                                              0.5,
-                                            ),
-                                            shape: BoxShape.circle,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  // Center play button
-                                  Container(
-                                    width: 64,
-                                    height: 64,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: isDark
-                                          ? const Color(0xFF1E293B)
-                                          : Colors.white,
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black.withOpacity(0.2),
-                                          blurRadius: 20,
-                                          offset: const Offset(0, 4),
-                                        ),
-                                      ],
-                                    ),
-                                    child: Container(
-                                      margin: const EdgeInsets.all(4),
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: const Color(
-                                          0xFF6366F1,
-                                        ), // Primary color
-                                      ),
-                                      child: const Icon(
-                                        Icons.play_arrow,
-                                        color: Colors.white,
-                                        size: 32,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            // Spacing between spinner and cards
-                            const SizedBox(height: 24),
-                            // Game Mode Cards Grid - Always 2x2 layout using Row/Column
-                            Flexible(
-                              child: LayoutBuilder(
-                                builder: (context, cardConstraints) {
-                                  // Calculate available space
-                                  final availableWidth =
-                                      cardConstraints.maxWidth -
-                                      48; // 24px padding each side
-                                  final availableHeight =
-                                      cardConstraints.maxHeight;
-
-                                  final spacing = 16.0;
-
-                                  // Always use smaller dimension for 2x2 grid
-                                  final isHeightSmaller =
-                                      availableHeight < availableWidth;
-                                  final smallerDimension = isHeightSmaller
-                                      ? availableHeight
-                                      : availableWidth;
-
-                                  // For 2x2 grid: 2 columns, 2 rows
-                                  // We need: 2 cards + 1 spacing between them
-                                  // cardSize = (smallerDimension - spacing) / 2
-                                  double cardSize =
-                                      (smallerDimension - spacing) / 2;
-
-                                  // Ensure cardSize is positive and reasonable
-                                  if (cardSize <= 0) {
-                                    cardSize = 100.0; // Fallback minimum size
-                                  }
-
-                                  // Calculate exact width needed for 2 columns
-                                  final gridWidth = (2 * cardSize) + spacing;
-
-                                  // Always 2x2 grid using Row/Column
-                                  return Center(
-                                    child: ConstrainedBox(
-                                      constraints: BoxConstraints(
-                                        maxWidth: gridWidth,
-                                        minWidth: gridWidth,
-                                      ),
-                                      child: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          // ROW 1: Only 2 items
-                                          ConstrainedBox(
-                                            constraints: BoxConstraints(
-                                              maxWidth: gridWidth,
-                                              minWidth: gridWidth,
-                                            ),
-                                            child: Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                // Item 0
-                                                SizedBox(
-                                                  width: cardSize,
-                                                  height: cardSize,
-                                                  child: _buildGameModeCard(
-                                                    context,
-                                                    items[0]['title'] as String,
-                                                    items[0]['description']
-                                                        as String,
-                                                    items[0]['icon']
-                                                        as IconData,
-                                                    items[0]['gradient']
-                                                        as Gradient,
-                                                    items[0]['route'] as Widget,
-                                                    cardSize: cardSize,
-                                                  ),
-                                                ),
-                                                SizedBox(width: spacing),
-                                                // Item 1
-                                                SizedBox(
-                                                  width: cardSize,
-                                                  height: cardSize,
-                                                  child: _buildGameModeCard(
-                                                    context,
-                                                    items[1]['title'] as String,
-                                                    items[1]['description']
-                                                        as String,
-                                                    items[1]['icon']
-                                                        as IconData,
-                                                    items[1]['gradient']
-                                                        as Gradient,
-                                                    items[1]['route'] as Widget,
-                                                    cardSize: cardSize,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          SizedBox(height: spacing),
-                                          // ROW 2: Only 2 items
-                                          ConstrainedBox(
-                                            constraints: BoxConstraints(
-                                              maxWidth: gridWidth,
-                                              minWidth: gridWidth,
-                                            ),
-                                            child: Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                // Item 2
-                                                SizedBox(
-                                                  width: cardSize,
-                                                  height: cardSize,
-                                                  child: _buildGameModeCard(
-                                                    context,
-                                                    items[2]['title'] as String,
-                                                    items[2]['description']
-                                                        as String,
-                                                    items[2]['icon']
-                                                        as IconData,
-                                                    items[2]['gradient']
-                                                        as Gradient,
-                                                    items[2]['route'] as Widget,
-                                                    cardSize: cardSize,
-                                                  ),
-                                                ),
-                                                SizedBox(width: spacing),
-                                                // Item 3
-                                                SizedBox(
-                                                  width: cardSize,
-                                                  height: cardSize,
-                                                  child: _buildGameModeCard(
-                                                    context,
-                                                    items[3]['title'] as String,
-                                                    items[3]['description']
-                                                        as String,
-                                                    items[3]['icon']
-                                                        as IconData,
-                                                    items[3]['gradient']
-                                                        as Gradient,
-                                                    items[3]['route'] as Widget,
-                                                    cardSize: cardSize,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                          ],
-                        );
+                // Settings icon button - top right (glassmorphic style)
+                Positioned(
+                  top: 16,
+                  right: 16,
+                  child: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.6),
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Colors.white.withOpacity(0.3),
+                        width: 1,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 16,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: IconButton(
+                      icon: const Icon(
+                        Icons.settings,
+                        color: Color(0xFF6366F1),
+                        size: 20,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _showSettingsPopup = !_showSettingsPopup;
+                        });
                       },
+                      tooltip: 'Settings',
+                      padding: EdgeInsets.zero,
                     ),
-                    // Language icon - top left (glassmorphic style)
-                    Positioned(
-                      top: 16,
-                      left: 16,
-                      child: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.6),
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: Colors.white.withOpacity(0.3),
-                            width: 1,
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              blurRadius: 16,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: IconButton(
-                          icon: const Icon(
-                            Icons.language,
-                            color: Color(0xFF6366F1),
-                            size: 20,
-                          ),
-                          onPressed: () async {
-                            final result = await Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    const LanguageSelectionPage(),
-                              ),
-                            );
-                            // Reload page if language changed
-                            if (result == true) {
-                              setState(() {});
-                            }
-                          },
-                          tooltip: l10n.changeLanguage,
-                          padding: EdgeInsets.zero,
-                        ),
-                      ),
-                    ),
-                    // Settings icon button - top right (glassmorphic style)
-                    Positioned(
-                      top: 16,
-                      right: 16,
-                      child: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.6),
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: Colors.white.withOpacity(0.3),
-                            width: 1,
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              blurRadius: 16,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: IconButton(
-                          icon: const Icon(
-                            Icons.settings,
-                            color: Color(0xFF6366F1),
-                            size: 20,
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              _showSettingsPopup = !_showSettingsPopup;
-                            });
-                          },
-                          tooltip: 'Settings',
-                          padding: EdgeInsets.zero,
-                        ),
-                      ),
-                    ),
-                    // Tap outside to close popup
-                    if (_showSettingsPopup)
-                      Positioned.fill(
-                        child: GestureDetector(
-                          behavior: HitTestBehavior.translucent,
-                          onTap: () {
-                            setState(() {
-                              _showSettingsPopup = false;
-                            });
-                          },
-                          child: Container(color: Colors.transparent),
-                        ),
-                      ),
-                    // Settings popup - top right corner
-                    if (_showSettingsPopup)
-                      Positioned(
-                        top: 64,
-                        right: 16,
-                        child: GestureDetector(
-                          onTap: () {
-                            // Prevent tap from closing popup when tapping inside
-                          },
-                          child: Material(
-                            color: Colors.transparent,
-                            child: Container(
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.9),
-                                borderRadius: BorderRadius.circular(16),
-                                border: Border.all(
-                                  color: Colors.white.withOpacity(0.3),
-                                  width: 1,
-                                ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.2),
-                                    blurRadius: 16,
-                                    offset: const Offset(0, 4),
-                                  ),
-                                ],
-                              ),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  // Ads toggle button: DO NOT REMOVE THIS COMMENT
-                                  Container(
-                                    width: 48,
-                                    height: 48,
-                                    margin: const EdgeInsets.only(bottom: 12),
-                                    decoration: BoxDecoration(
-                                      color: _adsEnabled
-                                          ? const Color(0xFF6366F1)
-                                          : Colors.white.withOpacity(0.6),
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                        color: Colors.white.withOpacity(0.3),
-                                        width: 1,
-                                      ),
-                                    ),
-                                    child: IconButton(
-                                      icon: Icon(
-                                        _adsEnabled
-                                            ? Icons.ads_click
-                                            : Icons.ads_click_outlined,
-                                        color: Colors.white,
-                                      ),
-                                      onPressed: _toggleAds,
-                                      tooltip: _adsEnabled
-                                          ? l10n.adsOn
-                                          : l10n.adsOff,
-                                    ),
-                                  ),
-                                  // Vibration toggle button
-                                  Container(
-                                    width: 48,
-                                    height: 48,
-                                    margin: const EdgeInsets.only(bottom: 12),
-                                    decoration: BoxDecoration(
-                                      color: _vibrationEnabled
-                                          ? const Color(0xFF6366F1)
-                                          : Colors.white.withOpacity(0.6),
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                        color: Colors.white.withOpacity(0.3),
-                                        width: 1,
-                                      ),
-                                    ),
-                                    child: IconButton(
-                                      icon: Icon(
-                                        _vibrationEnabled
-                                            ? Icons.vibration
-                                            : Icons.vibration_outlined,
-                                        color: Colors.white,
-                                      ),
-                                      onPressed: _toggleVibration,
-                                      tooltip: _vibrationEnabled
-                                          ? l10n.vibrationOn
-                                          : l10n.vibrationOff,
-                                    ),
-                                  ),
-                                  // Sound toggle button
-                                  Container(
-                                    width: 48,
-                                    height: 48,
-                                    decoration: BoxDecoration(
-                                      color: _soundEnabled
-                                          ? const Color(0xFF6366F1)
-                                          : Colors.white.withOpacity(0.6),
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                        color: Colors.white.withOpacity(0.3),
-                                        width: 1,
-                                      ),
-                                    ),
-                                    child: IconButton(
-                                      icon: Icon(
-                                        _soundEnabled
-                                            ? Icons.volume_up
-                                            : Icons.volume_off,
-                                        color: Colors.white,
-                                      ),
-                                      onPressed: _toggleSound,
-                                      tooltip: _soundEnabled
-                                          ? l10n.soundOn
-                                          : l10n.soundOff,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                  ],
+                  ),
                 ),
-              ),
-            ],
+                // Tap outside to close popup
+                if (_showSettingsPopup)
+                  Positioned.fill(
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.translucent,
+                      onTap: () {
+                        setState(() {
+                          _showSettingsPopup = false;
+                        });
+                      },
+                      child: Container(color: Colors.transparent),
+                    ),
+                  ),
+                // Settings popup - top right corner
+                if (_showSettingsPopup)
+                  Positioned(
+                    top: 64,
+                    right: 16,
+                    child: GestureDetector(
+                      onTap: () {
+                        // Prevent tap from closing popup when tapping inside
+                      },
+                      child: Material(
+                        color: Colors.transparent,
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.9),
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.3),
+                              width: 1,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.2),
+                                blurRadius: 16,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              // Ads toggle button: DO NOT REMOVE THIS COMMENT
+                              Container(
+                                width: 48,
+                                height: 48,
+                                margin: const EdgeInsets.only(bottom: 12),
+                                decoration: BoxDecoration(
+                                  color: _adsEnabled
+                                      ? const Color(0xFF6366F1)
+                                      : Colors.white.withOpacity(0.6),
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Colors.white.withOpacity(0.3),
+                                    width: 1,
+                                  ),
+                                ),
+                                child: IconButton(
+                                  icon: Icon(
+                                    _adsEnabled
+                                        ? Icons.ads_click
+                                        : Icons.ads_click_outlined,
+                                    color: Colors.white,
+                                  ),
+                                  onPressed: _toggleAds,
+                                  tooltip: _adsEnabled
+                                      ? l10n.adsOn
+                                      : l10n.adsOff,
+                                ),
+                              ),
+                              // Vibration toggle button
+                              Container(
+                                width: 48,
+                                height: 48,
+                                margin: const EdgeInsets.only(bottom: 12),
+                                decoration: BoxDecoration(
+                                  color: _vibrationEnabled
+                                      ? const Color(0xFF6366F1)
+                                      : Colors.white.withOpacity(0.6),
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Colors.white.withOpacity(0.3),
+                                    width: 1,
+                                  ),
+                                ),
+                                child: IconButton(
+                                  icon: Icon(
+                                    _vibrationEnabled
+                                        ? Icons.vibration
+                                        : Icons.vibration_outlined,
+                                    color: Colors.white,
+                                  ),
+                                  onPressed: _toggleVibration,
+                                  tooltip: _vibrationEnabled
+                                      ? l10n.vibrationOn
+                                      : l10n.vibrationOff,
+                                ),
+                              ),
+                              // Sound toggle button
+                              Container(
+                                width: 48,
+                                height: 48,
+                                decoration: BoxDecoration(
+                                  color: _soundEnabled
+                                      ? const Color(0xFF6366F1)
+                                      : Colors.white.withOpacity(0.6),
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Colors.white.withOpacity(0.3),
+                                    width: 1,
+                                  ),
+                                ),
+                                child: IconButton(
+                                  icon: Icon(
+                                    _soundEnabled
+                                        ? Icons.volume_up
+                                        : Icons.volume_off,
+                                    color: Colors.white,
+                                  ),
+                                  onPressed: _toggleSound,
+                                  tooltip: _soundEnabled
+                                      ? l10n.soundOn
+                                      : l10n.soundOff,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
           ),
         );
       },

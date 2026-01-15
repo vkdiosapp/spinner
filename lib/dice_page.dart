@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'app_theme.dart';
 import 'dart:math' as math;
 import 'sound_vibration_helper.dart';
 import 'ad_helper.dart';
@@ -310,7 +309,7 @@ class _DicePageState extends State<DicePage> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     final l10n = AppLocalizationsHelper.of(context);
     return Scaffold(
-      backgroundColor: const Color(0xFF2D2D44),
+      backgroundColor: Colors.transparent, // Transparent so gradient shows through
       body: Stack(
         children: [
           SafeArea(

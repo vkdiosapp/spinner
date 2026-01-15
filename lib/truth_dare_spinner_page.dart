@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'app_theme.dart';
 import 'package:flutter/services.dart';
 import 'dart:async';
 import 'dart:convert';
@@ -379,7 +378,7 @@ class _TruthDareSpinnerPageState extends State<TruthDareSpinnerPage>
     }
 
     return Scaffold(
-      backgroundColor: const Color(0xFF2D2D44),
+      backgroundColor: Colors.transparent, // Transparent so gradient shows through
       body: SafeArea(
         child: Column(
           children: [

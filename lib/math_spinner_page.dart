@@ -650,7 +650,7 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
         }
       },
       child: Scaffold(
-        backgroundColor: const Color(0xFF2D2D44),
+        backgroundColor: Colors.transparent, // Transparent so gradient shows through
         body: SafeArea(
           child: Column(
             children: [

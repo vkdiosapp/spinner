@@ -9,6 +9,7 @@ import 'language_settings.dart';
 import 'language_selection_page.dart';
 import 'app_localizations_helper.dart';
 import 'app_theme.dart';
+import 'animated_gradient_background.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -76,35 +77,37 @@ class _MyAppState extends State<MyApp> {
     return ValueListenableBuilder<bool>(
       valueListenable: AppTheme.themeNotifier,
       builder: (context, isDark, _) {
-        return MaterialApp(
-          title: 'Spinner',
-          theme: ThemeData(
-            brightness: Brightness.light,
-            scaffoldBackgroundColor: AppTheme.lightBackground,
-            colorScheme: ColorScheme.fromSeed(
-              seedColor: Colors.deepPurple,
+        return AnimatedGradientBackground(
+          child: MaterialApp(
+            title: 'Spinner',
+            theme: ThemeData(
               brightness: Brightness.light,
+              scaffoldBackgroundColor: Colors.transparent, // Transparent so gradient shows through
+              colorScheme: ColorScheme.fromSeed(
+                seedColor: Colors.deepPurple,
+                brightness: Brightness.light,
+              ),
             ),
-          ),
-          darkTheme: ThemeData(
-            brightness: Brightness.dark,
-            scaffoldBackgroundColor: AppTheme.darkBackground,
-            colorScheme: ColorScheme.fromSeed(
-              seedColor: Colors.deepPurple,
+            darkTheme: ThemeData(
               brightness: Brightness.dark,
+              scaffoldBackgroundColor: Colors.transparent, // Transparent so gradient shows through
+              colorScheme: ColorScheme.fromSeed(
+                seedColor: Colors.deepPurple,
+                brightness: Brightness.dark,
+              ),
             ),
+            themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
+            // Localization configuration
+            localizationsDelegates: [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: AppLocalizationsHelper.getSupportedLocales(),
+            locale: currentLocale,
+            home: initialRoute,
           ),
-          themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
-          // Localization configuration
-          localizationsDelegates: [
-            AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          supportedLocales: AppLocalizationsHelper.getSupportedLocales(),
-          locale: currentLocale,
-          home: initialRoute,
         );
       },
     );

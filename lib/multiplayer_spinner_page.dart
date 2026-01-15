@@ -649,7 +649,7 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
         valueListenable: AppTheme.themeNotifier,
         builder: (context, isDark, _) {
           return Scaffold(
-            backgroundColor: AppTheme.backgroundColor,
+            backgroundColor: Colors.transparent, // Transparent so gradient shows through
             body: Stack(
               children: [
                 SafeArea(

@@ -247,7 +247,7 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
       valueListenable: AppTheme.themeNotifier,
       builder: (context, isDark, _) {
         return Scaffold(
-          backgroundColor: AppTheme.backgroundColor,
+          backgroundColor: Colors.transparent, // Transparent so gradient shows through
           body: SafeArea(
         child: Column(
           children: [

@@ -77,7 +77,7 @@ class _LanguageSelectionPageState extends State<LanguageSelectionPage> {
     final sortedKeys = _groupedLanguages.keys.toList()..sort();
     
     return Scaffold(
-      backgroundColor: const Color(0xFF2D2D44),
+      backgroundColor: Colors.transparent, // Transparent so gradient shows through
       body: SafeArea(
         child: Column(
           children: [

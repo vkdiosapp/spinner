@@ -155,7 +155,7 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
         seenNames.add(lowerUser);
       }
 
-      Navigator.of(context).pushReplacement(
+      Navigator.of(context).push(
         MaterialPageRoute(
           builder: (context) => MathSpinnerPage(users: updatedUsers),
         ),
@@ -165,7 +165,7 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
 
     // For single player mode, use a default user
     if (_gameMode == 'single') {
-      Navigator.of(context).pushReplacement(
+      Navigator.of(context).push(
         MaterialPageRoute(
           builder: (context) => widget.isWhoFirst
               ? WhoFirstSpinnerPage(users: ['Player'], rounds: 10)
@@ -232,7 +232,7 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
       seenNames.add(lowerUser);
     }
 
-    Navigator.of(context).pushReplacement(
+    Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => widget.isWhoFirst
             ? WhoFirstSpinnerPage(users: updatedUsers, rounds: 10)

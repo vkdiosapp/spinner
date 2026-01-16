@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import 'dart:ui';
-import 'home_page.dart';
 import 'sound_vibration_helper.dart';
 import 'ad_helper.dart';
 import 'spinner_colors.dart';
@@ -630,11 +629,11 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
       // Show interstitial ad before leaving
       await InterstitialAdHelper.showInterstitialAd(
         onAdClosed: () {
-          // Navigate after ad is closed
+          // Navigate after ad is closed - pop back to config page
           if (!mounted) return;
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => const HomePage()),
-          );
+          if (Navigator.of(context).canPop()) {
+            Navigator.of(context).pop();
+          }
         },
       );
     }

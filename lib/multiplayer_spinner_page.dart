@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import 'dart:ui';
-import 'home_page.dart';
 import 'multiplayer_results_page.dart';
 import 'sound_vibration_helper.dart';
 import 'ad_helper.dart';
@@ -576,15 +575,10 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
       // Show interstitial ad before leaving
       await InterstitialAdHelper.showInterstitialAd(
         onAdClosed: () {
-          // Navigate after ad is closed
+          // Pop back to config page (config page is in stack)
           if (!mounted) return;
           if (Navigator.of(context).canPop()) {
             Navigator.of(context).pop();
-          } else {
-            Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(builder: (context) => const HomePage()),
-              (route) => false,
-            );
           }
         },
       );

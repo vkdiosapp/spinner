@@ -251,7 +251,7 @@ class _SpinnerConfigPageState extends State<SpinnerConfigPage> {
       seenNames.add(lowerItem);
     }
 
-    Navigator.of(context).pushReplacement(
+    Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) =>
             SpinnerWheelPage(title: titleText, items: updatedItems),

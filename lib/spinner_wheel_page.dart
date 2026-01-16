@@ -3,7 +3,6 @@ import 'dart:math' as math;
 import 'dart:ui';
 import 'package:screenshot/screenshot.dart';
 import 'spinner_edit_page.dart';
-import 'spinner_config_page.dart';
 import 'sound_vibration_helper.dart';
 import 'ad_helper.dart';
 import 'spinner_colors.dart';
@@ -289,15 +288,9 @@ class _SpinnerWheelPageState extends State<SpinnerWheelPage>
                         onTap: () => BackArrowAd.handleBackButton(
                           context: context,
                           onBack: () {
+                            // Pop back to config page (config page is in stack)
                             if (Navigator.of(context).canPop()) {
                               Navigator.of(context).pop();
-                            } else {
-                              Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      const SpinnerConfigPage(),
-                                ),
-                              );
                             }
                           },
                         ),

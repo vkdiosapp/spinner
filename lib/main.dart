@@ -11,6 +11,7 @@ import 'language_selection_page.dart';
 import 'app_localizations_helper.dart';
 import 'app_theme.dart';
 import 'firebase_remote_config_service.dart';
+import 'subscription_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,6 +30,9 @@ void main() async {
   
   // Initialize OneSignal Push Notifications
   await OneSignalService.initialize();
+  
+  // Initialize Subscription Service
+  await SubscriptionService.initialize();
   
   runApp(const MyApp());
 }

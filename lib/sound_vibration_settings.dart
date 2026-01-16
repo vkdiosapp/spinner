@@ -1,4 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
+import 'subscription_service.dart';
 
 class SoundVibrationSettings {
   static const String _soundEnabledKey = 'sound_enabled';
@@ -35,7 +36,14 @@ class SoundVibrationSettings {
   static bool get vibrationEnabled => _vibrationEnabled;
 
   // Get ads enabled state
-  static bool get adsEnabled => _adsEnabled;
+  // If user has active subscription, ads are disabled
+  static bool get adsEnabled {
+    // Check subscription status - if subscribed, ads are disabled
+    if (SubscriptionService.isSubscriptionActive) {
+      return false;
+    }
+    return _adsEnabled;
+  }
 
   // Toggle sound
   static Future<void> toggleSound() async {

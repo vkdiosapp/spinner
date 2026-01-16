@@ -59,6 +59,9 @@ PODS:
   - GoogleUtilities/UserDefaults (7.13.3):
     - GoogleUtilities/Logger
     - GoogleUtilities/Privacy
+  - in_app_purchase_storekit (0.0.1):
+    - Flutter
+    - FlutterMacOS
   - onesignal_flutter (5.3.4):
     - Flutter
     - OneSignalXCFramework (= 5.2.15)
@@ -130,6 +133,7 @@ DEPENDENCIES:
   - firebase_remote_config (from `.symlinks/plugins/firebase_remote_config/ios`)
   - Flutter (from `Flutter`)
   - google_mobile_ads (from `.symlinks/plugins/google_mobile_ads/ios`)
+  - in_app_purchase_storekit (from `.symlinks/plugins/in_app_purchase_storekit/darwin`)
   - onesignal_flutter (from `.symlinks/plugins/onesignal_flutter/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
   - share_plus (from `.symlinks/plugins/share_plus/ios`)
@@ -166,6 +170,8 @@ EXTERNAL SOURCES:
     :path: Flutter
   google_mobile_ads:
     :path: ".symlinks/plugins/google_mobile_ads/ios"
+  in_app_purchase_storekit:
+    :path: ".symlinks/plugins/in_app_purchase_storekit/darwin"
   onesignal_flutter:
     :path: ".symlinks/plugins/onesignal_flutter/ios"
   path_provider_foundation:
@@ -197,6 +203,7 @@ SPEC CHECKSUMS:
   google_mobile_ads: 16ad301354fa6a7ea55770c6254bd4339bf8558b
   GoogleUserMessagingPlatform: befe603da6501006420c206222acd449bba45a9c
   GoogleUtilities: ea963c370a38a8069cc5f7ba4ca849a60b6d7d15
+  in_app_purchase_storekit: 22cca7d08eebca9babdf4d07d0baccb73325d3c8
   onesignal_flutter: 6e6254c04f61c8d71d2b9a511bd19f8977eb44e4
   OneSignalXCFramework: ea9e14a95b92ad48d9b35037cbae88a9542bdea3
   path_provider_foundation: bb55f6dbba17d0dccd6737fe6f7f34fbd0376880

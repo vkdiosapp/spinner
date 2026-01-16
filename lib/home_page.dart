@@ -10,6 +10,8 @@ import 'language_selection_page.dart';
 import 'app_localizations_helper.dart';
 import 'app_theme.dart';
 import 'animated_gradient_background.dart';
+import 'subscription_popup.dart';
+import 'subscription_service.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -549,6 +551,61 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           }
                         },
                         tooltip: l10n.changeLanguage,
+                        padding: EdgeInsets.zero,
+                      ),
+                    ),
+                  ),
+                  // Subscription icon - after language icon (glassmorphic style)
+                  Positioned(
+                    top: 16,
+                    left: 64,
+                    child: Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: SubscriptionService.isSubscriptionActive
+                            ? const Color(0xFF10B981).withOpacity(0.6)
+                            : Colors.white.withOpacity(0.6),
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: SubscriptionService.isSubscriptionActive
+                              ? const Color(0xFF10B981).withOpacity(0.3)
+                              : Colors.white.withOpacity(0.3),
+                          width: 1,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 16,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: IconButton(
+                        icon: Icon(
+                          SubscriptionService.isSubscriptionActive
+                              ? Icons.verified
+                              : Icons.star,
+                          color: SubscriptionService.isSubscriptionActive
+                              ? Colors.white
+                              : const Color(0xFF6366F1),
+                          size: 20,
+                        ),
+                        onPressed: () async {
+                          final result = await showDialog<bool>(
+                            context: context,
+                            barrierDismissible: false, // Prevent dismissing by tapping outside
+                            builder: (context) => const SubscriptionPopup(),
+                          );
+                          // Reload settings if subscription changed
+                          if (result == true) {
+                            await _loadSettings();
+                            setState(() {});
+                          }
+                        },
+                        tooltip: SubscriptionService.isSubscriptionActive
+                            ? 'Premium Active'
+                            : 'Upgrade to Premium',
                         padding: EdgeInsets.zero,
                       ),
                     ),

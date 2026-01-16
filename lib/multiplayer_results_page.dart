@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:share_plus/share_plus.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:path_provider/path_provider.dart';
-import 'home_page.dart';
 import 'app_localizations_helper.dart';
 import 'ad_helper.dart';
 import 'animated_gradient_background.dart';
@@ -154,10 +153,10 @@ class _MultiplayerResultsPageState extends State<MultiplayerResultsPage> {
   }
 
   void _goHome() {
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (context) => const HomePage()),
-      (route) => false,
-    );
+    // Pop back to config page (config page is in stack since spinner used pushReplacement)
+    if (Navigator.of(context).canPop()) {
+      Navigator.of(context).pop();
+    }
   }
 
   @override

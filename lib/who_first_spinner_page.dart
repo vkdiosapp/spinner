@@ -658,9 +658,10 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
                 Border.all(color: Colors.white.withOpacity(0.6), width: 1),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF1F2687).withOpacity(0.07),
-                blurRadius: 32,
-                offset: const Offset(0, 8),
+                color: Colors.black.withOpacity(0.15),
+                blurRadius: 12,
+                spreadRadius: 1,
+                offset: const Offset(0, 4),
               ),
             ],
           ),
@@ -714,576 +715,609 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
         builder: (context, isDark, _) {
           return AnimatedGradientBackground(
             child: Scaffold(
-              backgroundColor: Colors.transparent, // Transparent so gradient shows through
+              backgroundColor:
+                  Colors.transparent, // Transparent so gradient shows through
               body: SafeArea(
-              child: Column(
-                children: [
-                  // Header
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 24,
-                      vertical: 16,
-                    ),
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        // Back button - left aligned with frosted glass effect
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: GestureDetector(
-                            onTap: _goHome,
-                            child: Container(
-                              width: 40,
-                              height: 40,
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.4),
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: Colors.white.withOpacity(0.6),
-                                  width: 1,
+                child: Column(
+                  children: [
+                    // Header
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 16,
+                      ),
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          // Back button - left aligned with frosted glass effect
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: GestureDetector(
+                              onTap: _goHome,
+                              child: Container(
+                                width: 40,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.4),
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Colors.white.withOpacity(0.6),
+                                    width: 1,
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.03),
+                                      blurRadius: 12,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                    BoxShadow(
+                                      color: Colors.white.withOpacity(0.8),
+                                      blurRadius: 1,
+                                      offset: const Offset(0, 1),
+                                      blurStyle: BlurStyle.inner,
+                                    ),
+                                  ],
                                 ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.03),
-                                    blurRadius: 12,
-                                    offset: const Offset(0, 4),
-                                  ),
-                                  BoxShadow(
-                                    color: Colors.white.withOpacity(0.8),
-                                    blurRadius: 1,
-                                    offset: const Offset(0, 1),
-                                    blurStyle: BlurStyle.inner,
-                                  ),
-                                ],
-                              ),
-                              child: ClipOval(
-                                child: BackdropFilter(
-                                  filter: ImageFilter.blur(
-                                    sigmaX: 16,
-                                    sigmaY: 16,
-                                  ),
-                                  child: const Icon(
-                                    Icons.arrow_back,
-                                    color: Color(0xFF475569),
-                                    size: 20,
+                                child: ClipOval(
+                                  child: BackdropFilter(
+                                    filter: ImageFilter.blur(
+                                      sigmaX: 16,
+                                      sigmaY: 16,
+                                    ),
+                                    child: const Icon(
+                                      Icons.arrow_back,
+                                      color: Color(0xFF475569),
+                                      size: 20,
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                        // Title - centered
-                        Text(
-                          'Who First',
-                          style: const TextStyle(
-                            color: Color(0xFF0F172A),
-                            fontSize: 20,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: -0.5,
+                          // Title - centered
+                          Text(
+                            'Who First',
+                            style: const TextStyle(
+                              color: Color(0xFF0F172A),
+                              fontSize: 20,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: -0.5,
+                            ),
                           ),
-                        ),
-                        // Spacer for balance
-                        const SizedBox(width: 40),
-                      ],
+                          // Spacer for balance
+                          const SizedBox(width: 40),
+                        ],
+                      ),
                     ),
-                  ),
-                  // Game content - responsive layout
-                  Expanded(
-                    child: LayoutBuilder(
-                      builder: (context, constraints) {
-                        final isLandscape =
-                            constraints.maxWidth > constraints.maxHeight;
+                    // Game content - responsive layout
+                    Expanded(
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          final isLandscape =
+                              constraints.maxWidth > constraints.maxHeight;
 
-                        if (isLandscape) {
-                          // Landscape: Users on left, Spinner on right
-                          return Row(
-                            children: [
-                              // Users section - left half
-                              Expanded(
-                                flex: 1,
-                                child: LayoutBuilder(
-                                  builder: (context, constraints) {
-                                    final availableHeight =
-                                        constraints.maxHeight;
-                                    final availableWidth = constraints.maxWidth;
+                          if (isLandscape) {
+                            // Landscape: Users on left, Spinner on right
+                            return Row(
+                              children: [
+                                // Users section - left half
+                                Expanded(
+                                  flex: 1,
+                                  child: LayoutBuilder(
+                                    builder: (context, constraints) {
+                                      final availableHeight =
+                                          constraints.maxHeight;
+                                      final availableWidth =
+                                          constraints.maxWidth;
 
-                                    // Detect if mobile (smaller screen)
-                                    final isMobile = availableWidth < 600;
+                                      // Detect if mobile (smaller screen)
+                                      final isMobile = availableWidth < 600;
 
-                                    // Calculate dynamic sizes (no turn text) - responsive for mobile
-                                    final padding = isMobile ? 8.0 : 16.0;
-                                    final userNameHeight = isMobile
-                                        ? 40.0
-                                        : 50.0;
-                                    final userNameSpacing = isMobile
-                                        ? 4.0
-                                        : 8.0;
-                                    final roundsAreaHeight =
-                                        availableHeight -
-                                        userNameHeight -
-                                        userNameSpacing -
-                                        (padding * 2);
+                                      // Calculate dynamic sizes (no turn text) - responsive for mobile
+                                      final padding = isMobile ? 8.0 : 16.0;
+                                      final userNameHeight = isMobile
+                                          ? 40.0
+                                          : 50.0;
+                                      final userNameSpacing = isMobile
+                                          ? 4.0
+                                          : 8.0;
+                                      final roundsAreaHeight =
+                                          availableHeight -
+                                          userNameHeight -
+                                          userNameSpacing -
+                                          (padding * 2);
 
-                                    // Calculate tile size based on available space to fit all rounds
-                                    final tileSpacing = isMobile ? 1.0 : 2.0;
-                                    final totalSpacing =
-                                        (widget.rounds - 1) * tileSpacing * 2;
-                                    final calculatedTileSize =
-                                        (roundsAreaHeight - totalSpacing) /
-                                        widget.rounds;
-                                    final minTileSize = isMobile ? 25.0 : 30.0;
-                                    final maxTileSize = isMobile ? 40.0 : 50.0;
-                                    final tileSize = math.max(
-                                      minTileSize,
-                                      math.min(maxTileSize, calculatedTileSize),
-                                    );
-                                    final tileFontSize = math.max(
-                                      10.0,
-                                      math.min(18.0, tileSize * 0.36),
-                                    );
+                                      // Calculate tile size based on available space to fit all rounds
+                                      final tileSpacing = isMobile ? 1.0 : 2.0;
+                                      final totalSpacing =
+                                          (widget.rounds - 1) * tileSpacing * 2;
+                                      final calculatedTileSize =
+                                          (roundsAreaHeight - totalSpacing) /
+                                          widget.rounds;
+                                      final minTileSize = isMobile
+                                          ? 25.0
+                                          : 30.0;
+                                      final maxTileSize = isMobile
+                                          ? 40.0
+                                          : 50.0;
+                                      final tileSize = math.max(
+                                        minTileSize,
+                                        math.min(
+                                          maxTileSize,
+                                          calculatedTileSize,
+                                        ),
+                                      );
+                                      final tileFontSize = math.max(
+                                        10.0,
+                                        math.min(18.0, tileSize * 0.36),
+                                      );
 
-                                    // Calculate column width based on available width - more compact on mobile
-                                    // Adjust margins based on number of users to prevent overflow
-                                    final numUsers = _displayUsers.length;
-                                    final horizontalMargin = isMobile
-                                        ? (numUsers > 5 ? 2.0 : 4.0)
-                                        : (numUsers > 5 ? 4.0 : 8.0);
-                                    final totalHorizontalMargin =
-                                        (numUsers - 1) * horizontalMargin * 2;
-                                    final totalPadding = padding * 2;
-                                    final calculatedColumnWidth =
-                                        (availableWidth -
-                                            totalPadding -
-                                            totalHorizontalMargin) /
-                                        numUsers;
-                                    final minColumnWidth = isMobile
-                                        ? (numUsers > 5 ? 35.0 : 45.0)
-                                        : (numUsers > 5 ? 50.0 : 60.0);
-                                    final maxColumnWidth = isMobile
-                                        ? (numUsers > 5 ? 55.0 : 70.0)
-                                        : (numUsers > 5 ? 70.0 : 80.0);
-                                    final columnWidth = math.max(
-                                      minColumnWidth,
-                                      math.min(
-                                        maxColumnWidth,
-                                        calculatedColumnWidth,
-                                      ),
-                                    );
+                                      // Calculate column width based on available width - more compact on mobile
+                                      // Adjust margins based on number of users to prevent overflow
+                                      final numUsers = _displayUsers.length;
+                                      final horizontalMargin = isMobile
+                                          ? (numUsers > 5 ? 2.0 : 4.0)
+                                          : (numUsers > 5 ? 4.0 : 8.0);
+                                      final totalHorizontalMargin =
+                                          (numUsers - 1) * horizontalMargin * 2;
+                                      final totalPadding = padding * 2;
+                                      final calculatedColumnWidth =
+                                          (availableWidth -
+                                              totalPadding -
+                                              totalHorizontalMargin) /
+                                          numUsers;
+                                      final minColumnWidth = isMobile
+                                          ? (numUsers > 5 ? 35.0 : 45.0)
+                                          : (numUsers > 5 ? 50.0 : 60.0);
+                                      final maxColumnWidth = isMobile
+                                          ? (numUsers > 5 ? 55.0 : 70.0)
+                                          : (numUsers > 5 ? 70.0 : 80.0);
+                                      final columnWidth = math.max(
+                                        minColumnWidth,
+                                        math.min(
+                                          maxColumnWidth,
+                                          calculatedColumnWidth,
+                                        ),
+                                      );
 
-                                    return Padding(
-                                      padding: EdgeInsets.all(padding),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          // Users list with rounds
-                                          Expanded(
-                                            child: SingleChildScrollView(
-                                              scrollDirection: Axis.horizontal,
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  // Users with their rounds - side by side
-                                                  ...List.generate(_displayUsers.length, (
-                                                    userIndex,
-                                                  ) {
-                                                    final user =
-                                                        _displayUsers[userIndex];
-                                                    final isCurrentUser =
-                                                        userIndex ==
-                                                        _currentUserIndex;
-                                                    final isWinner = _winners
-                                                        .contains(userIndex);
-                                                    final isLoser = _losers
-                                                        .contains(userIndex);
+                                      return Padding(
+                                        padding: EdgeInsets.all(padding),
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            // Users list with rounds
+                                            Expanded(
+                                              child: SingleChildScrollView(
+                                                scrollDirection:
+                                                    Axis.horizontal,
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: [
+                                                    // Users with their rounds - side by side
+                                                    ...List.generate(_displayUsers.length, (
+                                                      userIndex,
+                                                    ) {
+                                                      final user =
+                                                          _displayUsers[userIndex];
+                                                      final isCurrentUser =
+                                                          userIndex ==
+                                                          _currentUserIndex;
+                                                      final isWinner = _winners
+                                                          .contains(userIndex);
+                                                      final isLoser = _losers
+                                                          .contains(userIndex);
 
-                                                    return Opacity(
-                                                      opacity:
-                                                          (isWinner || isLoser)
-                                                          ? 0.5
-                                                          : 1.0,
-                                                      child: Container(
-                                                        width: columnWidth,
-                                                        margin: EdgeInsets.only(
-                                                          left: userIndex == 0
-                                                              ? 0
-                                                              : horizontalMargin,
-                                                          right:
-                                                              userIndex ==
-                                                                  _displayUsers
-                                                                          .length -
-                                                                      1
-                                                              ? 0
-                                                              : horizontalMargin,
-                                                        ),
-                                                        child: Column(
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .center,
-                                                          mainAxisSize:
-                                                              MainAxisSize.min,
-                                                          children: [
-                                                            // Rounds display vertically
-                                                            Column(
-                                                              mainAxisSize:
-                                                                  MainAxisSize
-                                                                      .min,
-                                                              children: List.generate(widget.rounds, (
-                                                                index,
-                                                              ) {
-                                                                final roundNumber =
-                                                                    index + 1;
-                                                                final isDisabled =
-                                                                    _disabledRounds[userIndex]
-                                                                        .contains(
-                                                                          roundNumber,
-                                                                        );
-                                                                final isHighlighting =
-                                                                    _isHighlighting &&
-                                                                    userIndex ==
-                                                                        _currentUserIndex &&
-                                                                    _finalSelectedRound ==
-                                                                        roundNumber;
-                                                                final isHighlightedAndDisabled =
-                                                                    isHighlighting &&
-                                                                    isDisabled;
+                                                      return Opacity(
+                                                        opacity:
+                                                            (isWinner ||
+                                                                isLoser)
+                                                            ? 0.5
+                                                            : 1.0,
+                                                        child: Container(
+                                                          width: columnWidth,
+                                                          margin: EdgeInsets.only(
+                                                            left: userIndex == 0
+                                                                ? 0
+                                                                : horizontalMargin,
+                                                            right:
+                                                                userIndex ==
+                                                                    _displayUsers
+                                                                            .length -
+                                                                        1
+                                                                ? 0
+                                                                : horizontalMargin,
+                                                          ),
+                                                          child: Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .center,
+                                                            mainAxisSize:
+                                                                MainAxisSize
+                                                                    .min,
+                                                            children: [
+                                                              // Rounds display vertically
+                                                              Column(
+                                                                mainAxisSize:
+                                                                    MainAxisSize
+                                                                        .min,
+                                                                children: List.generate(widget.rounds, (
+                                                                  index,
+                                                                ) {
+                                                                  final roundNumber =
+                                                                      index + 1;
+                                                                  final isDisabled =
+                                                                      _disabledRounds[userIndex]
+                                                                          .contains(
+                                                                            roundNumber,
+                                                                          );
+                                                                  final isHighlighting =
+                                                                      _isHighlighting &&
+                                                                      userIndex ==
+                                                                          _currentUserIndex &&
+                                                                      _finalSelectedRound ==
+                                                                          roundNumber;
+                                                                  final isHighlightedAndDisabled =
+                                                                      isHighlighting &&
+                                                                      isDisabled;
 
-                                                                return AnimatedBuilder(
-                                                                  animation:
-                                                                      _highlightAnimation,
-                                                                  builder:
-                                                                      (
-                                                                        context,
-                                                                        child,
-                                                                      ) {
-                                                                        final highlightScale =
-                                                                            isHighlighting
-                                                                            ? 1.0 +
-                                                                                  (_highlightAnimation.value *
-                                                                                      0.3)
-                                                                            : 1.0;
-                                                                        final highlightOpacity =
-                                                                            isHighlighting
-                                                                            ? 0.5 +
-                                                                                  (_highlightAnimation.value *
-                                                                                      0.5)
-                                                                            : 1.0;
-                                                                        final highlightColor =
-                                                                            isHighlighting
-                                                                            ? isHighlightedAndDisabled
-                                                                                  ? Color.lerp(
-                                                                                      Colors.red,
-                                                                                      Colors.redAccent,
-                                                                                      _highlightAnimation.value,
-                                                                                    )!
-                                                                                  : Color.lerp(
-                                                                                      const Color(
-                                                                                        0xFF00B894,
-                                                                                      ),
-                                                                                      const Color(
-                                                                                        0xFF00B894,
-                                                                                      ).withOpacity(
-                                                                                        0.8,
-                                                                                      ),
-                                                                                      _highlightAnimation.value,
-                                                                                    )!
-                                                                            : null;
+                                                                  return AnimatedBuilder(
+                                                                    animation:
+                                                                        _highlightAnimation,
+                                                                    builder:
+                                                                        (
+                                                                          context,
+                                                                          child,
+                                                                        ) {
+                                                                          final highlightScale =
+                                                                              isHighlighting
+                                                                              ? 1.0 +
+                                                                                    (_highlightAnimation.value *
+                                                                                        0.3)
+                                                                              : 1.0;
+                                                                          final highlightOpacity =
+                                                                              isHighlighting
+                                                                              ? 0.5 +
+                                                                                    (_highlightAnimation.value *
+                                                                                        0.5)
+                                                                              : 1.0;
+                                                                          final highlightColor =
+                                                                              isHighlighting
+                                                                              ? isHighlightedAndDisabled
+                                                                                    ? Color.lerp(
+                                                                                        Colors.red,
+                                                                                        Colors.redAccent,
+                                                                                        _highlightAnimation.value,
+                                                                                      )!
+                                                                                    : Color.lerp(
+                                                                                        const Color(
+                                                                                          0xFF00B894,
+                                                                                        ),
+                                                                                        const Color(
+                                                                                          0xFF00B894,
+                                                                                        ).withOpacity(
+                                                                                          0.8,
+                                                                                        ),
+                                                                                        _highlightAnimation.value,
+                                                                                      )!
+                                                                              : null;
 
-                                                                        return Transform.scale(
-                                                                          scale:
-                                                                              highlightScale,
-                                                                          child: Container(
-                                                                            margin: EdgeInsets.symmetric(
-                                                                              vertical: tileSpacing,
-                                                                            ),
-                                                                            width:
-                                                                                tileSize,
-                                                                            height:
-                                                                                tileSize,
-                                                                            decoration: BoxDecoration(
-                                                                              color: isHighlighting
-                                                                                  ? highlightColor
-                                                                                  : isDisabled
-                                                                                  ? Colors.red.withOpacity(
-                                                                                      0.7,
-                                                                                    )
-                                                                                  : const Color(
-                                                                                      0xFF00B894,
-                                                                                    ).withOpacity(
-                                                                                      0.7,
-                                                                                    ),
-                                                                              borderRadius: BorderRadius.circular(
-                                                                                8,
+                                                                          return Transform.scale(
+                                                                            scale:
+                                                                                highlightScale,
+                                                                            child: Container(
+                                                                              margin: EdgeInsets.symmetric(
+                                                                                vertical: tileSpacing,
                                                                               ),
-                                                                              border: Border.all(
+                                                                              width: tileSize,
+                                                                              height: tileSize,
+                                                                              decoration: BoxDecoration(
                                                                                 color: isHighlighting
-                                                                                    ? Colors.white
+                                                                                    ? highlightColor
                                                                                     : isDisabled
-                                                                                    ? Colors.red
+                                                                                    ? Colors.red.withOpacity(
+                                                                                        0.7,
+                                                                                      )
                                                                                     : const Color(
                                                                                         0xFF00B894,
+                                                                                      ).withOpacity(
+                                                                                        0.7,
                                                                                       ),
-                                                                                width: isHighlighting
-                                                                                    ? 3
-                                                                                    : 2,
-                                                                              ),
-                                                                              boxShadow: isHighlighting
-                                                                                  ? [
-                                                                                      BoxShadow(
-                                                                                        color: highlightColor!.withOpacity(
-                                                                                          highlightOpacity,
-                                                                                        ),
-                                                                                        blurRadius: 15,
-                                                                                        spreadRadius: 2,
-                                                                                      ),
-                                                                                    ]
-                                                                                  : null,
-                                                                            ),
-                                                                            child: Center(
-                                                                              child: Text(
-                                                                                '$roundNumber',
-                                                                                style: TextStyle(
+                                                                                shape: BoxShape.circle,
+                                                                                border: Border.all(
                                                                                   color: isHighlighting
                                                                                       ? Colors.white
                                                                                       : isDisabled
-                                                                                      ? Colors.white
-                                                                                      : Colors.white,
-                                                                                  fontSize: tileFontSize,
-                                                                                  fontWeight: FontWeight.bold,
-                                                                                  decoration:
-                                                                                      isDisabled &&
-                                                                                          !isHighlighting
-                                                                                      ? TextDecoration.lineThrough
-                                                                                      : null,
+                                                                                      ? Colors.red
+                                                                                      : const Color(
+                                                                                          0xFF00B894,
+                                                                                        ),
+                                                                                  width: isHighlighting
+                                                                                      ? 3
+                                                                                      : 2,
+                                                                                ),
+                                                                                boxShadow: isHighlighting
+                                                                                    ? [
+                                                                                        BoxShadow(
+                                                                                          color: highlightColor!.withOpacity(
+                                                                                            highlightOpacity,
+                                                                                          ),
+                                                                                          blurRadius: 15,
+                                                                                          spreadRadius: 2,
+                                                                                        ),
+                                                                                      ]
+                                                                                    : [
+                                                                                        BoxShadow(
+                                                                                          color: Colors.black.withOpacity(
+                                                                                            0.15,
+                                                                                          ),
+                                                                                          blurRadius: 12,
+                                                                                          spreadRadius: 1,
+                                                                                          offset: const Offset(
+                                                                                            0,
+                                                                                            4,
+                                                                                          ),
+                                                                                        ),
+                                                                                      ],
+                                                                              ),
+                                                                              child: Center(
+                                                                                child: Text(
+                                                                                  '$roundNumber',
+                                                                                  style: TextStyle(
+                                                                                    color: isHighlighting
+                                                                                        ? Colors.white
+                                                                                        : isDisabled
+                                                                                        ? Colors.white
+                                                                                        : Colors.white,
+                                                                                    fontSize: tileFontSize,
+                                                                                    fontWeight: FontWeight.bold,
+                                                                                    decoration:
+                                                                                        isDisabled &&
+                                                                                            !isHighlighting
+                                                                                        ? TextDecoration.lineThrough
+                                                                                        : null,
+                                                                                  ),
                                                                                 ),
                                                                               ),
                                                                             ),
-                                                                          ),
-                                                                        );
-                                                                      },
-                                                                );
-                                                              }),
-                                                            ),
-                                                            SizedBox(
-                                                              height:
-                                                                  userNameSpacing,
-                                                            ),
-                                                            // User name
-                                                            _buildGlossyCard(
-                                                              borderRadius: 12,
-                                                              backgroundColor: isWinner
-                                                                  ? const Color(0xFF2D2D44).withOpacity(0.6)
-                                                                  : (isLoser
-                                                                      ? const Color(0xFF2D2D44).withOpacity(0.6)
-                                                                      : (isCurrentUser
-                                                                          ? const Color(0xFF6366F1).withOpacity(0.7)
-                                                                          : Colors.white.withOpacity(0.3))),
-                                                              border: isCurrentUser && !isWinner && !isLoser
-                                                                  ? Border.all(
-                                                                      color: Colors.white,
-                                                                      width: 2,
-                                                                    )
-                                                                  : (isWinner
-                                                                      ? Border.all(
-                                                                          color: const Color(0xFF4CAF50).withOpacity(0.8),
-                                                                          width: 1.5,
-                                                                        )
-                                                                      : (isLoser
+                                                                          );
+                                                                        },
+                                                                  );
+                                                                }),
+                                                              ),
+                                                              SizedBox(
+                                                                height:
+                                                                    userNameSpacing,
+                                                              ),
+                                                              // User name
+                                                              _buildGlossyCard(
+                                                                borderRadius:
+                                                                    12,
+                                                                backgroundColor:
+                                                                    isWinner
+                                                                    ? const Color(
+                                                                        0xFF2D2D44,
+                                                                      ).withOpacity(
+                                                                        0.6,
+                                                                      )
+                                                                    : (isLoser
+                                                                          ? const Color(
+                                                                              0xFF2D2D44,
+                                                                            ).withOpacity(
+                                                                              0.6,
+                                                                            )
+                                                                          : (isCurrentUser
+                                                                                ? const Color(
+                                                                                    0xFF6366F1,
+                                                                                  ).withOpacity(
+                                                                                    0.7,
+                                                                                  )
+                                                                                : Colors.white.withOpacity(0.3))),
+                                                                border:
+                                                                    isCurrentUser &&
+                                                                        !isWinner &&
+                                                                        !isLoser
+                                                                    ? Border.all(
+                                                                        color: Colors
+                                                                            .white,
+                                                                        width:
+                                                                            2,
+                                                                      )
+                                                                    : (isWinner
                                                                           ? Border.all(
-                                                                              color: const Color(0xFFEF5350).withOpacity(0.8),
+                                                                              color:
+                                                                                  const Color(
+                                                                                    0xFF4CAF50,
+                                                                                  ).withOpacity(
+                                                                                    0.8,
+                                                                                  ),
                                                                               width: 1.5,
                                                                             )
-                                                                          : Border.all(
-                                                                              color: Colors.white.withOpacity(0.6),
-                                                                              width: 1,
-                                                                            ))),
-                                                              child: Padding(
-                                                                padding: EdgeInsets.symmetric(
-                                                                  horizontal:
-                                                                      isMobile
-                                                                      ? 6.0
-                                                                      : 8.0,
-                                                                  vertical:
-                                                                      isMobile
-                                                                      ? 6.0
-                                                                      : 8.0,
-                                                                ),
-                                                                child: Row(
-                                                                mainAxisSize:
-                                                                    MainAxisSize
-                                                                        .min,
-                                                                children: [
-                                                                  Expanded(
-                                                                    child: FittedBox(
-                                                                      fit: BoxFit
-                                                                          .scaleDown,
-                                                                      child: Text(
-                                                                        user,
-                                                                        style: TextStyle(
-                                                                          color:
-                                                                              (isWinner ||
-                                                                                  isLoser)
-                                                                              ? const Color(0xFF1F2937)
-                                                                              : const Color(0xFF111827),
-                                                                          fontSize:
-                                                                              isMobile
-                                                                              ? math.max(
-                                                                                  10.0,
-                                                                                  math.min(
-                                                                                    14.0,
-                                                                                    columnWidth *
-                                                                                        0.2,
-                                                                                  ),
-                                                                                )
-                                                                              : math.max(
-                                                                                  12.0,
-                                                                                  math.min(
-                                                                                    16.0,
-                                                                                    columnWidth *
-                                                                                        0.2,
-                                                                                  ),
-                                                                                ),
-                                                                          fontWeight:
-                                                                              FontWeight.bold,
-                                                                        ),
-                                                                        textAlign:
-                                                                            TextAlign.center,
-                                                                        maxLines:
-                                                                            1,
-                                                                      ),
-                                                                    ),
+                                                                          : (isLoser
+                                                                                ? Border.all(
+                                                                                    color:
+                                                                                        const Color(
+                                                                                          0xFFEF5350,
+                                                                                        ).withOpacity(
+                                                                                          0.8,
+                                                                                        ),
+                                                                                    width: 1.5,
+                                                                                  )
+                                                                                : Border.all(
+                                                                                    color: Colors.white.withOpacity(
+                                                                                      0.6,
+                                                                                    ),
+                                                                                    width: 1,
+                                                                                  ))),
+                                                                child: Padding(
+                                                                  padding: EdgeInsets.symmetric(
+                                                                    horizontal:
+                                                                        isMobile
+                                                                        ? 6.0
+                                                                        : 8.0,
+                                                                    vertical:
+                                                                        isMobile
+                                                                        ? 6.0
+                                                                        : 8.0,
                                                                   ),
-                                                                  if (isLoser)
-                                                                    Padding(
-                                                                      padding: EdgeInsets.only(
-                                                                        left:
-                                                                            isMobile
-                                                                            ? 3.0
-                                                                            : 4.0,
-                                                                      ),
-                                                                      child: Icon(
-                                                                        Icons
-                                                                            .cancel,
-                                                                        color: const Color(
-                                                                          0xFFEF5350,
+                                                                  child: Row(
+                                                                    mainAxisSize:
+                                                                        MainAxisSize
+                                                                            .min,
+                                                                    children: [
+                                                                      Expanded(
+                                                                        child: FittedBox(
+                                                                          fit: BoxFit
+                                                                              .scaleDown,
+                                                                          child: Text(
+                                                                            user,
+                                                                            style: TextStyle(
+                                                                              color:
+                                                                                  (isWinner ||
+                                                                                      isLoser)
+                                                                                  ? const Color(
+                                                                                      0xFF1F2937,
+                                                                                    )
+                                                                                  : const Color(
+                                                                                      0xFF111827,
+                                                                                    ),
+                                                                              fontSize: isMobile
+                                                                                  ? math.max(
+                                                                                      10.0,
+                                                                                      math.min(
+                                                                                        14.0,
+                                                                                        columnWidth *
+                                                                                            0.2,
+                                                                                      ),
+                                                                                    )
+                                                                                  : math.max(
+                                                                                      12.0,
+                                                                                      math.min(
+                                                                                        16.0,
+                                                                                        columnWidth *
+                                                                                            0.2,
+                                                                                      ),
+                                                                                    ),
+                                                                              fontWeight: FontWeight.bold,
+                                                                            ),
+                                                                            textAlign:
+                                                                                TextAlign.center,
+                                                                            maxLines:
+                                                                                1,
+                                                                          ),
                                                                         ),
-                                                                        size:
-                                                                            isMobile
-                                                                            ? 14.0
-                                                                            : 16.0,
                                                                       ),
-                                                                    ),
-                                                                  if (!isWinner &&
-                                                                      !isLoser &&
-                                                                      _disabledRounds[userIndex]
-                                                                              .length ==
-                                                                          widget
-                                                                              .rounds)
-                                                                    Padding(
-                                                                      padding: EdgeInsets.only(
-                                                                        left:
-                                                                            isMobile
-                                                                            ? 3.0
-                                                                            : 4.0,
-                                                                      ),
-                                                                      child: Icon(
-                                                                        Icons
-                                                                            .emoji_events,
-                                                                        color: Colors
-                                                                            .amber,
-                                                                        size:
-                                                                            isMobile
-                                                                            ? 14.0
-                                                                            : 16.0,
-                                                                      ),
-                                                                    ),
-                                                                  ],
+                                                                      if (isLoser)
+                                                                        Padding(
+                                                                          padding: EdgeInsets.only(
+                                                                            left:
+                                                                                isMobile
+                                                                                ? 3.0
+                                                                                : 4.0,
+                                                                          ),
+                                                                          child: Icon(
+                                                                            Icons.cancel,
+                                                                            color: const Color(
+                                                                              0xFFEF5350,
+                                                                            ),
+                                                                            size:
+                                                                                isMobile
+                                                                                ? 14.0
+                                                                                : 16.0,
+                                                                          ),
+                                                                        ),
+                                                                      if (!isWinner &&
+                                                                          !isLoser &&
+                                                                          _disabledRounds[userIndex].length ==
+                                                                              widget.rounds)
+                                                                        Padding(
+                                                                          padding: EdgeInsets.only(
+                                                                            left:
+                                                                                isMobile
+                                                                                ? 3.0
+                                                                                : 4.0,
+                                                                          ),
+                                                                          child: Icon(
+                                                                            Icons.emoji_events,
+                                                                            color:
+                                                                                Colors.amber,
+                                                                            size:
+                                                                                isMobile
+                                                                                ? 14.0
+                                                                                : 16.0,
+                                                                          ),
+                                                                        ),
+                                                                    ],
+                                                                  ),
                                                                 ),
                                                               ),
-                                                            ),
-                                                          ],
+                                                            ],
+                                                          ),
                                                         ),
-                                                      ),
-                                                    );
-                                                  }),
-                                                ],
+                                                      );
+                                                    }),
+                                                  ],
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                  },
+                                          ],
+                                        ),
+                                      );
+                                    },
+                                  ),
                                 ),
-                              ),
-                              // Spinner section - right half
-                              Expanded(
-                                flex: 1,
-                                child: LayoutBuilder(
-                                  builder: (context, spinnerConstraints) {
-                                    final spinnerHeight =
-                                        spinnerConstraints.maxHeight;
-                                    final spinnerWidth =
-                                        spinnerConstraints.maxWidth;
-                                    final spinnerSize = math.min(
-                                      spinnerHeight * 0.8,
-                                      spinnerWidth * 0.8,
-                                    );
-                                    final finalSize = math.max(
-                                      200.0,
-                                      spinnerSize,
-                                    );
+                                // Spinner section - right half
+                                Expanded(
+                                  flex: 1,
+                                  child: LayoutBuilder(
+                                    builder: (context, spinnerConstraints) {
+                                      final spinnerHeight =
+                                          spinnerConstraints.maxHeight;
+                                      final spinnerWidth =
+                                          spinnerConstraints.maxWidth;
+                                      final spinnerSize = math.min(
+                                        spinnerHeight * 0.8,
+                                        spinnerWidth * 0.8,
+                                      );
+                                      final finalSize = math.max(
+                                        200.0,
+                                        spinnerSize,
+                                      );
 
-                                    final buttonSize = finalSize * 0.25;
+                                      final buttonSize = finalSize * 0.25;
 
-                                    return Center(
-                                      child: Container(
-                                        height: finalSize,
-                                        width: finalSize,
-                                        child: Stack(
-                                          alignment: Alignment.center,
-                                          children: [
-                                            // Wheel
-                                            Transform.rotate(
-                                              angle: _rotation * math.pi / 180,
-                                              child: CustomPaint(
-                                                size: Size(
-                                                  finalSize,
-                                                  finalSize,
-                                                ),
-                                                painter: WhoFirstWheelPainter(
-                                                  segments: _segments,
-                                                  getSegmentColor:
-                                                      _getSegmentColor,
+                                      return Center(
+                                        child: Container(
+                                          height: finalSize,
+                                          width: finalSize,
+                                          child: Stack(
+                                            alignment: Alignment.center,
+                                            children: [
+                                              // Wheel
+                                              Transform.rotate(
+                                                angle:
+                                                    _rotation * math.pi / 180,
+                                                child: CustomPaint(
+                                                  size: Size(
+                                                    finalSize,
+                                                    finalSize,
+                                                  ),
+                                                  painter: WhoFirstWheelPainter(
+                                                    segments: _segments,
+                                                    getSegmentColor:
+                                                        _getSegmentColor,
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                            // Pointer
-                                            // Center Spin Button
-                                            GestureDetector(
-                                              onTap:
-                                                  (_isRevealed ||
-                                                      _isSpinning ||
-                                                      _isWaitingForNextTurn ||
-                                                      _isHighlighting ||
-                                                      _winner != null ||
-                                                      _winners.contains(
-                                                        _currentUserIndex,
-                                                      ) ||
-                                                      _losers.contains(
-                                                        _currentUserIndex,
-                                                      ) ||
-                                                      (_isSinglePlayer &&
-                                                          _displayUsers[_currentUserIndex] ==
-                                                              'Computer'))
-                                                  ? null
-                                                  : _spin,
-                                              child: Opacity(
-                                                opacity:
+                                              // Pointer
+                                              // Center Spin Button
+                                              GestureDetector(
+                                                onTap:
                                                     (_isRevealed ||
                                                         _isSpinning ||
                                                         _isWaitingForNextTurn ||
@@ -1298,681 +1332,735 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
                                                         (_isSinglePlayer &&
                                                             _displayUsers[_currentUserIndex] ==
                                                                 'Computer'))
-                                                    ? 0.5
-                                                    : 1.0,
-                                                child: Image.asset(
-                                                  'assets/images/spin_logo.png',
-                                                  width: buttonSize,
-                                                  height: buttonSize,
-                                                  fit: BoxFit.contain,
+                                                    ? null
+                                                    : _spin,
+                                                child: Opacity(
+                                                  opacity:
+                                                      (_isRevealed ||
+                                                          _isSpinning ||
+                                                          _isWaitingForNextTurn ||
+                                                          _isHighlighting ||
+                                                          _winner != null ||
+                                                          _winners.contains(
+                                                            _currentUserIndex,
+                                                          ) ||
+                                                          _losers.contains(
+                                                            _currentUserIndex,
+                                                          ) ||
+                                                          (_isSinglePlayer &&
+                                                              _displayUsers[_currentUserIndex] ==
+                                                                  'Computer'))
+                                                      ? 0.5
+                                                      : 1.0,
+                                                  child: Image.asset(
+                                                    'assets/images/spin_logo.png',
+                                                    width: buttonSize,
+                                                    height: buttonSize,
+                                                    fit: BoxFit.contain,
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                            // Reveal animation overlay
-                                            if (_isRevealed &&
-                                                _earnedNumber != null)
-                                              AnimatedBuilder(
-                                                animation: _revealController,
-                                                builder: (context, child) {
-                                                  return FadeTransition(
-                                                    opacity: _revealController,
-                                                    child: ScaleTransition(
-                                                      scale:
-                                                          Tween<double>(
-                                                            begin: 0.0,
-                                                            end: 1.0,
-                                                          ).animate(
-                                                            CurvedAnimation(
-                                                              parent:
-                                                                  _revealController,
-                                                              curve: Curves
-                                                                  .elasticOut,
+                                              // Reveal animation overlay
+                                              if (_isRevealed &&
+                                                  _earnedNumber != null)
+                                                AnimatedBuilder(
+                                                  animation: _revealController,
+                                                  builder: (context, child) {
+                                                    return FadeTransition(
+                                                      opacity:
+                                                          _revealController,
+                                                      child: ScaleTransition(
+                                                        scale:
+                                                            Tween<double>(
+                                                              begin: 0.0,
+                                                              end: 1.0,
+                                                            ).animate(
+                                                              CurvedAnimation(
+                                                                parent:
+                                                                    _revealController,
+                                                                curve: Curves
+                                                                    .elasticOut,
+                                                              ),
                                                             ),
-                                                          ),
-                                                      child: Container(
-                                                        width: finalSize * 1.2,
-                                                        height: finalSize * 1.2,
-                                                        decoration: BoxDecoration(
-                                                          shape:
-                                                              BoxShape.circle,
-                                                          gradient:
-                                                              RadialGradient(
-                                                                colors: [
-                                                                  const Color(
-                                                                    0xFFFFF9C4,
-                                                                  ).withOpacity(
-                                                                    0.95,
-                                                                  ),
-                                                                  const Color(
-                                                                    0xFFFFF59D,
-                                                                  ).withOpacity(
-                                                                    0.9,
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                          boxShadow: [
-                                                            BoxShadow(
-                                                              color:
-                                                                  const Color(
-                                                                    0xFFFFF59D,
-                                                                  ).withOpacity(
-                                                                    0.5,
-                                                                  ),
-                                                              blurRadius: 30,
-                                                              spreadRadius: 10,
+                                                        child: Container(
+                                                          width:
+                                                              finalSize * 1.2,
+                                                          height:
+                                                              finalSize * 1.2,
+                                                          decoration: BoxDecoration(
+                                                            shape:
+                                                                BoxShape.circle,
+                                                            gradient: RadialGradient(
+                                                              colors: [
+                                                                const Color(
+                                                                  0xFFFFF9C4,
+                                                                ).withOpacity(
+                                                                  0.95,
+                                                                ),
+                                                                const Color(
+                                                                  0xFFFFF59D,
+                                                                ).withOpacity(
+                                                                  0.9,
+                                                                ),
+                                                              ],
                                                             ),
-                                                          ],
-                                                        ),
-                                                        child: Center(
-                                                          child: Column(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .center,
-                                                            children: [
-                                                              FadeTransition(
-                                                                opacity:
-                                                                    Tween<double>(
-                                                                      begin:
-                                                                          0.0,
-                                                                      end: 1.0,
-                                                                    ).animate(
-                                                                      CurvedAnimation(
-                                                                        parent:
-                                                                            _revealController,
-                                                                        curve: const Interval(
-                                                                          0.0,
-                                                                          0.5,
-                                                                          curve:
-                                                                              Curves.easeIn,
-                                                                        ),
-                                                                      ),
+                                                            boxShadow: [
+                                                              BoxShadow(
+                                                                color:
+                                                                    const Color(
+                                                                      0xFFFFF59D,
+                                                                    ).withOpacity(
+                                                                      0.5,
                                                                     ),
-                                                                child: Text(
-                                                                  'SELECTED',
-                                                                  style: TextStyle(
-                                                                    color: Colors
-                                                                        .black87,
-                                                                    fontSize:
-                                                                        finalSize *
-                                                                        0.08,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .bold,
-                                                                    letterSpacing:
-                                                                        3,
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                              const SizedBox(
-                                                                height: 12,
-                                                              ),
-                                                              ScaleTransition(
-                                                                scale:
-                                                                    Tween<double>(
-                                                                      begin:
-                                                                          0.0,
-                                                                      end: 1.0,
-                                                                    ).animate(
-                                                                      CurvedAnimation(
-                                                                        parent:
-                                                                            _revealController,
-                                                                        curve: const Interval(
-                                                                          0.2,
-                                                                          0.7,
-                                                                          curve:
-                                                                              Curves.elasticOut,
-                                                                        ),
-                                                                      ),
-                                                                    ),
-                                                                child: Text(
-                                                                  _earnedNumber
-                                                                      .toString(),
-                                                                  style: TextStyle(
-                                                                    color: Colors
-                                                                        .black,
-                                                                    fontSize:
-                                                                        finalSize *
-                                                                        0.25,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .bold,
-                                                                    shadows: [
-                                                                      Shadow(
-                                                                        color: Colors
-                                                                            .black
-                                                                            .withOpacity(
-                                                                              0.2,
-                                                                            ),
-                                                                        blurRadius:
-                                                                            10,
-                                                                      ),
-                                                                    ],
-                                                                  ),
-                                                                ),
+                                                                blurRadius: 30,
+                                                                spreadRadius:
+                                                                    10,
                                                               ),
                                                             ],
                                                           ),
+                                                          child: Center(
+                                                            child: Column(
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .center,
+                                                              children: [
+                                                                FadeTransition(
+                                                                  opacity:
+                                                                      Tween<double>(
+                                                                        begin:
+                                                                            0.0,
+                                                                        end:
+                                                                            1.0,
+                                                                      ).animate(
+                                                                        CurvedAnimation(
+                                                                          parent:
+                                                                              _revealController,
+                                                                          curve: const Interval(
+                                                                            0.0,
+                                                                            0.5,
+                                                                            curve:
+                                                                                Curves.easeIn,
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                  child: Text(
+                                                                    'SELECTED',
+                                                                    style: TextStyle(
+                                                                      color: Colors
+                                                                          .black87,
+                                                                      fontSize:
+                                                                          finalSize *
+                                                                          0.08,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                      letterSpacing:
+                                                                          3,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                                const SizedBox(
+                                                                  height: 12,
+                                                                ),
+                                                                ScaleTransition(
+                                                                  scale:
+                                                                      Tween<double>(
+                                                                        begin:
+                                                                            0.0,
+                                                                        end:
+                                                                            1.0,
+                                                                      ).animate(
+                                                                        CurvedAnimation(
+                                                                          parent:
+                                                                              _revealController,
+                                                                          curve: const Interval(
+                                                                            0.2,
+                                                                            0.7,
+                                                                            curve:
+                                                                                Curves.elasticOut,
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                  child: Text(
+                                                                    _earnedNumber
+                                                                        .toString(),
+                                                                    style: TextStyle(
+                                                                      color: Colors
+                                                                          .black,
+                                                                      fontSize:
+                                                                          finalSize *
+                                                                          0.25,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                      shadows: [
+                                                                        Shadow(
+                                                                          color: Colors.black.withOpacity(
+                                                                            0.2,
+                                                                          ),
+                                                                          blurRadius:
+                                                                              10,
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ),
                                                         ),
                                                       ),
-                                                    ),
-                                                  );
-                                                },
-                                              ),
-                                          ],
+                                                    );
+                                                  },
+                                                ),
+                                            ],
+                                          ),
                                         ),
-                                      ),
-                                    );
-                                  },
+                                      );
+                                    },
+                                  ),
                                 ),
-                              ),
-                            ],
-                          );
-                        } else {
-                          // Portrait: Users on top, Spinner on bottom
-                          return Column(
-                            children: [
-                              // Users section - top half
-                              Expanded(
-                                flex: 1,
-                                child: LayoutBuilder(
-                                  builder: (context, constraints) {
-                                    final availableHeight =
-                                        constraints.maxHeight;
-                                    final availableWidth = constraints.maxWidth;
+                              ],
+                            );
+                          } else {
+                            // Portrait: Users on top, Spinner on bottom
+                            return Column(
+                              children: [
+                                // Users section - top half
+                                Expanded(
+                                  flex: 1,
+                                  child: LayoutBuilder(
+                                    builder: (context, constraints) {
+                                      final availableHeight =
+                                          constraints.maxHeight;
+                                      final availableWidth =
+                                          constraints.maxWidth;
 
-                                    // Detect if mobile (smaller screen)
-                                    final isMobile = availableWidth < 600;
+                                      // Detect if mobile (smaller screen)
+                                      final isMobile = availableWidth < 600;
 
-                                    // Calculate dynamic sizes (no turn text) - responsive for mobile
-                                    final padding = isMobile ? 8.0 : 16.0;
-                                    final userNamePadding = isMobile
-                                        ? 6.0
-                                        : 8.0;
-                                    final userNameHeight =
-                                        (isMobile ? 40.0 : 50.0) +
-                                        (userNamePadding *
-                                            2); // Include padding
-                                    final userNameSpacing = isMobile
-                                        ? 4.0
-                                        : 8.0;
+                                      // Calculate dynamic sizes (no turn text) - responsive for mobile
+                                      final padding = isMobile ? 8.0 : 16.0;
+                                      final userNamePadding = isMobile
+                                          ? 6.0
+                                          : 8.0;
+                                      final userNameHeight =
+                                          (isMobile ? 40.0 : 50.0) +
+                                          (userNamePadding *
+                                              2); // Include padding
+                                      final userNameSpacing = isMobile
+                                          ? 4.0
+                                          : 8.0;
 
-                                    // Reserve space for username and spacing, then calculate rounds area
-                                    final reservedSpace =
-                                        userNameHeight +
-                                        userNameSpacing +
-                                        (padding * 2);
-                                    final roundsAreaHeight = math.max(
-                                      0,
-                                      availableHeight - reservedSpace,
-                                    );
+                                      // Reserve space for username and spacing, then calculate rounds area
+                                      final reservedSpace =
+                                          userNameHeight +
+                                          userNameSpacing +
+                                          (padding * 2);
+                                      final roundsAreaHeight = math.max(
+                                        0,
+                                        availableHeight - reservedSpace,
+                                      );
 
-                                    // Calculate tile size based on available space to fit all rounds
-                                    final tileSpacing = isMobile ? 1.0 : 2.0;
-                                    final totalSpacing =
-                                        (widget.rounds - 1) * tileSpacing * 2;
-                                    final calculatedTileSize =
-                                        roundsAreaHeight > 0
-                                        ? (roundsAreaHeight - totalSpacing) /
-                                              widget.rounds
-                                        : 0.0;
-                                    final minTileSize = isMobile ? 25.0 : 30.0;
-                                    final maxTileSize = isMobile ? 40.0 : 50.0;
-                                    final tileSize = math.max(
-                                      minTileSize,
-                                      math.min(maxTileSize, calculatedTileSize),
-                                    );
-                                    final tileFontSize = math.max(
-                                      10.0,
-                                      math.min(18.0, tileSize * 0.36),
-                                    );
+                                      // Calculate tile size based on available space to fit all rounds
+                                      final tileSpacing = isMobile ? 1.0 : 2.0;
+                                      final totalSpacing =
+                                          (widget.rounds - 1) * tileSpacing * 2;
+                                      final calculatedTileSize =
+                                          roundsAreaHeight > 0
+                                          ? (roundsAreaHeight - totalSpacing) /
+                                                widget.rounds
+                                          : 0.0;
+                                      final minTileSize = isMobile
+                                          ? 25.0
+                                          : 30.0;
+                                      final maxTileSize = isMobile
+                                          ? 40.0
+                                          : 50.0;
+                                      final tileSize = math.max(
+                                        minTileSize,
+                                        math.min(
+                                          maxTileSize,
+                                          calculatedTileSize,
+                                        ),
+                                      );
+                                      final tileFontSize = math.max(
+                                        10.0,
+                                        math.min(18.0, tileSize * 0.36),
+                                      );
 
-                                    // Calculate column width based on available width - more compact on mobile
-                                    // Adjust margins based on number of users to prevent overflow
-                                    final numUsers = _displayUsers.length;
-                                    final horizontalMargin = isMobile
-                                        ? (numUsers > 5 ? 2.0 : 4.0)
-                                        : (numUsers > 5 ? 4.0 : 8.0);
-                                    final totalHorizontalMargin =
-                                        (numUsers - 1) * horizontalMargin * 2;
-                                    final totalPadding = padding * 2;
-                                    final calculatedColumnWidth =
-                                        (availableWidth -
-                                            totalPadding -
-                                            totalHorizontalMargin) /
-                                        numUsers;
-                                    final minColumnWidth = isMobile
-                                        ? (numUsers > 5 ? 35.0 : 45.0)
-                                        : (numUsers > 5 ? 50.0 : 60.0);
-                                    final maxColumnWidth = isMobile
-                                        ? (numUsers > 5 ? 55.0 : 70.0)
-                                        : (numUsers > 5 ? 70.0 : 80.0);
-                                    final columnWidth = math.max(
-                                      minColumnWidth,
-                                      math.min(
-                                        maxColumnWidth,
-                                        calculatedColumnWidth,
-                                      ),
-                                    );
+                                      // Calculate column width based on available width - more compact on mobile
+                                      // Adjust margins based on number of users to prevent overflow
+                                      final numUsers = _displayUsers.length;
+                                      final horizontalMargin = isMobile
+                                          ? (numUsers > 5 ? 2.0 : 4.0)
+                                          : (numUsers > 5 ? 4.0 : 8.0);
+                                      final totalHorizontalMargin =
+                                          (numUsers - 1) * horizontalMargin * 2;
+                                      final totalPadding = padding * 2;
+                                      final calculatedColumnWidth =
+                                          (availableWidth -
+                                              totalPadding -
+                                              totalHorizontalMargin) /
+                                          numUsers;
+                                      final minColumnWidth = isMobile
+                                          ? (numUsers > 5 ? 35.0 : 45.0)
+                                          : (numUsers > 5 ? 50.0 : 60.0);
+                                      final maxColumnWidth = isMobile
+                                          ? (numUsers > 5 ? 55.0 : 70.0)
+                                          : (numUsers > 5 ? 70.0 : 80.0);
+                                      final columnWidth = math.max(
+                                        minColumnWidth,
+                                        math.min(
+                                          maxColumnWidth,
+                                          calculatedColumnWidth,
+                                        ),
+                                      );
 
-                                    return Padding(
-                                      padding: EdgeInsets.all(padding),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          // Users list with rounds
-                                          Expanded(
-                                            child: SingleChildScrollView(
-                                              scrollDirection: Axis.horizontal,
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  // Users with their rounds - side by side
-                                                  ...List.generate(_displayUsers.length, (
-                                                    userIndex,
-                                                  ) {
-                                                    final user =
-                                                        _displayUsers[userIndex];
-                                                    final isCurrentUser =
-                                                        userIndex ==
-                                                        _currentUserIndex;
-                                                    final isWinner = _winners
-                                                        .contains(userIndex);
-                                                    final isLoser = _losers
-                                                        .contains(userIndex);
+                                      return Padding(
+                                        padding: EdgeInsets.all(padding),
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            // Users list with rounds
+                                            Expanded(
+                                              child: SingleChildScrollView(
+                                                scrollDirection:
+                                                    Axis.horizontal,
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: [
+                                                    // Users with their rounds - side by side
+                                                    ...List.generate(_displayUsers.length, (
+                                                      userIndex,
+                                                    ) {
+                                                      final user =
+                                                          _displayUsers[userIndex];
+                                                      final isCurrentUser =
+                                                          userIndex ==
+                                                          _currentUserIndex;
+                                                      final isWinner = _winners
+                                                          .contains(userIndex);
+                                                      final isLoser = _losers
+                                                          .contains(userIndex);
 
-                                                    return Opacity(
-                                                      opacity:
-                                                          (isWinner || isLoser)
-                                                          ? 0.5
-                                                          : 1.0,
-                                                      child: Container(
-                                                        width: columnWidth,
-                                                        margin: EdgeInsets.only(
-                                                          left: userIndex == 0
-                                                              ? 0
-                                                              : horizontalMargin,
-                                                          right:
-                                                              userIndex ==
-                                                                  _displayUsers
-                                                                          .length -
-                                                                      1
-                                                              ? 0
-                                                              : horizontalMargin,
-                                                        ),
-                                                        child: Column(
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .center,
-                                                          mainAxisSize:
-                                                              MainAxisSize.min,
-                                                          children: [
-                                                            // Rounds display vertically - use Flexible to prevent overflow
-                                                            Flexible(
-                                                              child: SingleChildScrollView(
-                                                                physics:
-                                                                    const NeverScrollableScrollPhysics(),
-                                                                child: Column(
-                                                                  mainAxisSize:
-                                                                      MainAxisSize
-                                                                          .min,
-                                                                  children: List.generate(
-                                                                    widget
-                                                                        .rounds,
-                                                                    (index) {
-                                                                      final roundNumber =
-                                                                          index +
-                                                                          1;
-                                                                      final isDisabled =
-                                                                          _disabledRounds[userIndex].contains(
-                                                                            roundNumber,
-                                                                          );
-                                                                      final isHighlighting =
-                                                                          _isHighlighting &&
-                                                                          userIndex ==
-                                                                              _currentUserIndex &&
-                                                                          _finalSelectedRound ==
-                                                                              roundNumber;
-                                                                      final isHighlightedAndDisabled =
-                                                                          isHighlighting &&
-                                                                          isDisabled;
+                                                      return Opacity(
+                                                        opacity:
+                                                            (isWinner ||
+                                                                isLoser)
+                                                            ? 0.5
+                                                            : 1.0,
+                                                        child: Container(
+                                                          width: columnWidth,
+                                                          margin: EdgeInsets.only(
+                                                            left: userIndex == 0
+                                                                ? 0
+                                                                : horizontalMargin,
+                                                            right:
+                                                                userIndex ==
+                                                                    _displayUsers
+                                                                            .length -
+                                                                        1
+                                                                ? 0
+                                                                : horizontalMargin,
+                                                          ),
+                                                          child: Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .center,
+                                                            mainAxisSize:
+                                                                MainAxisSize
+                                                                    .min,
+                                                            children: [
+                                                              // Rounds display vertically - use Flexible to prevent overflow
+                                                              Flexible(
+                                                                child: SingleChildScrollView(
+                                                                  physics:
+                                                                      const NeverScrollableScrollPhysics(),
+                                                                  child: Column(
+                                                                    mainAxisSize:
+                                                                        MainAxisSize
+                                                                            .min,
+                                                                    children: List.generate(
+                                                                      widget
+                                                                          .rounds,
+                                                                      (index) {
+                                                                        final roundNumber =
+                                                                            index +
+                                                                            1;
+                                                                        final isDisabled =
+                                                                            _disabledRounds[userIndex].contains(
+                                                                              roundNumber,
+                                                                            );
+                                                                        final isHighlighting =
+                                                                            _isHighlighting &&
+                                                                            userIndex ==
+                                                                                _currentUserIndex &&
+                                                                            _finalSelectedRound ==
+                                                                                roundNumber;
+                                                                        final isHighlightedAndDisabled =
+                                                                            isHighlighting &&
+                                                                            isDisabled;
 
-                                                                      return AnimatedBuilder(
-                                                                        animation:
-                                                                            _highlightAnimation,
-                                                                        builder:
-                                                                            (
-                                                                              context,
-                                                                              child,
-                                                                            ) {
-                                                                              final highlightScale = isHighlighting
-                                                                                  ? 1.0 +
-                                                                                        (_highlightAnimation.value *
-                                                                                            0.3)
-                                                                                  : 1.0;
-                                                                              final highlightOpacity = isHighlighting
-                                                                                  ? 0.5 +
-                                                                                        (_highlightAnimation.value *
-                                                                                            0.5)
-                                                                                  : 1.0;
-                                                                              final highlightColor = isHighlighting
-                                                                                  ? isHighlightedAndDisabled
-                                                                                        ? Color.lerp(
-                                                                                            Colors.red,
-                                                                                            Colors.redAccent,
-                                                                                            _highlightAnimation.value,
-                                                                                          )!
-                                                                                        : Color.lerp(
-                                                                                            const Color(
-                                                                                              0xFF00B894,
-                                                                                            ),
-                                                                                            const Color(
-                                                                                              0xFF00B894,
-                                                                                            ).withOpacity(
-                                                                                              0.8,
-                                                                                            ),
-                                                                                            _highlightAnimation.value,
-                                                                                          )!
-                                                                                  : null;
+                                                                        return AnimatedBuilder(
+                                                                          animation:
+                                                                              _highlightAnimation,
+                                                                          builder:
+                                                                              (
+                                                                                context,
+                                                                                child,
+                                                                              ) {
+                                                                                final highlightScale = isHighlighting
+                                                                                    ? 1.0 +
+                                                                                          (_highlightAnimation.value *
+                                                                                              0.3)
+                                                                                    : 1.0;
+                                                                                final highlightOpacity = isHighlighting
+                                                                                    ? 0.5 +
+                                                                                          (_highlightAnimation.value *
+                                                                                              0.5)
+                                                                                    : 1.0;
+                                                                                final highlightColor = isHighlighting
+                                                                                    ? isHighlightedAndDisabled
+                                                                                          ? Color.lerp(
+                                                                                              Colors.red,
+                                                                                              Colors.redAccent,
+                                                                                              _highlightAnimation.value,
+                                                                                            )!
+                                                                                          : Color.lerp(
+                                                                                              const Color(
+                                                                                                0xFF00B894,
+                                                                                              ),
+                                                                                              const Color(
+                                                                                                0xFF00B894,
+                                                                                              ).withOpacity(
+                                                                                                0.8,
+                                                                                              ),
+                                                                                              _highlightAnimation.value,
+                                                                                            )!
+                                                                                    : null;
 
-                                                                              return Transform.scale(
-                                                                                scale: highlightScale,
-                                                                                child: Container(
-                                                                                  margin: EdgeInsets.symmetric(
-                                                                                    vertical: tileSpacing,
-                                                                                  ),
-                                                                                  width: tileSize,
-                                                                                  height: tileSize,
-                                                                                  decoration: BoxDecoration(
-                                                                                    color: isHighlighting
-                                                                                        ? highlightColor
-                                                                                        : isDisabled
-                                                                                        ? Colors.red.withOpacity(
-                                                                                            0.7,
-                                                                                          )
-                                                                                        : const Color(
-                                                                                            0xFF00B894,
-                                                                                          ).withOpacity(
-                                                                                            0.7,
-                                                                                          ),
-                                                                                    borderRadius: BorderRadius.circular(
-                                                                                      8,
+                                                                                return Transform.scale(
+                                                                                  scale: highlightScale,
+                                                                                  child: Container(
+                                                                                    margin: EdgeInsets.symmetric(
+                                                                                      vertical: tileSpacing,
                                                                                     ),
-                                                                                    border: Border.all(
+                                                                                    width: tileSize,
+                                                                                    height: tileSize,
+                                                                                    decoration: BoxDecoration(
                                                                                       color: isHighlighting
-                                                                                          ? Colors.white
+                                                                                          ? highlightColor
                                                                                           : isDisabled
-                                                                                          ? Colors.red
+                                                                                          ? Colors.red.withOpacity(
+                                                                                              0.7,
+                                                                                            )
                                                                                           : const Color(
                                                                                               0xFF00B894,
+                                                                                            ).withOpacity(
+                                                                                              0.7,
                                                                                             ),
-                                                                                      width: isHighlighting
-                                                                                          ? 3
-                                                                                          : 2,
-                                                                                    ),
-                                                                                    boxShadow: isHighlighting
-                                                                                        ? [
-                                                                                            BoxShadow(
-                                                                                              color: highlightColor!.withOpacity(
-                                                                                                highlightOpacity,
-                                                                                              ),
-                                                                                              blurRadius: 15,
-                                                                                              spreadRadius: 2,
-                                                                                            ),
-                                                                                          ]
-                                                                                        : null,
-                                                                                  ),
-                                                                                  child: Center(
-                                                                                    child: Text(
-                                                                                      '$roundNumber',
-                                                                                      style: TextStyle(
+                                                                                      shape: BoxShape.circle,
+                                                                                      border: Border.all(
                                                                                         color: isHighlighting
                                                                                             ? Colors.white
                                                                                             : isDisabled
-                                                                                            ? Colors.white
-                                                                                            : Colors.white,
-                                                                                        fontSize: tileFontSize,
-                                                                                        fontWeight: FontWeight.bold,
-                                                                                        decoration:
-                                                                                            isDisabled &&
-                                                                                                !isHighlighting
-                                                                                            ? TextDecoration.lineThrough
-                                                                                            : null,
+                                                                                            ? Colors.red
+                                                                                            : const Color(
+                                                                                                0xFF00B894,
+                                                                                              ),
+                                                                                        width: isHighlighting
+                                                                                            ? 3
+                                                                                            : 2,
+                                                                                      ),
+                                                                                      boxShadow: isHighlighting
+                                                                                          ? [
+                                                                                              BoxShadow(
+                                                                                                color: highlightColor!.withOpacity(
+                                                                                                  highlightOpacity,
+                                                                                                ),
+                                                                                                blurRadius: 15,
+                                                                                                spreadRadius: 2,
+                                                                                              ),
+                                                                                            ]
+                                                                                          : [
+                                                                                              BoxShadow(
+                                                                                                color: Colors.black.withOpacity(
+                                                                                                  0.15,
+                                                                                                ),
+                                                                                                blurRadius: 12,
+                                                                                                spreadRadius: 1,
+                                                                                                offset: const Offset(
+                                                                                                  0,
+                                                                                                  4,
+                                                                                                ),
+                                                                                              ),
+                                                                                            ],
+                                                                                    ),
+                                                                                    child: Center(
+                                                                                      child: Text(
+                                                                                        '$roundNumber',
+                                                                                        style: TextStyle(
+                                                                                          color: isHighlighting
+                                                                                              ? Colors.white
+                                                                                              : isDisabled
+                                                                                              ? Colors.white
+                                                                                              : Colors.white,
+                                                                                          fontSize: tileFontSize,
+                                                                                          fontWeight: FontWeight.bold,
+                                                                                          decoration:
+                                                                                              isDisabled &&
+                                                                                                  !isHighlighting
+                                                                                              ? TextDecoration.lineThrough
+                                                                                              : null,
+                                                                                        ),
                                                                                       ),
                                                                                     ),
                                                                                   ),
-                                                                                ),
-                                                                              );
-                                                                            },
-                                                                      );
-                                                                    },
+                                                                                );
+                                                                              },
+                                                                        );
+                                                                      },
+                                                                    ),
                                                                   ),
                                                                 ),
                                                               ),
-                                                            ),
-                                                            SizedBox(
-                                                              height:
-                                                                  userNameSpacing,
-                                                            ),
-                                                            // User name
-                                                            _buildGlossyCard(
-                                                              borderRadius: 12,
-                                                              backgroundColor: isWinner
-                                                                  ? const Color(0xFF2D2D44).withOpacity(0.6)
-                                                                  : (isLoser
-                                                                      ? const Color(0xFF2D2D44).withOpacity(0.6)
-                                                                      : (isCurrentUser
-                                                                          ? const Color(0xFF6366F1).withOpacity(0.7)
-                                                                          : Colors.white.withOpacity(0.3))),
-                                                              border: isCurrentUser && !isWinner && !isLoser
-                                                                  ? Border.all(
-                                                                      color: Colors.white,
-                                                                      width: 2,
-                                                                    )
-                                                                  : (isWinner
-                                                                      ? Border.all(
-                                                                          color: const Color(0xFF4CAF50).withOpacity(0.8),
-                                                                          width: 1.5,
-                                                                        )
-                                                                      : (isLoser
+                                                              SizedBox(
+                                                                height:
+                                                                    userNameSpacing,
+                                                              ),
+                                                              // User name
+                                                              _buildGlossyCard(
+                                                                borderRadius:
+                                                                    12,
+                                                                backgroundColor:
+                                                                    isWinner
+                                                                    ? const Color(
+                                                                        0xFF2D2D44,
+                                                                      ).withOpacity(
+                                                                        0.6,
+                                                                      )
+                                                                    : (isLoser
+                                                                          ? const Color(
+                                                                              0xFF2D2D44,
+                                                                            ).withOpacity(
+                                                                              0.6,
+                                                                            )
+                                                                          : (isCurrentUser
+                                                                                ? const Color(
+                                                                                    0xFF6366F1,
+                                                                                  ).withOpacity(
+                                                                                    0.7,
+                                                                                  )
+                                                                                : Colors.white.withOpacity(0.3))),
+                                                                border:
+                                                                    isCurrentUser &&
+                                                                        !isWinner &&
+                                                                        !isLoser
+                                                                    ? Border.all(
+                                                                        color: Colors
+                                                                            .white,
+                                                                        width:
+                                                                            2,
+                                                                      )
+                                                                    : (isWinner
                                                                           ? Border.all(
-                                                                              color: const Color(0xFFEF5350).withOpacity(0.8),
+                                                                              color:
+                                                                                  const Color(
+                                                                                    0xFF4CAF50,
+                                                                                  ).withOpacity(
+                                                                                    0.8,
+                                                                                  ),
                                                                               width: 1.5,
                                                                             )
-                                                                          : Border.all(
-                                                                              color: Colors.white.withOpacity(0.6),
-                                                                              width: 1,
-                                                                            ))),
-                                                              child: Container(
-                                                                constraints:
-                                                                    BoxConstraints(
-                                                                      maxHeight:
-                                                                          userNameHeight -
-                                                                          (userNamePadding *
-                                                                              2),
-                                                                    ),
-                                                                padding: EdgeInsets.symmetric(
-                                                                  horizontal:
-                                                                      userNamePadding,
-                                                                  vertical:
-                                                                      userNamePadding,
-                                                                ),
-                                                                child: Row(
-                                                                mainAxisSize:
-                                                                    MainAxisSize
-                                                                        .min,
-                                                                children: [
-                                                                  Expanded(
-                                                                    child: FittedBox(
-                                                                      fit: BoxFit
-                                                                          .scaleDown,
-                                                                      child: Text(
-                                                                        user,
-                                                                        style: TextStyle(
-                                                                          color:
-                                                                              (isWinner ||
-                                                                                  isLoser)
-                                                                              ? const Color(0xFF1F2937)
-                                                                              : const Color(0xFF111827),
-                                                                          fontSize:
-                                                                              isMobile
-                                                                              ? math.max(
-                                                                                  10.0,
-                                                                                  math.min(
-                                                                                    14.0,
-                                                                                    columnWidth *
-                                                                                        0.2,
-                                                                                  ),
-                                                                                )
-                                                                              : math.max(
-                                                                                  12.0,
-                                                                                  math.min(
-                                                                                    16.0,
-                                                                                    columnWidth *
-                                                                                        0.2,
-                                                                                  ),
-                                                                                ),
-                                                                          fontWeight:
-                                                                              FontWeight.bold,
-                                                                        ),
-                                                                        textAlign:
-                                                                            TextAlign.center,
-                                                                        maxLines:
-                                                                            1,
-                                                                      ),
-                                                                    ),
+                                                                          : (isLoser
+                                                                                ? Border.all(
+                                                                                    color:
+                                                                                        const Color(
+                                                                                          0xFFEF5350,
+                                                                                        ).withOpacity(
+                                                                                          0.8,
+                                                                                        ),
+                                                                                    width: 1.5,
+                                                                                  )
+                                                                                : Border.all(
+                                                                                    color: Colors.white.withOpacity(
+                                                                                      0.6,
+                                                                                    ),
+                                                                                    width: 1,
+                                                                                  ))),
+                                                                child: Container(
+                                                                  constraints: BoxConstraints(
+                                                                    maxHeight:
+                                                                        userNameHeight -
+                                                                        (userNamePadding *
+                                                                            2),
                                                                   ),
-                                                                  if (isLoser)
-                                                                    Padding(
-                                                                      padding: EdgeInsets.only(
-                                                                        left:
-                                                                            isMobile
-                                                                            ? 3.0
-                                                                            : 4.0,
-                                                                      ),
-                                                                      child: Icon(
-                                                                        Icons
-                                                                            .cancel,
-                                                                        color: const Color(
-                                                                          0xFFEF5350,
+                                                                  padding: EdgeInsets.symmetric(
+                                                                    horizontal:
+                                                                        userNamePadding,
+                                                                    vertical:
+                                                                        userNamePadding,
+                                                                  ),
+                                                                  child: Row(
+                                                                    mainAxisSize:
+                                                                        MainAxisSize
+                                                                            .min,
+                                                                    children: [
+                                                                      Expanded(
+                                                                        child: FittedBox(
+                                                                          fit: BoxFit
+                                                                              .scaleDown,
+                                                                          child: Text(
+                                                                            user,
+                                                                            style: TextStyle(
+                                                                              color:
+                                                                                  (isWinner ||
+                                                                                      isLoser)
+                                                                                  ? const Color(
+                                                                                      0xFF1F2937,
+                                                                                    )
+                                                                                  : const Color(
+                                                                                      0xFF111827,
+                                                                                    ),
+                                                                              fontSize: isMobile
+                                                                                  ? math.max(
+                                                                                      10.0,
+                                                                                      math.min(
+                                                                                        14.0,
+                                                                                        columnWidth *
+                                                                                            0.2,
+                                                                                      ),
+                                                                                    )
+                                                                                  : math.max(
+                                                                                      12.0,
+                                                                                      math.min(
+                                                                                        16.0,
+                                                                                        columnWidth *
+                                                                                            0.2,
+                                                                                      ),
+                                                                                    ),
+                                                                              fontWeight: FontWeight.bold,
+                                                                            ),
+                                                                            textAlign:
+                                                                                TextAlign.center,
+                                                                            maxLines:
+                                                                                1,
+                                                                          ),
                                                                         ),
-                                                                        size:
-                                                                            isMobile
-                                                                            ? 14.0
-                                                                            : 16.0,
                                                                       ),
-                                                                    ),
-                                                                  if (!isWinner &&
-                                                                      !isLoser &&
-                                                                      _disabledRounds[userIndex]
-                                                                              .length ==
-                                                                          widget
-                                                                              .rounds)
-                                                                    Padding(
-                                                                      padding: EdgeInsets.only(
-                                                                        left:
-                                                                            isMobile
-                                                                            ? 3.0
-                                                                            : 4.0,
-                                                                      ),
-                                                                      child: Icon(
-                                                                        Icons
-                                                                            .emoji_events,
-                                                                        color: Colors
-                                                                            .amber,
-                                                                        size:
-                                                                            isMobile
-                                                                            ? 14.0
-                                                                            : 16.0,
-                                                                      ),
-                                                                    ),
-                                                                  ],
+                                                                      if (isLoser)
+                                                                        Padding(
+                                                                          padding: EdgeInsets.only(
+                                                                            left:
+                                                                                isMobile
+                                                                                ? 3.0
+                                                                                : 4.0,
+                                                                          ),
+                                                                          child: Icon(
+                                                                            Icons.cancel,
+                                                                            color: const Color(
+                                                                              0xFFEF5350,
+                                                                            ),
+                                                                            size:
+                                                                                isMobile
+                                                                                ? 14.0
+                                                                                : 16.0,
+                                                                          ),
+                                                                        ),
+                                                                      if (!isWinner &&
+                                                                          !isLoser &&
+                                                                          _disabledRounds[userIndex].length ==
+                                                                              widget.rounds)
+                                                                        Padding(
+                                                                          padding: EdgeInsets.only(
+                                                                            left:
+                                                                                isMobile
+                                                                                ? 3.0
+                                                                                : 4.0,
+                                                                          ),
+                                                                          child: Icon(
+                                                                            Icons.emoji_events,
+                                                                            color:
+                                                                                Colors.amber,
+                                                                            size:
+                                                                                isMobile
+                                                                                ? 14.0
+                                                                                : 16.0,
+                                                                          ),
+                                                                        ),
+                                                                    ],
+                                                                  ),
                                                                 ),
                                                               ),
-                                                            ),
-                                                          ],
+                                                            ],
+                                                          ),
                                                         ),
-                                                      ),
-                                                    );
-                                                  }),
-                                                ],
+                                                      );
+                                                    }),
+                                                  ],
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                  },
+                                          ],
+                                        ),
+                                      );
+                                    },
+                                  ),
                                 ),
-                              ),
-                              // Spinner section - bottom half
-                              Expanded(
-                                flex: 1,
-                                child: LayoutBuilder(
-                                  builder: (context, spinnerConstraints) {
-                                    final spinnerHeight =
-                                        spinnerConstraints.maxHeight;
-                                    final spinnerWidth =
-                                        spinnerConstraints.maxWidth;
-                                    final spinnerSize = math.min(
-                                      spinnerHeight * 0.8,
-                                      spinnerWidth * 0.8,
-                                    );
-                                    final finalSize = math.max(
-                                      200.0,
-                                      spinnerSize,
-                                    );
+                                // Spinner section - bottom half
+                                Expanded(
+                                  flex: 1,
+                                  child: LayoutBuilder(
+                                    builder: (context, spinnerConstraints) {
+                                      final spinnerHeight =
+                                          spinnerConstraints.maxHeight;
+                                      final spinnerWidth =
+                                          spinnerConstraints.maxWidth;
+                                      final spinnerSize = math.min(
+                                        spinnerHeight * 0.8,
+                                        spinnerWidth * 0.8,
+                                      );
+                                      final finalSize = math.max(
+                                        200.0,
+                                        spinnerSize,
+                                      );
 
-                                    final buttonSize = finalSize * 0.25;
+                                      final buttonSize = finalSize * 0.25;
 
-                                    return Center(
-                                      child: Container(
-                                        height: finalSize,
-                                        width: finalSize,
-                                        child: Stack(
-                                          alignment: Alignment.center,
-                                          children: [
-                                            // Wheel
-                                            Transform.rotate(
-                                              angle: _rotation * math.pi / 180,
-                                              child: CustomPaint(
-                                                size: Size(
-                                                  finalSize,
-                                                  finalSize,
-                                                ),
-                                                painter: WhoFirstWheelPainter(
-                                                  segments: _segments,
-                                                  getSegmentColor:
-                                                      _getSegmentColor,
+                                      return Center(
+                                        child: Container(
+                                          height: finalSize,
+                                          width: finalSize,
+                                          child: Stack(
+                                            alignment: Alignment.center,
+                                            children: [
+                                              // Wheel
+                                              Transform.rotate(
+                                                angle:
+                                                    _rotation * math.pi / 180,
+                                                child: CustomPaint(
+                                                  size: Size(
+                                                    finalSize,
+                                                    finalSize,
+                                                  ),
+                                                  painter: WhoFirstWheelPainter(
+                                                    segments: _segments,
+                                                    getSegmentColor:
+                                                        _getSegmentColor,
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                            // Pointer
-                                            // Center Spin Button
-                                            GestureDetector(
-                                              onTap:
-                                                  (_isRevealed ||
-                                                      _isSpinning ||
-                                                      _isWaitingForNextTurn ||
-                                                      _isHighlighting ||
-                                                      _winner != null ||
-                                                      _winners.contains(
-                                                        _currentUserIndex,
-                                                      ) ||
-                                                      _losers.contains(
-                                                        _currentUserIndex,
-                                                      ) ||
-                                                      (_isSinglePlayer &&
-                                                          _displayUsers[_currentUserIndex] ==
-                                                              'Computer'))
-                                                  ? null
-                                                  : _spin,
-                                              child: Opacity(
-                                                opacity:
+                                              // Pointer
+                                              // Center Spin Button
+                                              GestureDetector(
+                                                onTap:
                                                     (_isRevealed ||
                                                         _isSpinning ||
                                                         _isWaitingForNextTurn ||
@@ -1987,184 +2075,205 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
                                                         (_isSinglePlayer &&
                                                             _displayUsers[_currentUserIndex] ==
                                                                 'Computer'))
-                                                    ? 0.5
-                                                    : 1.0,
-                                                child: Image.asset(
-                                                  'assets/images/spin_logo.png',
-                                                  width: buttonSize,
-                                                  height: buttonSize,
-                                                  fit: BoxFit.contain,
+                                                    ? null
+                                                    : _spin,
+                                                child: Opacity(
+                                                  opacity:
+                                                      (_isRevealed ||
+                                                          _isSpinning ||
+                                                          _isWaitingForNextTurn ||
+                                                          _isHighlighting ||
+                                                          _winner != null ||
+                                                          _winners.contains(
+                                                            _currentUserIndex,
+                                                          ) ||
+                                                          _losers.contains(
+                                                            _currentUserIndex,
+                                                          ) ||
+                                                          (_isSinglePlayer &&
+                                                              _displayUsers[_currentUserIndex] ==
+                                                                  'Computer'))
+                                                      ? 0.5
+                                                      : 1.0,
+                                                  child: Image.asset(
+                                                    'assets/images/spin_logo.png',
+                                                    width: buttonSize,
+                                                    height: buttonSize,
+                                                    fit: BoxFit.contain,
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                            // Reveal animation overlay
-                                            if (_isRevealed &&
-                                                _earnedNumber != null)
-                                              AnimatedBuilder(
-                                                animation: _revealController,
-                                                builder: (context, child) {
-                                                  return FadeTransition(
-                                                    opacity: _revealController,
-                                                    child: ScaleTransition(
-                                                      scale:
-                                                          Tween<double>(
-                                                            begin: 0.0,
-                                                            end: 1.0,
-                                                          ).animate(
-                                                            CurvedAnimation(
-                                                              parent:
-                                                                  _revealController,
-                                                              curve: Curves
-                                                                  .elasticOut,
+                                              // Reveal animation overlay
+                                              if (_isRevealed &&
+                                                  _earnedNumber != null)
+                                                AnimatedBuilder(
+                                                  animation: _revealController,
+                                                  builder: (context, child) {
+                                                    return FadeTransition(
+                                                      opacity:
+                                                          _revealController,
+                                                      child: ScaleTransition(
+                                                        scale:
+                                                            Tween<double>(
+                                                              begin: 0.0,
+                                                              end: 1.0,
+                                                            ).animate(
+                                                              CurvedAnimation(
+                                                                parent:
+                                                                    _revealController,
+                                                                curve: Curves
+                                                                    .elasticOut,
+                                                              ),
                                                             ),
-                                                          ),
-                                                      child: Container(
-                                                        width: finalSize * 1.2,
-                                                        height: finalSize * 1.2,
-                                                        decoration: BoxDecoration(
-                                                          shape:
-                                                              BoxShape.circle,
-                                                          gradient:
-                                                              RadialGradient(
-                                                                colors: [
-                                                                  const Color(
-                                                                    0xFFFFF9C4,
-                                                                  ).withOpacity(
-                                                                    0.95,
-                                                                  ),
-                                                                  const Color(
-                                                                    0xFFFFF59D,
-                                                                  ).withOpacity(
-                                                                    0.9,
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                          boxShadow: [
-                                                            BoxShadow(
-                                                              color:
-                                                                  const Color(
-                                                                    0xFFFFF59D,
-                                                                  ).withOpacity(
-                                                                    0.5,
-                                                                  ),
-                                                              blurRadius: 30,
-                                                              spreadRadius: 10,
+                                                        child: Container(
+                                                          width:
+                                                              finalSize * 1.2,
+                                                          height:
+                                                              finalSize * 1.2,
+                                                          decoration: BoxDecoration(
+                                                            shape:
+                                                                BoxShape.circle,
+                                                            gradient: RadialGradient(
+                                                              colors: [
+                                                                const Color(
+                                                                  0xFFFFF9C4,
+                                                                ).withOpacity(
+                                                                  0.95,
+                                                                ),
+                                                                const Color(
+                                                                  0xFFFFF59D,
+                                                                ).withOpacity(
+                                                                  0.9,
+                                                                ),
+                                                              ],
                                                             ),
-                                                          ],
-                                                        ),
-                                                        child: Center(
-                                                          child: Column(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .center,
-                                                            children: [
-                                                              FadeTransition(
-                                                                opacity:
-                                                                    Tween<double>(
-                                                                      begin:
-                                                                          0.0,
-                                                                      end: 1.0,
-                                                                    ).animate(
-                                                                      CurvedAnimation(
-                                                                        parent:
-                                                                            _revealController,
-                                                                        curve: const Interval(
-                                                                          0.0,
-                                                                          0.5,
-                                                                          curve:
-                                                                              Curves.easeIn,
-                                                                        ),
-                                                                      ),
+                                                            boxShadow: [
+                                                              BoxShadow(
+                                                                color:
+                                                                    const Color(
+                                                                      0xFFFFF59D,
+                                                                    ).withOpacity(
+                                                                      0.5,
                                                                     ),
-                                                                child: Text(
-                                                                  'SELECTED',
-                                                                  style: TextStyle(
-                                                                    color: Colors
-                                                                        .black87,
-                                                                    fontSize:
-                                                                        finalSize *
-                                                                        0.08,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .bold,
-                                                                    letterSpacing:
-                                                                        3,
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                              const SizedBox(
-                                                                height: 12,
-                                                              ),
-                                                              ScaleTransition(
-                                                                scale:
-                                                                    Tween<double>(
-                                                                      begin:
-                                                                          0.0,
-                                                                      end: 1.0,
-                                                                    ).animate(
-                                                                      CurvedAnimation(
-                                                                        parent:
-                                                                            _revealController,
-                                                                        curve: const Interval(
-                                                                          0.2,
-                                                                          0.7,
-                                                                          curve:
-                                                                              Curves.elasticOut,
-                                                                        ),
-                                                                      ),
-                                                                    ),
-                                                                child: Text(
-                                                                  _earnedNumber
-                                                                      .toString(),
-                                                                  style: TextStyle(
-                                                                    color: Colors
-                                                                        .black,
-                                                                    fontSize:
-                                                                        finalSize *
-                                                                        0.25,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .bold,
-                                                                    shadows: [
-                                                                      Shadow(
-                                                                        color: Colors
-                                                                            .black
-                                                                            .withOpacity(
-                                                                              0.2,
-                                                                            ),
-                                                                        blurRadius:
-                                                                            10,
-                                                                      ),
-                                                                    ],
-                                                                  ),
-                                                                ),
+                                                                blurRadius: 30,
+                                                                spreadRadius:
+                                                                    10,
                                                               ),
                                                             ],
                                                           ),
+                                                          child: Center(
+                                                            child: Column(
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .center,
+                                                              children: [
+                                                                FadeTransition(
+                                                                  opacity:
+                                                                      Tween<double>(
+                                                                        begin:
+                                                                            0.0,
+                                                                        end:
+                                                                            1.0,
+                                                                      ).animate(
+                                                                        CurvedAnimation(
+                                                                          parent:
+                                                                              _revealController,
+                                                                          curve: const Interval(
+                                                                            0.0,
+                                                                            0.5,
+                                                                            curve:
+                                                                                Curves.easeIn,
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                  child: Text(
+                                                                    'SELECTED',
+                                                                    style: TextStyle(
+                                                                      color: Colors
+                                                                          .black87,
+                                                                      fontSize:
+                                                                          finalSize *
+                                                                          0.08,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                      letterSpacing:
+                                                                          3,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                                const SizedBox(
+                                                                  height: 12,
+                                                                ),
+                                                                ScaleTransition(
+                                                                  scale:
+                                                                      Tween<double>(
+                                                                        begin:
+                                                                            0.0,
+                                                                        end:
+                                                                            1.0,
+                                                                      ).animate(
+                                                                        CurvedAnimation(
+                                                                          parent:
+                                                                              _revealController,
+                                                                          curve: const Interval(
+                                                                            0.2,
+                                                                            0.7,
+                                                                            curve:
+                                                                                Curves.elasticOut,
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                  child: Text(
+                                                                    _earnedNumber
+                                                                        .toString(),
+                                                                    style: TextStyle(
+                                                                      color: Colors
+                                                                          .black,
+                                                                      fontSize:
+                                                                          finalSize *
+                                                                          0.25,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                      shadows: [
+                                                                        Shadow(
+                                                                          color: Colors.black.withOpacity(
+                                                                            0.2,
+                                                                          ),
+                                                                          blurRadius:
+                                                                              10,
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ),
                                                         ),
                                                       ),
-                                                    ),
-                                                  );
-                                                },
-                                              ),
-                                          ],
+                                                    );
+                                                  },
+                                                ),
+                                            ],
+                                          ),
                                         ),
-                                      ),
-                                    );
-                                  },
+                                      );
+                                    },
+                                  ),
                                 ),
-                              ),
-                            ],
-                          );
-                        }
-                      },
+                              ],
+                            );
+                          }
+                        },
+                      ),
                     ),
-                  ),
-                  // Banner Ad at bottom
-                  const BannerAdWidget(),
-                ],
+                    // Banner Ad at bottom
+                    const BannerAdWidget(),
+                  ],
+                ),
               ),
-            ),
             ),
           );
         },

@@ -317,11 +317,17 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
               _showJackpotPopup = false;
             });
             _confettiController.stop();
-            // Continue with normal flow
-            Future.delayed(const Duration(milliseconds: 500), () {
-              if (!mounted) return;
-              _autoHideRevealAndFly();
-            });
+            // Show interstitial ad after jackpot animation completes
+            InterstitialAdHelper.showInterstitialAd(
+              onAdClosed: () {
+                // Continue with normal flow after ad is closed
+                if (!mounted) return;
+                Future.delayed(const Duration(milliseconds: 500), () {
+                  if (!mounted) return;
+                  _autoHideRevealAndFly();
+                });
+              },
+            );
           }
         });
       } else {

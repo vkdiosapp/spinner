@@ -359,9 +359,9 @@ class _SpinnerWheelPageState extends State<SpinnerWheelPage>
                   ],
                 ),
               ),
-              // Spinner content - 70% of screen
+              // Spinner content - 80% of screen
               Expanded(
-                flex: 7,
+                flex: 8,
                 child: LayoutBuilder(
                   builder: (context, constraints) {
                     // Get screen orientation
@@ -656,9 +656,9 @@ class _SpinnerWheelPageState extends State<SpinnerWheelPage>
                   },
                 ),
               ),
-              // Native Ad at bottom - 30% of screen
+              // Native Ad at bottom - 20% of screen
               Expanded(
-                flex: 3,
+                flex: 2,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10),
                   child: const NativeAdWidget(),

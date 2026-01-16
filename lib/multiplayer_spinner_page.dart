@@ -810,9 +810,9 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
                             ],
                           ),
                         ),
-                        // Spinner content - 70% of screen
+                        // Spinner content - 80% of screen
                         Expanded(
-                          flex: 7,
+                          flex: 8,
                           child: LayoutBuilder(
                             builder: (context, constraints) {
                               final maxWidth = constraints.maxWidth;
@@ -923,8 +923,9 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
                                                 : _displayUsers[_currentUserIndex]),
                                     ),
                                     style: const TextStyle(
-                                      color: Colors.white70,
+                                      color: Color(0xFF1E293B),
                                       fontSize: 16,
+                                      fontWeight: FontWeight.w600,
                                     ),
                                   ),
                                   // Spinner Wheel - takes remaining space
@@ -1212,9 +1213,9 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
                             },
                           ),
                         ),
-                        // Native Ad at bottom - 30% of screen
+                        // Native Ad at bottom - 20% of screen
                         Expanded(
-                          flex: 3,
+                          flex: 2,
                           child: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 10),
                             child: const NativeAdWidget(),

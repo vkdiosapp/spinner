@@ -55,14 +55,16 @@ class _SubscriptionPopupState extends State<SubscriptionPopup> {
       if (products.isEmpty) {
         if (!mounted || _isDisposed) return;
         setState(() {
-          _errorMessage = 'Unable to load subscription plans.\n\n'
-              'Please check:\n'
-              '• Testing on a REAL device (not simulator)\n'
-              '• Products configured in App Store Connect\n'
-              '• Product IDs match exactly\n'
-              '• Products are "Ready to Submit"\n'
-              '• Signed out of real Apple ID\n\n'
-              'Tap to retry.';
+          _errorMessage = 'Unable to load subscription plans from App Store Connect.\n\n'
+              'REQUIREMENTS:\n'
+              '✓ Products must exist in App Store Connect\n'
+              '✓ Product IDs: monthly_purchase, yearly_purchase, lifetime_purchase\n'
+              '✓ Products must be "Ready to Submit"\n'
+              '✓ Testing on REAL device (not simulator)\n'
+              '✓ Signed out of real Apple ID\n'
+              '✓ Correct provisioning profile\n\n'
+              'Bundle ID: com.vkd.spinner.game\n\n'
+              'Tap to retry loading products.';
           _isLoading = false;
         });
       } else {

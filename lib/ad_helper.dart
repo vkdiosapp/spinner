@@ -415,7 +415,11 @@ class _NativeAdWidgetState extends State<NativeAdWidget> {
           setState(() {
             _isAdLoaded = false;
           });
-          debugPrint('Native-style ad failed to load: $error');
+          // Only log errors that are not "no ad available" (code 1 is normal when no ads in inventory)
+          // Code 1 = ERROR_CODE_NO_FILL - No ad available to show
+          if (error.code != 1) {
+            debugPrint('Native-style ad failed to load: $error');
+          }
         },
       ),
     );

@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:io';
 
 /// Subscription Service
 ///
@@ -203,41 +202,30 @@ class SubscriptionService {
   }
 
   /// Get available products with retry logic
-  static Future<List<ProductDetails>> getProducts({int maxRetries = 5}) async {
+  static Future<List<ProductDetails>> getProducts({int maxRetries = 3}) async {
     if (!_isAvailable) {
       debugPrint('In-app purchase not available on this device');
       return [];
     }
 
-    // Check if running on simulator (iOS only)
-    if (Platform.isIOS) {
-      try {
-        // Try to detect simulator (this is a workaround)
-        // In-app purchases don't work on iOS Simulator
-        debugPrint('Running on iOS - ensure you are testing on a real device');
-      } catch (e) {
-        // Ignore
-      }
-    }
-
     final productIds = {monthlyProductId, yearlyProductId, lifetimeProductId};
     debugPrint('Fetching products: $productIds');
-    debugPrint(
-      'Make sure products exist in App Store Connect with these exact IDs',
-    );
 
-    // Retry logic with exponential backoff
+    // Retry logic with exponential backoff - reduced retries and faster timeouts
     for (int attempt = 1; attempt <= maxRetries; attempt++) {
       try {
         debugPrint('Attempt $attempt of $maxRetries to fetch products...');
 
-        // Add timeout to prevent hanging
+        // Reduced timeout - StoreKit should respond quickly or not at all
         final response = await _inAppPurchase
             .queryProductDetails(productIds)
             .timeout(
-              const Duration(seconds: 30),
+              const Duration(seconds: 15), // Reduced from 60 to 15 seconds
               onTimeout: () {
-                throw Exception('Product query timed out after 30 seconds');
+                throw TimeoutException(
+                  'Product query timed out after 15 seconds',
+                  const Duration(seconds: 15),
+                );
               },
             );
 
@@ -249,31 +237,60 @@ class SubscriptionService {
           debugPrint('Error details: ${error.details}');
           debugPrint('Error source: ${error.source}');
 
-          // Provide more helpful error messages
-          if (error.code == 'storekit_no_response' ||
-              error.code == 'storekit_product_not_available' ||
+          // Handle storekit_no_response specifically
+          if (error.code == 'storekit_no_response') {
+            debugPrint('⚠️ StoreKit Error: storekit_no_response');
+            debugPrint('StoreKit cannot connect to App Store Connect.');
+            debugPrint('');
+            debugPrint('REQUIREMENTS for App Store Connect:');
+            debugPrint('1. ✅ Test on REAL device (iOS Simulator does NOT support IAP)');
+            debugPrint('2. ✅ Products must exist in App Store Connect');
+            debugPrint('   - Product IDs: monthly_purchase, yearly_purchase, lifetime_purchase');
+            debugPrint('   - Products must be in "Ready to Submit" or "Approved" status');
+            debugPrint('3. ✅ Sign out of real Apple ID (use sandbox test account)');
+            debugPrint('4. ✅ Check internet connection');
+            debugPrint('5. ✅ App must be signed with correct provisioning profile');
+            debugPrint('6. ✅ Bundle ID must match: com.vkd.spinner.game');
+            debugPrint('');
+            
+            // For storekit_no_response, don't retry too many times
+            // It usually means simulator or App Store Connect connection issue
+            if (attempt >= 2) {
+              debugPrint('⚠️ StoreKit not responding. Likely causes:');
+              debugPrint('   - Running on iOS Simulator (IAP not supported - use REAL device)');
+              debugPrint('   - Products not configured in App Store Connect');
+              debugPrint('   - Network/App Store Connect connection issue');
+              debugPrint('   - Products not in "Ready to Submit" status');
+              return [];
+            }
+
+            // Quick retry with short delay
+            final delay = Duration(seconds: 2);
+            debugPrint('Quick retry in ${delay.inSeconds} seconds...');
+            await Future.delayed(delay);
+            continue;
+          } else if (error.code == 'storekit_product_not_available' ||
               error.code == 'storekit_cloud_service_permission_denied') {
             debugPrint('StoreKit Error: ${error.code}');
-            debugPrint(
-              'CRITICAL: Products must be in "Ready to Submit" status',
-            );
-            debugPrint('Check: 1. Real device (not simulator)');
-            debugPrint('Check: 2. Bundle ID matches App Store Connect');
-            debugPrint('Check: 3. Products status is "Ready to Submit"');
-            debugPrint('Check: 4. Signed out of real Apple ID');
-            debugPrint('Expected IDs: $productIds');
-
-            // If it's the last attempt, return empty
+            debugPrint('Bundle ID: com.vkd.spinner.game');
+            debugPrint('Expected Product IDs: $productIds');
+            debugPrint('');
+            debugPrint('REQUIREMENTS:');
+            debugPrint('1. Products must exist in App Store Connect');
+            debugPrint('2. Product IDs must match exactly: $productIds');
+            debugPrint('3. Products must be in "Ready to Submit" status');
+            debugPrint('4. Testing on REAL device (not simulator)');
+            debugPrint('5. Signed out of real Apple ID (use sandbox account)');
+            
             if (attempt == maxRetries) {
               debugPrint('All $maxRetries retry attempts failed.');
               return [];
             }
 
-            // Wait before retrying (longer delays for StoreKit)
-            final delay = Duration(seconds: attempt * 3);
+            final delay = Duration(seconds: attempt * 2);
             debugPrint('Retrying in ${delay.inSeconds} seconds...');
             await Future.delayed(delay);
-            continue; // Retry
+            continue;
           } else {
             // For other errors, don't retry
             debugPrint('Non-retryable error: ${error.code}');
@@ -287,20 +304,18 @@ class SubscriptionService {
           );
           debugPrint('Expected IDs: $productIds');
 
-          // If it's the last attempt, return empty
           if (attempt == maxRetries) {
             return [];
           }
 
-          // Wait before retrying
           final delay = Duration(seconds: attempt * 2);
           debugPrint('Retrying in ${delay.inSeconds} seconds...');
           await Future.delayed(delay);
-          continue; // Retry
+          continue;
         }
 
         debugPrint(
-          'Successfully fetched ${response.productDetails.length} products',
+          '✅ Successfully fetched ${response.productDetails.length} products',
         );
         for (final product in response.productDetails) {
           debugPrint(
@@ -309,15 +324,28 @@ class SubscriptionService {
         }
 
         return response.productDetails;
-      } catch (e) {
-        debugPrint('Exception getting products (attempt $attempt): $e');
-
-        // If it's the last attempt, return empty
-        if (attempt == maxRetries) {
+      } on TimeoutException catch (e) {
+        debugPrint('⏱️ Timeout getting products (attempt $attempt): $e');
+        
+        // Timeout usually means StoreKit isn't responding
+        if (attempt >= 2) {
+          debugPrint('⚠️ StoreKit timeout - cannot connect to App Store Connect');
+          debugPrint('   Fix: Run on REAL device (not simulator)');
+          debugPrint('   Verify products exist in App Store Connect and are "Ready to Submit"');
           return [];
         }
 
-        // Wait before retrying
+        final delay = Duration(seconds: 2);
+        debugPrint('Quick retry in ${delay.inSeconds} seconds...');
+        await Future.delayed(delay);
+      } catch (e) {
+        debugPrint('Exception getting products (attempt $attempt): $e');
+
+        if (attempt == maxRetries) {
+          debugPrint('⚠️ All retry attempts failed');
+          return [];
+        }
+
         final delay = Duration(seconds: attempt * 2);
         debugPrint('Retrying in ${delay.inSeconds} seconds...');
         await Future.delayed(delay);

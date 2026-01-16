@@ -227,37 +227,6 @@ class _SpinnerWheelPageState extends State<SpinnerWheelPage>
     return _segmentColors[index % _segmentColors.length];
   }
 
-  // Helper widget for vibrant button
-  Widget _buildVibrantButton({
-    required IconData icon,
-    required VoidCallback onTap,
-    double size = 40,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: size,
-        height: size,
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFF6366F1), Color(0xFF4F46E5)],
-          ),
-          shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-              color: const Color(0xFF6366F1).withOpacity(0.35),
-              blurRadius: 15,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Icon(icon, color: Colors.white, size: size * 0.5),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizationsHelper.of(context);
@@ -345,20 +314,54 @@ class _SpinnerWheelPageState extends State<SpinnerWheelPage>
                         ),
                       ),
                     ),
-                    // Edit button - right aligned
+                    // Edit button - right aligned with frosted glass effect
                     Align(
                       alignment: Alignment.centerRight,
-                      child: _buildVibrantButton(
-                        icon: Icons.edit,
+                      child: GestureDetector(
                         onTap: _editSpinner,
-                        size: 40,
+                        child: Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.4),
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.6),
+                              width: 1,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.03),
+                                blurRadius: 12,
+                                offset: const Offset(0, 4),
+                              ),
+                              BoxShadow(
+                                color: Colors.white.withOpacity(0.8),
+                                blurRadius: 1,
+                                offset: const Offset(0, 1),
+                                blurStyle: BlurStyle.inner,
+                              ),
+                            ],
+                          ),
+                          child: ClipOval(
+                            child: BackdropFilter(
+                              filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+                              child: const Icon(
+                                Icons.edit,
+                                color: Color(0xFF475569),
+                                size: 20,
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                   ],
                 ),
               ),
-              // Spinner content - no scrolling
+              // Spinner content - 70% of screen
               Expanded(
+                flex: 7,
                 child: LayoutBuilder(
                   builder: (context, constraints) {
                     // Get screen orientation
@@ -653,8 +656,14 @@ class _SpinnerWheelPageState extends State<SpinnerWheelPage>
                   },
                 ),
               ),
-              // Banner Ad at bottom
-              const BannerAdWidget(),
+              // Native Ad at bottom - 30% of screen
+              Expanded(
+                flex: 3,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: const NativeAdWidget(),
+                ),
+              ),
             ],
           ),
         ),

@@ -604,6 +604,8 @@ class _SpinnerConfigPageState extends State<SpinnerConfigPage> {
                   ),
                 ),
               ),
+              // Banner Ad at bottom
+              const BannerAdWidget(),
               // Bottom indicator
               Padding(
                 padding: const EdgeInsets.only(bottom: 16),

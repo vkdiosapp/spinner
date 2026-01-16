@@ -1,0 +1,121 @@
+{
+  "identifier" : "Products",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+    {
+      "displayPrice" : "4.99",
+      "familyShareable" : false,
+      "identifier" : "monthly_purchase",
+      "localizations" : [
+        {
+          "description" : "Monthly premium subscription with access to all features",
+          "displayName" : "Monthly Premium",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "monthly_purchase",
+      "referenceName" : "Monthly Premium Subscription",
+      "type" : "SUBSCRIPTION",
+      "subscriptionGroupIdentifier" : "premium_subscriptions"
+    },
+    {
+      "displayPrice" : "39.99",
+      "familyShareable" : false,
+      "identifier" : "yearly_purchase",
+      "localizations" : [
+        {
+          "description" : "Yearly premium subscription with access to all features",
+          "displayName" : "Yearly Premium",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "yearly_purchase",
+      "referenceName" : "Yearly Premium Subscription",
+      "type" : "SUBSCRIPTION",
+      "subscriptionGroupIdentifier" : "premium_subscriptions"
+    },
+    {
+      "displayPrice" : "99.99",
+      "familyShareable" : false,
+      "identifier" : "lifetime_purchase",
+      "localizations" : [
+        {
+          "description" : "One-time lifetime purchase with access to all premium features forever",
+          "displayName" : "Lifetime Premium",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "lifetime_purchase",
+      "referenceName" : "Lifetime Premium Purchase",
+      "type" : "NON_CONSUMABLE"
+    }
+  ],
+  "settings" : {
+    "_failTransactionsEnabled" : false,
+    "_storeKitErrors" : [
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Load Products"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Purchase"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Verification"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "App Store Sync"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Subscription Status"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "App Transaction"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Manage Subscriptions Sheet"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Refund Request Sheet"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Offer Code Redeem Sheet"
+      }
+    ]
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "premium_subscriptions",
+      "localizations" : [
+        {
+          "name" : "Premium Subscriptions",
+          "locale" : "en_US"
+        }
+      ],
+      "name" : "Premium Subscriptions"
+    }
+  ],
+  "version" : {
+    "major" : 3,
+    "minor" : 0
+  }
+}

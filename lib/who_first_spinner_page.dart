@@ -1295,6 +1295,19 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
                                         child: Container(
                                           height: finalSize,
                                           width: finalSize,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.black.withOpacity(
+                                                  0.15,
+                                                ),
+                                                blurRadius: 12,
+                                                spreadRadius: 1,
+                                                offset: const Offset(0, 4),
+                                              ),
+                                            ],
+                                          ),
                                           child: Stack(
                                             alignment: Alignment.center,
                                             children: [
@@ -2038,6 +2051,19 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
                                         child: Container(
                                           height: finalSize,
                                           width: finalSize,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.black.withOpacity(
+                                                  0.15,
+                                                ),
+                                                blurRadius: 12,
+                                                spreadRadius: 1,
+                                                offset: const Offset(0, 4),
+                                              ),
+                                            ],
+                                          ),
                                           child: Stack(
                                             alignment: Alignment.center,
                                             children: [

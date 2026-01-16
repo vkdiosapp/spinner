@@ -390,11 +390,13 @@ class _NativeAdWidgetState extends State<NativeAdWidget> {
       return;
     }
 
-    final adUnitId = AdManager.getNativeAdId();
+    // Use banner ad ID since we're using BannerAd with medium rectangle size
+    // Native ad IDs require NativeAd class, not BannerAd
+    final adUnitId = AdManager.getBannerAdId();
     
     // Don't load ad if ad ID is empty (not configured in Remote Config)
     if (adUnitId.isEmpty) {
-      debugPrint('Native ad ID is empty, skipping ad load');
+      debugPrint('Banner ad ID is empty, skipping native-style ad load');
       return;
     }
 

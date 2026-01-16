@@ -787,13 +787,22 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
                                 ),
                               ),
                               // Title - centered
-                              Text(
-                                'Round $_currentRound / ${widget.rounds}',
-                                style: const TextStyle(
-                                  color: Color(0xFF0F172A),
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w800,
-                                  letterSpacing: -0.5,
+                              ShaderMask(
+                                shaderCallback: (bounds) =>
+                                    const LinearGradient(
+                                      colors: [
+                                        Color.fromARGB(255, 41, 44, 232),
+                                        Color.fromARGB(255, 136, 16, 248),
+                                      ],
+                                    ).createShader(bounds),
+                                child: Text(
+                                  'Round $_currentRound / ${widget.rounds}',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w800,
+                                    letterSpacing: -0.5,
+                                  ),
                                 ),
                               ),
                               // Spacer for balance
@@ -959,6 +968,19 @@ class _MultiplayerSpinnerPageState extends State<MultiplayerSpinnerPage>
                                             50, // Fixed height to prevent cropping
                                         width: finalSize,
                                         margin: const EdgeInsets.all(20),
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.black.withOpacity(
+                                                0.15,
+                                              ),
+                                              blurRadius: 12,
+                                              spreadRadius: 1,
+                                              offset: const Offset(0, 4),
+                                            ),
+                                          ],
+                                        ),
                                         child: Stack(
                                           alignment: Alignment.center,
                                           children: [

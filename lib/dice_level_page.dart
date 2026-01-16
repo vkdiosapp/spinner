@@ -53,13 +53,22 @@ class DiceLevelPage extends StatelessWidget {
                     ),
                   ),
                   // Title - centered on screen
-                  const Text(
-                    'Dice',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
+                  ShaderMask(
+                    shaderCallback: (bounds) =>
+                        const LinearGradient(
+                          colors: [
+                            Color.fromARGB(255, 41, 44, 232),
+                            Color.fromARGB(255, 136, 16, 248),
+                          ],
+                        ).createShader(bounds),
+                    child: const Text(
+                      'Dice',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ],

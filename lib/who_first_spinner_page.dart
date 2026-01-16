@@ -569,6 +569,7 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
               rounds: widget.rounds,
               roundScores: _roundScores,
               totalScores: Map<String, int>.from(_totalScores),
+              hideScores: true,
             ),
           ),
         );
@@ -775,13 +776,21 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
                             ),
                           ),
                           // Title - centered
-                          Text(
-                            'Who First',
-                            style: const TextStyle(
-                              color: Color(0xFF0F172A),
-                              fontSize: 20,
-                              fontWeight: FontWeight.w800,
-                              letterSpacing: -0.5,
+                          ShaderMask(
+                            shaderCallback: (bounds) => const LinearGradient(
+                              colors: [
+                                Color.fromARGB(255, 41, 44, 232),
+                                Color.fromARGB(255, 136, 16, 248),
+                              ],
+                            ).createShader(bounds),
+                            child: const Text(
+                              'Who First',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: -0.5,
+                              ),
                             ),
                           ),
                           // Spacer for balance

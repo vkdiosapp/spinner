@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'dart:ui';
 import 'animated_gradient_background.dart';
+import 'app_localizations_helper.dart';
+import 'ad_helper.dart';
 
 class SpinnerEditPage extends StatefulWidget {
   final String title;
@@ -37,6 +40,7 @@ class _SpinnerEditPageState extends State<SpinnerEditPage> {
       _items.add('');
       _itemControllers.add(TextEditingController());
       _itemFocusNodes.add(FocusNode());
+      // Don't auto-focus - keyboard should not open automatically
     }
   }
 
@@ -76,7 +80,143 @@ class _SpinnerEditPageState extends State<SpinnerEditPage> {
     });
   }
 
+  // Helper widget for glossy card effect
+  Widget _buildGlossyCard({
+    required Widget child,
+    double borderRadius = 24,
+    EdgeInsets? padding,
+  }) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(borderRadius),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+        child: Container(
+          padding: padding,
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.45),
+            borderRadius: BorderRadius.circular(borderRadius),
+            border: Border.all(color: Colors.white.withOpacity(0.6), width: 1),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF1F2687).withOpacity(0.07),
+                blurRadius: 32,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: Stack(
+            children: [
+              child,
+              // Glossy overlay effect - ignore pointer events so taps pass through
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                height: 100,
+                child: IgnorePointer(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.white.withOpacity(0.4),
+                          Colors.white.withOpacity(0),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(borderRadius),
+                        topRight: Radius.circular(borderRadius),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Helper widget for vibrant button
+  Widget _buildVibrantButton({
+    required String text,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFF6366F1), Color(0xFF4F46E5)],
+          ),
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF6366F1).withOpacity(0.35),
+              blurRadius: 15,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Stack(
+          children: [
+            Text(
+              text,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            // Shine effect
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              height: 20,
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.white.withOpacity(0.15),
+                      Colors.transparent,
+                    ],
+                  ),
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(24),
+                    topRight: Radius.circular(24),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   void _saveChanges() {
+    final l10n = AppLocalizationsHelper.of(context);
+
+    // Validate spinner title is mandatory
+    final titleText = _titleController.text.trim();
+    if (titleText.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Please enter spinner title'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     // Update items from controllers
     final updatedItems = <String>[];
     for (var controller in _itemControllers) {
@@ -88,8 +228,8 @@ class _SpinnerEditPageState extends State<SpinnerEditPage> {
 
     if (updatedItems.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please add at least one item'),
+        SnackBar(
+          content: Text(l10n.pleaseAddAtLeastOneItem),
           backgroundColor: Colors.red,
         ),
       );
@@ -103,7 +243,7 @@ class _SpinnerEditPageState extends State<SpinnerEditPage> {
       if (seenNames.contains(lowerItem)) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Duplicate item name: "$item". Please use unique names.'),
+            content: Text(l10n.duplicateItemName(item)),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 3),
           ),
@@ -115,228 +255,362 @@ class _SpinnerEditPageState extends State<SpinnerEditPage> {
 
     // Return updated data to previous page
     Navigator.of(context).pop({
-      'title': _titleController.text.trim().isEmpty
-          ? 'Random Picker'
-          : _titleController.text.trim(),
+      'title': titleText,
       'items': updatedItems,
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizationsHelper.of(context);
+
     return AnimatedGradientBackground(
       child: Scaffold(
-        backgroundColor: Colors.transparent, // Transparent so gradient shows through
+        backgroundColor:
+            Colors.transparent, // Transparent so gradient shows through
         body: SafeArea(
-        child: Column(
-          children: [
-            // Fixed header with back button and title
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  // Back button - left aligned
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Container(
-                      width: 48,
-                      height: 48,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF6C5CE7),
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.3),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
+          child: Column(
+            children: [
+              // Header
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 16,
+                ),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    // Back button - left aligned with frosted glass effect
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: GestureDetector(
+                        onTap: () => BackArrowAd.handleBackButton(
+                          context: context,
+                          onBack: () => Navigator.of(context).pop(),
+                        ),
+                        child: Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.4),
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.6),
+                              width: 1,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.03),
+                                blurRadius: 12,
+                                offset: const Offset(0, 4),
+                              ),
+                              BoxShadow(
+                                color: Colors.white.withOpacity(0.8),
+                                blurRadius: 1,
+                                offset: const Offset(0, 1),
+                                blurStyle: BlurStyle.inner,
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                      child: IconButton(
-                        icon: const Icon(Icons.arrow_back, color: Colors.white),
-                        onPressed: () => Navigator.of(context).pop(),
-                      ),
-                    ),
-                  ),
-                  // Title - centered on screen
-                  const Text(
-                    'Edit Spinner',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            // Scrollable form content
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-            // Title Input Section
-            Card(
-              color: const Color(0xFF3D3D5C),
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Spinner Title',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    TextField(
-                      controller: _titleController,
-                      textCapitalization: TextCapitalization.words,
-                      style: const TextStyle(color: Colors.white),
-                      decoration: InputDecoration(
-                        hintText: 'Enter spinner title',
-                        hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
-                        filled: true,
-                        fillColor: const Color(0xFF2D2D44),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
+                          child: ClipOval(
+                            child: BackdropFilter(
+                              filter: ImageFilter.blur(
+                                sigmaX: 16,
+                                sigmaY: 16,
+                              ),
+                              child: const Icon(
+                                Icons.arrow_back,
+                                color: Color(0xFF475569),
+                                size: 20,
+                              ),
+                            ),
+                          ),
                         ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 14,
-                        ),
+                      ),
+                    ),
+                    // Title - centered
+                    Text(
+                      l10n.spinner,
+                      style: const TextStyle(
+                        color: Color(0xFF0F172A),
+                        fontSize: 20,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: -0.5,
+                      ),
+                    ),
+                    // Save button - right aligned
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: _buildVibrantButton(
+                        text: l10n.save,
+                        onTap: _saveChanges,
                       ),
                     ),
                   ],
                 ),
               ),
-            ),
-            const SizedBox(height: 24),
-            
-            // Items List Section
-            Card(
-              color: const Color(0xFF3D3D5C),
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Spinner Items',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    ...List.generate(_items.length, (index) {
-                      return Container(
-                        margin: const EdgeInsets.only(bottom: 12),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: TextField(
-                                controller: _itemControllers[index],
-                                focusNode: _itemFocusNodes[index],
-                                textCapitalization: TextCapitalization.words,
-                                style: const TextStyle(color: Colors.white),
-                                decoration: InputDecoration(
-                                  hintText: 'Enter item name',
-                                  hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
-                                  filled: true,
-                                  fillColor: const Color(0xFF2D2D44),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide.none,
+              // Scrollable content
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 16),
+                      // Title Input Section
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              left: 4,
+                              bottom: 12,
+                            ),
+                            child: Text(
+                              l10n.spinnerTitle.toUpperCase(),
+                              style: TextStyle(
+                                color: const Color(0xFF475569),
+                                fontSize: 12,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: 1.2,
+                              ),
+                            ),
+                          ),
+                          _buildGlossyCard(
+                            borderRadius: 24,
+                            padding: const EdgeInsets.all(20),
+                            child: TextField(
+                              controller: _titleController,
+                              textCapitalization: TextCapitalization.words,
+                              style: const TextStyle(
+                                color: Color(0xFF1E293B),
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              decoration: InputDecoration(
+                                filled: true,
+                                fillColor: Colors.white.withOpacity(0.3),
+                                hintText: l10n.enterSpinnerTitle,
+                                hintStyle: TextStyle(
+                                  color: const Color(0xFF64748B),
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 14,
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                  borderSide: BorderSide(
+                                    color: Colors.white.withOpacity(0.4),
+                                    width: 1,
                                   ),
-                                  contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 14,
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                  borderSide: BorderSide(
+                                    color: Colors.white.withOpacity(0.4),
+                                    width: 1,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                  borderSide: BorderSide(
+                                    color: const Color(0xFF6366F1).withOpacity(0.6),
+                                    width: 2,
                                   ),
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 12),
-                            IconButton(
-                              onPressed: () => _removeItem(index),
-                              icon: const Icon(
-                                Icons.delete_outline,
-                                color: Colors.red,
-                                size: 28,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
+                      // Items List Section
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              left: 4,
+                              bottom: 12,
+                            ),
+                            child: Text(
+                              l10n.spinnerItems.toUpperCase(),
+                              style: TextStyle(
+                                color: const Color(0xFF475569),
+                                fontSize: 12,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: 1.2,
                               ),
                             ),
-                          ],
-                        ),
-                      );
-                    }),
-                    if (_items.isEmpty)
-                      Padding(
-                        padding: const EdgeInsets.all(24),
-                        child: Center(
-                          child: Text(
-                            'No items. Click "Add Item" to add items.',
-                            style: TextStyle(
-                              color: Colors.white.withOpacity(0.6),
-                              fontSize: 14,
+                          ),
+                          _buildGlossyCard(
+                            borderRadius: 32,
+                            padding: const EdgeInsets.all(20),
+                            child: Column(
+                              children: [
+                                ...List.generate(_items.length, (index) {
+                                  return Container(
+                                    margin: const EdgeInsets.only(bottom: 12),
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: TextField(
+                                            controller: _itemControllers[index],
+                                            focusNode: _itemFocusNodes[index],
+                                            textCapitalization:
+                                                TextCapitalization.words,
+                                            style: const TextStyle(
+                                              color: Color(0xFF1E293B),
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                            decoration: InputDecoration(
+                                              filled: true,
+                                              fillColor: Colors.white.withOpacity(0.3),
+                                              hintText: l10n.enterItemName,
+                                              hintStyle: TextStyle(
+                                                color: Colors.grey[600],
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                              contentPadding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 16,
+                                                    vertical: 14,
+                                                  ),
+                                              border: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(16),
+                                                borderSide: BorderSide(
+                                                  color: Colors.white.withOpacity(0.4),
+                                                  width: 1,
+                                                ),
+                                              ),
+                                              enabledBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(16),
+                                                borderSide: BorderSide(
+                                                  color: Colors.white.withOpacity(0.4),
+                                                  width: 1,
+                                                ),
+                                              ),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(16),
+                                                borderSide: BorderSide(
+                                                  color: const Color(0xFF6366F1).withOpacity(0.6),
+                                                  width: 2,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 12),
+                                        GestureDetector(
+                                          behavior: HitTestBehavior.opaque,
+                                          onTap: () => _removeItem(index),
+                                          child: Container(
+                                            width: 40,
+                                            height: 40,
+                                            decoration: BoxDecoration(
+                                              color: Colors.red.withOpacity(0.1),
+                                              shape: BoxShape.circle,
+                                              border: Border.all(
+                                                color: Colors.red.withOpacity(0.3),
+                                                width: 1,
+                                              ),
+                                            ),
+                                            child: const Icon(
+                                              Icons.delete_outline,
+                                              color: Colors.red,
+                                              size: 20,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }),
+                                if (_items.isEmpty)
+                                  Padding(
+                                    padding: const EdgeInsets.all(24),
+                                    child: Center(
+                                      child: Text(
+                                        l10n.noItems,
+                                        style: TextStyle(
+                                          color: const Color(0xFF64748B),
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                const SizedBox(height: 12),
+                                // Add Item button at bottom
+                                GestureDetector(
+                                  behavior: HitTestBehavior.opaque,
+                                  onTap: _addNewItem,
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 12,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withOpacity(0.3),
+                                      borderRadius: BorderRadius.circular(16),
+                                      border: Border.all(
+                                        color: Colors.white.withOpacity(0.4),
+                                        width: 1,
+                                      ),
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.add,
+                                          color: const Color(0xFF6366F1),
+                                          size: 20,
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Text(
+                                          l10n.addItem,
+                                          style: TextStyle(
+                                            color: const Color(0xFF1E293B),
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                        ),
+                        ],
                       ),
-                    const SizedBox(height: 12),
-                    // Add Item button at bottom
-                    TextButton.icon(
-                      onPressed: _addNewItem,
-                      icon: const Icon(Icons.add, color: Colors.white),
-                      label: const Text(
-                        'Add Item',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                      ),
-                    ),
-                  ],
+                      const SizedBox(height: 40),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 32),
-            
-            // Save Button
-            ElevatedButton(
-              onPressed: _saveChanges,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF6C5CE7),
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 18),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                elevation: 4,
-              ),
-              child: const Text(
-                'Save Changes',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+              // Bottom indicator
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: Container(
+                  width: 128,
+                  height: 6,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[400]?.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(3),
+                  ),
                 ),
               ),
-            ),
-                  ],
-                ),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
       ),
     );
   }

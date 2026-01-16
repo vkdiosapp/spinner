@@ -328,13 +328,22 @@ class _SpinnerConfigPageState extends State<SpinnerConfigPage> {
                         ),
                       ),
                       // Title - centered
-                      Text(
-                        l10n.spinner,
-                        style: const TextStyle(
-                          color: Color(0xFF0F172A),
-                          fontSize: 20,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: -0.5,
+                      ShaderMask(
+                        shaderCallback: (bounds) =>
+                            const LinearGradient(
+                              colors: [
+                                Color.fromARGB(255, 41, 44, 232),
+                                Color.fromARGB(255, 136, 16, 248),
+                              ],
+                            ).createShader(bounds),
+                        child: Text(
+                          l10n.spinner,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: -0.5,
+                          ),
                         ),
                       ),
                       // Start button - right aligned

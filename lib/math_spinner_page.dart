@@ -571,6 +571,7 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
               rounds: _currentRound,
               roundScores: _roundScores,
               totalScores: Map<String, int>.from(_scores),
+              hideScores: true,
             ),
           ),
         );
@@ -654,10 +655,9 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
           decoration: BoxDecoration(
             color: backgroundColor ?? Colors.white.withOpacity(0.45),
             borderRadius: BorderRadius.circular(borderRadius),
-            border: border ?? Border.all(
-              color: Colors.white.withOpacity(0.6),
-              width: 1,
-            ),
+            border:
+                border ??
+                Border.all(color: Colors.white.withOpacity(0.6), width: 1),
             boxShadow: [
               BoxShadow(
                 color: const Color(0xFF1F2687).withOpacity(0.07),
@@ -714,327 +714,349 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
       },
       child: AnimatedGradientBackground(
         child: Scaffold(
-          backgroundColor: Colors.transparent, // Transparent so gradient shows through
+          backgroundColor:
+              Colors.transparent, // Transparent so gradient shows through
           body: SafeArea(
             child: Column(
-            children: [
-              // Header
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 16,
-                ),
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    // Back button - left aligned with frosted glass effect
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: GestureDetector(
-                        onTap: () => BackArrowAd.handleBackButton(
-                          context: context,
-                          onBack: () => _goHome(),
-                        ),
-                        child: Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.4),
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: Colors.white.withOpacity(0.6),
-                              width: 1,
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.03),
-                                blurRadius: 12,
-                                offset: const Offset(0, 4),
-                              ),
-                              BoxShadow(
-                                color: Colors.white.withOpacity(0.8),
-                                blurRadius: 1,
-                                offset: const Offset(0, 1),
-                                blurStyle: BlurStyle.inner,
-                              ),
-                            ],
+              children: [
+                // Header
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 16,
+                  ),
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      // Back button - left aligned with frosted glass effect
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: GestureDetector(
+                          onTap: () => BackArrowAd.handleBackButton(
+                            context: context,
+                            onBack: () => _goHome(),
                           ),
-                          child: ClipOval(
-                            child: BackdropFilter(
-                              filter: ImageFilter.blur(
-                                sigmaX: 16,
-                                sigmaY: 16,
+                          child: Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.4),
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Colors.white.withOpacity(0.6),
+                                width: 1,
                               ),
-                              child: const Icon(
-                                Icons.arrow_back,
-                                color: Color(0xFF475569),
-                                size: 20,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.03),
+                                  blurRadius: 12,
+                                  offset: const Offset(0, 4),
+                                ),
+                                BoxShadow(
+                                  color: Colors.white.withOpacity(0.8),
+                                  blurRadius: 1,
+                                  offset: const Offset(0, 1),
+                                  blurStyle: BlurStyle.inner,
+                                ),
+                              ],
+                            ),
+                            child: ClipOval(
+                              child: BackdropFilter(
+                                filter: ImageFilter.blur(
+                                  sigmaX: 16,
+                                  sigmaY: 16,
+                                ),
+                                child: const Icon(
+                                  Icons.arrow_back,
+                                  color: Color(0xFF475569),
+                                  size: 20,
+                                ),
                               ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                    // Title - centered
-                    Text(
-                      l10n.mathSpinner,
-                      style: const TextStyle(
-                        color: Color(0xFF0F172A),
-                        fontSize: 20,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: -0.5,
+                      // Title - centered
+                      ShaderMask(
+                        shaderCallback: (bounds) => const LinearGradient(
+                          colors: [
+                            Color.fromARGB(255, 41, 44, 232),
+                            Color.fromARGB(255, 136, 16, 248),
+                          ],
+                        ).createShader(bounds),
+                        child: Text(
+                          l10n.mathSpinner,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: -0.5,
+                          ),
+                        ),
                       ),
-                    ),
-                    // Spacer for balance
-                    const SizedBox(width: 40),
-                  ],
+                      // Spacer for balance
+                      const SizedBox(width: 40),
+                    ],
+                  ),
                 ),
-              ),
-              // Main content
-              Expanded(
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    final maxWidth = constraints.maxWidth;
-                    final maxHeight = constraints.maxHeight;
-                    final isLargeScreen = maxWidth > 600;
+                // Main content
+                Expanded(
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      final maxWidth = constraints.maxWidth;
+                      final maxHeight = constraints.maxHeight;
+                      final isLargeScreen = maxWidth > 600;
 
-                    // Calculate spinner size
-                    final availableWidth =
-                        maxWidth - (isLargeScreen ? 160 : 32);
-                    final availableHeight =
-                        maxHeight - 200; // Reserve space for UI
+                      // Calculate spinner size
+                      final availableWidth =
+                          maxWidth - (isLargeScreen ? 160 : 32);
+                      final availableHeight =
+                          maxHeight - 200; // Reserve space for UI
 
-                    final spinnerSize = math.min(
-                      availableWidth * 0.9,
-                      availableHeight * 0.6,
-                    );
-                    final finalSize = math.max(230.0, spinnerSize);
-                    final buttonSize = finalSize * 0.27;
+                      final spinnerSize = math.min(
+                        availableWidth * 0.9,
+                        availableHeight * 0.6,
+                      );
+                      final finalSize = math.max(230.0, spinnerSize);
+                      final buttonSize = finalSize * 0.27;
 
-                    return SingleChildScrollView(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: isLargeScreen ? 80 : 16,
-                      ),
-                      child: Column(
-                        children: [
-                          const SizedBox(height: 20),
-                          // Users list - without score
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                            child: Wrap(
-                              spacing: 12,
-                              runSpacing: 12,
-                              alignment: WrapAlignment.center,
-                              children: _displayUsers.asMap().entries.map((
-                                entry,
-                              ) {
-                                final index = entry.key;
-                                final user = entry.value;
-                                final isCurrentUser =
-                                    index == _currentUserIndex;
-                                final isWinner = _winners.contains(index);
-                                final isLoser = _losers.contains(index);
+                      return SingleChildScrollView(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: isLargeScreen ? 80 : 16,
+                        ),
+                        child: Column(
+                          children: [
+                            const SizedBox(height: 20),
+                            // Users list - without score
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                              ),
+                              child: Wrap(
+                                spacing: 12,
+                                runSpacing: 12,
+                                alignment: WrapAlignment.center,
+                                children: _displayUsers.asMap().entries.map((
+                                  entry,
+                                ) {
+                                  final index = entry.key;
+                                  final user = entry.value;
+                                  final isCurrentUser =
+                                      index == _currentUserIndex;
+                                  final isWinner = _winners.contains(index);
+                                  final isLoser = _losers.contains(index);
 
-                                return Opacity(
-                                  opacity: (isWinner || isLoser) ? 0.5 : 1.0,
-                                  child: _buildGlossyCard(
-                                    borderRadius: 16,
-                                    backgroundColor: isWinner
-                                        ? const Color(0xFF2D2D44).withOpacity(0.6)
-                                        : (isLoser
-                                              ? const Color(0xFF2D2D44).withOpacity(0.6)
-                                              : (isCurrentUser
-                                                    ? const Color(0xFF6366F1).withOpacity(0.7)
-                                                    : Colors.white.withOpacity(0.3))),
-                                    border: isCurrentUser && !isWinner && !isLoser
-                                        ? Border.all(
-                                            color: Colors.white,
-                                            width: 2,
-                                          )
-                                        : (isWinner
-                                              ? Border.all(
-                                                  color: const Color(0xFF4CAF50),
-                                                  width: 2,
-                                                )
-                                              : (isLoser
-                                                    ? Border.all(
-                                                        color: const Color(0xFFEF5350),
-                                                        width: 2,
-                                                      )
-                                                    : Border.all(
-                                                        color: Colors.white.withOpacity(0.6),
-                                                        width: 1,
-                                                      ))),
-                                    child: Container(
-                                      width:
-                                          (maxWidth - 60) /
-                                              (_displayUsers.length > 3
-                                                  ? 3
-                                                  : _displayUsers.length) -
-                                              8,
-                                      constraints: const BoxConstraints(
-                                        minWidth: 100,
-                                        maxWidth: 200,
-                                      ),
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 16,
-                                        vertical: 12,
-                                      ),
-                                      child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Text(
-                                          user == 'You'
-                                              ? l10n.you
-                                              : (user == 'Computer'
-                                                    ? l10n.computer
-                                                    : user),
-                                          style: TextStyle(
-                                            color: isWinner
-                                                ? const Color(0xFF64748B)
-                                                : const Color(0xFF1E293B),
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
+                                  return Opacity(
+                                    opacity: (isWinner || isLoser) ? 0.5 : 1.0,
+                                    child: _buildGlossyCard(
+                                      borderRadius: 16,
+                                      backgroundColor: isWinner
+                                          ? const Color(
+                                              0xFF2D2D44,
+                                            ).withOpacity(0.6)
+                                          : (isLoser
+                                                ? const Color(
+                                                    0xFF2D2D44,
+                                                  ).withOpacity(0.6)
+                                                : (isCurrentUser
+                                                      ? const Color(
+                                                          0xFF6366F1,
+                                                        ).withOpacity(0.7)
+                                                      : Colors.white
+                                                            .withOpacity(0.3))),
+                                      border:
+                                          isCurrentUser && !isWinner && !isLoser
+                                          ? Border.all(
+                                              color: Colors.white,
+                                              width: 2,
+                                            )
+                                          : (isWinner
+                                                ? Border.all(
+                                                    color: const Color(
+                                                      0xFF4CAF50,
+                                                    ),
+                                                    width: 2,
+                                                  )
+                                                : (isLoser
+                                                      ? Border.all(
+                                                          color: const Color(
+                                                            0xFFEF5350,
+                                                          ),
+                                                          width: 2,
+                                                        )
+                                                      : Border.all(
+                                                          color: Colors.white
+                                                              .withOpacity(0.6),
+                                                          width: 1,
+                                                        ))),
+                                      child: Container(
+                                        width:
+                                            (maxWidth - 60) /
+                                                (_displayUsers.length > 3
+                                                    ? 3
+                                                    : _displayUsers.length) -
+                                            8,
+                                        constraints: const BoxConstraints(
+                                          minWidth: 100,
+                                          maxWidth: 200,
                                         ),
-                                        if (isLoser) ...[
-                                          const SizedBox(height: 4),
-                                          const Icon(
-                                            Icons.cancel,
-                                            color: Color(0xFFEF5350),
-                                            size: 16,
-                                          ),
-                                        ],
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              );
-                            }).toList(),
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                          // Current user turn text (only show if current user is not a winner or loser)
-                          if (!_winners.contains(_currentUserIndex) &&
-                              !_losers.contains(_currentUserIndex))
-                            Text(
-                              l10n.turn(
-                                _displayUsers[_currentUserIndex] == 'You'
-                                    ? l10n.you
-                                    : (_displayUsers[_currentUserIndex] ==
-                                              'Computer'
-                                          ? l10n.computer
-                                          : _displayUsers[_currentUserIndex]),
-                              ),
-                              style: const TextStyle(
-                                color: Colors.white70,
-                                fontSize: 18,
-                              ),
-                            ),
-                          const SizedBox(height: 20),
-                          // Math Question Section - Glossy Design
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                            child: _buildGlossyCard(
-                              borderRadius: 20,
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 24,
-                                  vertical: 28,
-                                ),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    // Question label
-                                    Text(
-                                      'Math Question',
-                                      style: TextStyle(
-                                        color: Colors.white.withOpacity(0.8),
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600,
-                                        letterSpacing: 1,
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 16,
+                                          vertical: 12,
+                                        ),
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Text(
+                                              user == 'You'
+                                                  ? l10n.you
+                                                  : (user == 'Computer'
+                                                        ? l10n.computer
+                                                        : user),
+                                              style: TextStyle(
+                                                color: isWinner
+                                                    ? const Color(0xFF64748B)
+                                                    : const Color(0xFF1E293B),
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                            if (isLoser) ...[
+                                              const SizedBox(height: 4),
+                                              const Icon(
+                                                Icons.cancel,
+                                                color: Color(0xFFEF5350),
+                                                size: 16,
+                                              ),
+                                            ],
+                                          ],
+                                        ),
                                       ),
                                     ),
-                                    const SizedBox(height: 12),
-                                    // Math question with gradient text
-                                    ShaderMask(
-                                      shaderCallback: (bounds) => const LinearGradient(
-                                        colors: [
-                                          Color(0xFF6366F1),
-                                          Color(0xFF8B5CF6),
-                                          Color(0xFFEC4899),
-                                        ],
-                                      ).createShader(bounds),
-                                      child: Text(
-                                        _mathQuestion,
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 36,
-                                          fontWeight: FontWeight.bold,
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            // Current user turn text (only show if current user is not a winner or loser)
+                            if (!_winners.contains(_currentUserIndex) &&
+                                !_losers.contains(_currentUserIndex))
+                              Text(
+                                l10n.turn(
+                                  _displayUsers[_currentUserIndex] == 'You'
+                                      ? l10n.you
+                                      : (_displayUsers[_currentUserIndex] ==
+                                                'Computer'
+                                            ? l10n.computer
+                                            : _displayUsers[_currentUserIndex]),
+                                ),
+                                style: const TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 18,
+                                ),
+                              ),
+                            const SizedBox(height: 20),
+                            // Math Question Section - Glossy Design
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                              ),
+                              child: _buildGlossyCard(
+                                borderRadius: 20,
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 24,
+                                    vertical: 28,
+                                  ),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      // Question label
+                                      Text(
+                                        'Math Question',
+                                        style: TextStyle(
+                                          color: Colors.white.withOpacity(0.8),
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
                                           letterSpacing: 1,
                                         ),
-                                        textAlign: TextAlign.center,
                                       ),
+                                      const SizedBox(height: 12),
+                                      // Math question with gradient text
+                                      ShaderMask(
+                                        shaderCallback: (bounds) =>
+                                            const LinearGradient(
+                                              colors: [
+                                                Color(0xFF6366F1),
+                                                Color(0xFF8B5CF6),
+                                                Color(0xFFEC4899),
+                                              ],
+                                            ).createShader(bounds),
+                                        child: Text(
+                                          _mathQuestion,
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 36,
+                                            fontWeight: FontWeight.bold,
+                                            letterSpacing: 1,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            // Spinner Wheel
+                            Center(
+                              child: Container(
+                                height: finalSize + 40,
+                                width: finalSize + 40,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.15),
+                                      blurRadius: 12,
+                                      spreadRadius: 1,
+                                      offset: const Offset(0, 4),
                                     ),
                                   ],
                                 ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-                          // Spinner Wheel
-                          Center(
-                            child: Container(
-                              height: finalSize + 40,
-                              width: finalSize + 40,
-                              child: Stack(
-                                alignment: Alignment.center,
-                                children: [
-                                  // Spinner wheel
-                                  AnimatedBuilder(
-                                    animation: _controller,
-                                    builder: (context, child) {
-                                      return Transform.rotate(
-                                        angle:
-                                            _rotation *
-                                            math.pi /
-                                            180, // Convert degrees to radians
-                                        child: CustomPaint(
-                                          size: Size(finalSize, finalSize),
-                                          painter: _MathWheelPainter(
-                                            segments: _segments,
-                                            colors: _segmentColors,
+                                child: Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    // Spinner wheel
+                                    AnimatedBuilder(
+                                      animation: _controller,
+                                      builder: (context, child) {
+                                        return Transform.rotate(
+                                          angle:
+                                              _rotation *
+                                              math.pi /
+                                              180, // Convert degrees to radians
+                                          child: CustomPaint(
+                                            size: Size(finalSize, finalSize),
+                                            painter: _MathWheelPainter(
+                                              segments: _segments,
+                                              colors: _segmentColors,
+                                            ),
                                           ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                  // Center button
-                                  GestureDetector(
-                                    onTap:
-                                        (_isRevealed ||
-                                            _isSpinning ||
-                                            _isWaitingForNextTurn ||
-                                            _winners.contains(
-                                              _currentUserIndex,
-                                            ) ||
-                                            _losers.contains(
-                                              _currentUserIndex,
-                                            ) ||
-                                            (_isSinglePlayer &&
-                                                _displayUsers[_currentUserIndex] ==
-                                                    'Computer'))
-                                        ? null
-                                        : _spin,
-                                    child: Opacity(
-                                      opacity:
-                                          (_isWaitingForNextTurn ||
-                                              _isRevealed ||
+                                        );
+                                      },
+                                    ),
+                                    // Center button
+                                    GestureDetector(
+                                      onTap:
+                                          (_isRevealed ||
                                               _isSpinning ||
+                                              _isWaitingForNextTurn ||
                                               _winners.contains(
                                                 _currentUserIndex,
                                               ) ||
@@ -1044,225 +1066,245 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
                                               (_isSinglePlayer &&
                                                   _displayUsers[_currentUserIndex] ==
                                                       'Computer'))
-                                          ? 0.5
-                                          : 1.0,
-                                      child: Image.asset(
-                                        'assets/images/spin_logo.png',
-                                        width: buttonSize,
-                                        height: buttonSize,
+                                          ? null
+                                          : _spin,
+                                      child: Opacity(
+                                        opacity:
+                                            (_isWaitingForNextTurn ||
+                                                _isRevealed ||
+                                                _isSpinning ||
+                                                _winners.contains(
+                                                  _currentUserIndex,
+                                                ) ||
+                                                _losers.contains(
+                                                  _currentUserIndex,
+                                                ) ||
+                                                (_isSinglePlayer &&
+                                                    _displayUsers[_currentUserIndex] ==
+                                                        'Computer'))
+                                            ? 0.5
+                                            : 1.0,
+                                        child: Image.asset(
+                                          'assets/images/spin_logo.png',
+                                          width: buttonSize,
+                                          height: buttonSize,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  // Reveal animation overlay (same as multiplayer)
-                                  if (_isRevealed && _selectedNumber != null)
-                                    AnimatedBuilder(
-                                      animation: _revealController,
-                                      builder: (context, child) {
-                                        return FadeTransition(
-                                          opacity: _revealController,
-                                          child: ScaleTransition(
-                                            scale:
-                                                Tween<double>(
-                                                  begin: 0.0,
-                                                  end: 1.0,
-                                                ).animate(
-                                                  CurvedAnimation(
-                                                    parent: _revealController,
-                                                    curve: Curves.elasticOut,
-                                                  ),
-                                                ),
-                                            child: Container(
-                                              width: finalSize * 1.2,
-                                              height: finalSize * 1.2,
-                                              decoration: BoxDecoration(
-                                                shape: BoxShape.circle,
-                                                gradient: RadialGradient(
-                                                  colors: _isCorrectAnswer
-                                                      ? [
-                                                          const Color(
-                                                            0xFFFFF9C4,
-                                                          ).withOpacity(
-                                                            0.95,
-                                                          ), // Light yellow for correct
-                                                          const Color(
-                                                            0xFFFFF59D,
-                                                          ).withOpacity(
-                                                            0.9,
-                                                          ), // Slightly darker yellow
-                                                        ]
-                                                      : [
-                                                          const Color(
-                                                            0xFFEF5350,
-                                                          ).withOpacity(
-                                                            0.95,
-                                                          ), // Light red for wrong
-                                                          const Color(
-                                                            0xFFE53935,
-                                                          ).withOpacity(
-                                                            0.9,
-                                                          ), // Darker red
-                                                        ],
-                                                ),
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                    color:
-                                                        (_isCorrectAnswer
-                                                                ? const Color(
-                                                                    0xFFFFF59D,
-                                                                  )
-                                                                : const Color(
-                                                                    0xFFE53935,
-                                                                  ))
-                                                            .withOpacity(0.5),
-                                                    blurRadius: 30,
-                                                    spreadRadius: 10,
-                                                  ),
-                                                ],
-                                              ),
-                                              child: Center(
-                                                child: Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    // Label with animation
-                                                    FadeTransition(
-                                                      opacity:
-                                                          Tween<double>(
-                                                            begin: 0.0,
-                                                            end: 1.0,
-                                                          ).animate(
-                                                            CurvedAnimation(
-                                                              parent:
-                                                                  _revealController,
-                                                              curve:
-                                                                  const Interval(
-                                                                    0.0,
-                                                                    0.5,
-                                                                    curve: Curves
-                                                                        .easeIn,
-                                                                  ),
-                                                            ),
-                                                          ),
-                                                      child: Text(
-                                                        _isCorrectAnswer
-                                                            ? l10n.earned
-                                                            : l10n.selected,
-                                                        style: TextStyle(
-                                                          color:
-                                                              _isCorrectAnswer
-                                                              ? Colors.black87
-                                                              : Colors.white,
-                                                          fontSize:
-                                                              finalSize * 0.08,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          letterSpacing: 3,
-                                                        ),
-                                                      ),
+                                    // Reveal animation overlay (same as multiplayer)
+                                    if (_isRevealed && _selectedNumber != null)
+                                      AnimatedBuilder(
+                                        animation: _revealController,
+                                        builder: (context, child) {
+                                          return FadeTransition(
+                                            opacity: _revealController,
+                                            child: ScaleTransition(
+                                              scale:
+                                                  Tween<double>(
+                                                    begin: 0.0,
+                                                    end: 1.0,
+                                                  ).animate(
+                                                    CurvedAnimation(
+                                                      parent: _revealController,
+                                                      curve: Curves.elasticOut,
                                                     ),
-                                                    const SizedBox(height: 12),
-                                                    // Number with animation
-                                                    ScaleTransition(
-                                                      scale:
-                                                          Tween<double>(
-                                                            begin: 0.0,
-                                                            end: 1.0,
-                                                          ).animate(
-                                                            CurvedAnimation(
-                                                              parent:
-                                                                  _revealController,
-                                                              curve: const Interval(
-                                                                0.2,
-                                                                0.7,
-                                                                curve: Curves
-                                                                    .elasticOut,
-                                                              ),
-                                                            ),
-                                                          ),
-                                                      child: Text(
-                                                        '$_selectedNumber',
-                                                        style: TextStyle(
-                                                          color:
-                                                              _isCorrectAnswer
-                                                              ? Colors.black
-                                                              : Colors.white,
-                                                          fontSize:
-                                                              finalSize * 0.25,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          shadows: [
-                                                            Shadow(
-                                                              color:
-                                                                  (_isCorrectAnswer
-                                                                          ? Colors.black
-                                                                          : Colors.black)
-                                                                      .withOpacity(
-                                                                        0.2,
-                                                                      ),
-                                                              blurRadius: 10,
-                                                            ),
+                                                  ),
+                                              child: Container(
+                                                width: finalSize * 1.2,
+                                                height: finalSize * 1.2,
+                                                decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  gradient: RadialGradient(
+                                                    colors: _isCorrectAnswer
+                                                        ? [
+                                                            const Color(
+                                                              0xFFFFF9C4,
+                                                            ).withOpacity(
+                                                              0.95,
+                                                            ), // Light yellow for correct
+                                                            const Color(
+                                                              0xFFFFF59D,
+                                                            ).withOpacity(
+                                                              0.9,
+                                                            ), // Slightly darker yellow
+                                                          ]
+                                                        : [
+                                                            const Color(
+                                                              0xFFEF5350,
+                                                            ).withOpacity(
+                                                              0.95,
+                                                            ), // Light red for wrong
+                                                            const Color(
+                                                              0xFFE53935,
+                                                            ).withOpacity(
+                                                              0.9,
+                                                            ), // Darker red
                                                           ],
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    const SizedBox(height: 8),
-                                                    // Status text with animation
-                                                    FadeTransition(
-                                                      opacity:
-                                                          Tween<double>(
-                                                            begin: 0.0,
-                                                            end: 1.0,
-                                                          ).animate(
-                                                            CurvedAnimation(
-                                                              parent:
-                                                                  _revealController,
-                                                              curve:
-                                                                  const Interval(
-                                                                    0.5,
-                                                                    0.8,
-                                                                    curve: Curves
-                                                                        .easeIn,
-                                                                  ),
-                                                            ),
-                                                          ),
-                                                      child: Text(
-                                                        _isCorrectAnswer
-                                                            ? 'Correct!'
-                                                            : 'Wrong Answer',
-                                                        style: TextStyle(
-                                                          color:
-                                                              _isCorrectAnswer
-                                                              ? Colors.black87
-                                                              : Colors.white,
-                                                          fontSize:
-                                                              finalSize * 0.07,
-                                                          fontWeight:
-                                                              FontWeight.w600,
-                                                        ),
-                                                      ),
+                                                  ),
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color:
+                                                          (_isCorrectAnswer
+                                                                  ? const Color(
+                                                                      0xFFFFF59D,
+                                                                    )
+                                                                  : const Color(
+                                                                      0xFFE53935,
+                                                                    ))
+                                                              .withOpacity(0.5),
+                                                      blurRadius: 30,
+                                                      spreadRadius: 10,
                                                     ),
                                                   ],
                                                 ),
+                                                child: Center(
+                                                  child: Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      // Label with animation
+                                                      FadeTransition(
+                                                        opacity:
+                                                            Tween<double>(
+                                                              begin: 0.0,
+                                                              end: 1.0,
+                                                            ).animate(
+                                                              CurvedAnimation(
+                                                                parent:
+                                                                    _revealController,
+                                                                curve: const Interval(
+                                                                  0.0,
+                                                                  0.5,
+                                                                  curve: Curves
+                                                                      .easeIn,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                        child: Text(
+                                                          _isCorrectAnswer
+                                                              ? l10n.earned
+                                                              : l10n.selected,
+                                                          style: TextStyle(
+                                                            color:
+                                                                _isCorrectAnswer
+                                                                ? Colors.black87
+                                                                : Colors.white,
+                                                            fontSize:
+                                                                finalSize *
+                                                                0.08,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            letterSpacing: 3,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      const SizedBox(
+                                                        height: 12,
+                                                      ),
+                                                      // Number with animation
+                                                      ScaleTransition(
+                                                        scale:
+                                                            Tween<double>(
+                                                              begin: 0.0,
+                                                              end: 1.0,
+                                                            ).animate(
+                                                              CurvedAnimation(
+                                                                parent:
+                                                                    _revealController,
+                                                                curve: const Interval(
+                                                                  0.2,
+                                                                  0.7,
+                                                                  curve: Curves
+                                                                      .elasticOut,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                        child: Text(
+                                                          '$_selectedNumber',
+                                                          style: TextStyle(
+                                                            color:
+                                                                _isCorrectAnswer
+                                                                ? Colors.black
+                                                                : Colors.white,
+                                                            fontSize:
+                                                                finalSize *
+                                                                0.25,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            shadows: [
+                                                              Shadow(
+                                                                color:
+                                                                    (_isCorrectAnswer
+                                                                            ? Colors.black
+                                                                            : Colors.black)
+                                                                        .withOpacity(
+                                                                          0.2,
+                                                                        ),
+                                                                blurRadius: 10,
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      const SizedBox(height: 8),
+                                                      // Status text with animation
+                                                      FadeTransition(
+                                                        opacity:
+                                                            Tween<double>(
+                                                              begin: 0.0,
+                                                              end: 1.0,
+                                                            ).animate(
+                                                              CurvedAnimation(
+                                                                parent:
+                                                                    _revealController,
+                                                                curve: const Interval(
+                                                                  0.5,
+                                                                  0.8,
+                                                                  curve: Curves
+                                                                      .easeIn,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                        child: Text(
+                                                          _isCorrectAnswer
+                                                              ? 'Correct!'
+                                                              : 'Wrong Answer',
+                                                          style: TextStyle(
+                                                            color:
+                                                                _isCorrectAnswer
+                                                                ? Colors.black87
+                                                                : Colors.white,
+                                                            fontSize:
+                                                                finalSize *
+                                                                0.07,
+                                                            fontWeight:
+                                                                FontWeight.w600,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                ],
+                                          );
+                                        },
+                                      ),
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                          const SizedBox(height: 40),
-                        ],
-                      ),
-                    );
-                  },
+                            const SizedBox(height: 40),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
                 ),
-              ),
-              // Banner Ad at bottom
-              const BannerAdWidget(),
-            ],
+                // Banner Ad at bottom
+                const BannerAdWidget(),
+              ],
             ),
           ),
         ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:ui';
 import 'app_theme.dart';
 import 'dart:io';
 import 'package:share_plus/share_plus.dart';
@@ -13,6 +14,7 @@ class MultiplayerResultsPage extends StatefulWidget {
   final int rounds;
   final Map<int, Map<String, int>> roundScores;
   final Map<String, int> totalScores;
+  final bool hideScores;
 
   const MultiplayerResultsPage({
     super.key,
@@ -20,6 +22,7 @@ class MultiplayerResultsPage extends StatefulWidget {
     required this.rounds,
     required this.roundScores,
     required this.totalScores,
+    this.hideScores = false,
   });
 
   @override
@@ -51,46 +54,69 @@ class _MultiplayerResultsPageState extends State<MultiplayerResultsPage> {
   Gradient? _getMedalGradient(int rank) {
     switch (rank) {
       case 1:
-        // Gold gradient - rich yellow to orange with shine
+        // Gold gradient matching HTML - #fbbf24 to #f59e0b to #d97706
         return LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            const Color(0xFFFFD700), // Bright gold
-            const Color(0xFFFFA500), // Orange gold
-            const Color(0xFFFFD700), // Bright gold
-            const Color(0xFFFFC125), // Goldenrod
+            const Color(0xFFFBBF24), // #fbbf24
+            const Color(0xFFF59E0B), // #f59e0b
+            const Color(0xFFD97706), // #d97706
           ],
-          stops: const [0.0, 0.3, 0.6, 1.0],
+          stops: const [0.0, 0.5, 1.0],
         );
       case 2:
-        // Silver gradient - metallic gray to white with shine
+        // Silver gradient matching HTML - #f3f4f6 to #d1d5db to #9ca3af
         return LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            const Color(0xFFE8E8E8), // Light silver
-            const Color(0xFFFFFFFF), // White
-            const Color(0xFFC0C0C0), // Silver
-            const Color(0xFFE8E8E8), // Light silver
+            const Color(0xFFF3F4F6), // #f3f4f6
+            const Color(0xFFD1D5DB), // #d1d5db
+            const Color(0xFF9CA3AF), // #9ca3af
           ],
-          stops: const [0.0, 0.3, 0.6, 1.0],
+          stops: const [0.0, 0.5, 1.0],
         );
       case 3:
-        // Bronze gradient - brown to copper with metallic shine
+        // Bronze gradient matching HTML - #ea580c to #c2410c to #7c2d12
         return LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            const Color(0xFFCD7F32), // Bronze
-            const Color(0xFFB87333), // Darker bronze
-            const Color(0xFFCD853F), // Peru bronze
-            const Color(0xFFCD7F32), // Bronze
+            const Color(0xFFEA580C), // #ea580c
+            const Color(0xFFC2410C), // #c2410c
+            const Color(0xFF7C2D12), // #7c2d12
           ],
-          stops: const [0.0, 0.3, 0.6, 1.0],
+          stops: const [0.0, 0.5, 1.0],
         );
       default:
         return null; // No gradient for ranks 4+
+    }
+  }
+
+  String _getRankTitle(int rank) {
+    switch (rank) {
+      case 1:
+        return 'Grand Champion';
+      case 2:
+        return 'Runner Up';
+      case 3:
+        return 'Finalist';
+      default:
+        return '';
+    }
+  }
+
+  Color _getRankIconColor(int rank) {
+    switch (rank) {
+      case 1:
+        return const Color(0xFFF59E0B); // gold-DEFAULT
+      case 2:
+        return const Color(0xFF9CA3AF); // silver-DEFAULT
+      case 3:
+        return const Color(0xFFD97706); // bronze-DEFAULT
+      default:
+        return Colors.grey;
     }
   }
 
@@ -98,18 +124,19 @@ class _MultiplayerResultsPageState extends State<MultiplayerResultsPage> {
     try {
       // Add a delay to ensure content is fully rendered
       await Future.delayed(const Duration(milliseconds: 300));
-      
+
       // Capture screenshot
       final image = await _screenshotController.capture();
-      
+
       if (image != null && image.isNotEmpty) {
         final tempDir = await getTemporaryDirectory();
-        final fileName = 'multiplayer_results_${DateTime.now().millisecondsSinceEpoch}.png';
+        final fileName =
+            'multiplayer_results_${DateTime.now().millisecondsSinceEpoch}.png';
         final filePath = '${tempDir.path}/$fileName';
         final file = File(filePath);
-        
+
         await file.writeAsBytes(image);
-        
+
         // Verify file was created
         if (await file.exists()) {
           final fileSize = await file.length();
@@ -117,7 +144,7 @@ class _MultiplayerResultsPageState extends State<MultiplayerResultsPage> {
             // Get screen size for share position
             final screenSize = MediaQuery.of(context).size;
             final xFile = XFile(filePath);
-            
+
             // Use shareXFiles with sharePositionOrigin for iOS compatibility
             await Share.shareXFiles(
               [xFile],
@@ -136,7 +163,9 @@ class _MultiplayerResultsPageState extends State<MultiplayerResultsPage> {
           throw Exception('Screenshot file was not created at $filePath');
         }
       } else {
-        throw Exception('Failed to capture screenshot - image is null or empty');
+        throw Exception(
+          'Failed to capture screenshot - image is null or empty',
+        );
       }
     } catch (e) {
       if (mounted) {
@@ -167,231 +196,680 @@ class _MultiplayerResultsPageState extends State<MultiplayerResultsPage> {
       builder: (context, isDark, _) {
         return AnimatedGradientBackground(
           child: Scaffold(
-            backgroundColor: Colors.transparent, // Transparent so gradient shows through
+            backgroundColor:
+                Colors.transparent, // Transparent so gradient shows through
             body: SafeArea(
-        child: Column(
-          children: [
-            // Fixed header with back button, title, and share button
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-              child: Stack(
-                alignment: Alignment.center,
+              child: Column(
                 children: [
-                  // Back button - left aligned
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Container(
-                      width: 48,
-                      height: 48,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF6C5CE7),
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.3),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: IconButton(
-                        icon: const Icon(Icons.arrow_back, color: Colors.white),
-                        onPressed: _goHome,
-                      ),
+                  // Fixed header with back button, title, and share button
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 16,
                     ),
-                  ),
-                  // Title - centered on screen
-                  Text(
-                    '🏆 ${l10n.gameResults} 🏆',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        color: AppTheme.textColor,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  // Share button - right aligned
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: Builder(
-                      builder: (context) {
-                        return Container(
-                          width: 48,
-                          height: 48,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF6C5CE7),
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.3),
-                                blurRadius: 8,
-                                offset: const Offset(0, 2),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        // Back button - glass card style
+                        ClipOval(
+                          child: BackdropFilter(
+                            filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+                            child: Container(
+                              width: 40,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.4),
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: Colors.white.withOpacity(0.6),
+                                  width: 1,
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.05),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
                               ),
+                              child: Material(
+                                color: Colors.transparent,
+                                child: InkWell(
+                                  borderRadius: BorderRadius.circular(20),
+                                  onTap: _goHome,
+                                  child: const Icon(
+                                    Icons.arrow_back_ios_new,
+                                    color: Color(0xFF475569),
+                                    size: 20,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        // Title with trophy icons
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.emoji_events,
+                              color: Color(0xFFF59E0B),
+                              size: 24,
+                            ),
+                            const SizedBox(width: 8),
+                            ShaderMask(
+                              shaderCallback: (bounds) => const LinearGradient(
+                                colors: [
+                                  Color.fromARGB(255, 41, 44, 232),
+                                  Color.fromARGB(255, 136, 16, 248),
+                                ],
+                              ).createShader(bounds),
+                              child: Text(
+                                l10n.gameResults,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w800,
+                                  letterSpacing: -0.5,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            const Icon(
+                              Icons.emoji_events,
+                              color: Color(0xFFF59E0B),
+                              size: 24,
+                            ),
+                          ],
+                        ),
+                        // Share button - glass card style
+                        Builder(
+                          builder: (context) {
+                            return ClipOval(
+                              child: BackdropFilter(
+                                filter: ImageFilter.blur(
+                                  sigmaX: 12,
+                                  sigmaY: 12,
+                                ),
+                                child: Container(
+                                  width: 40,
+                                  height: 40,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.4),
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: Colors.white.withOpacity(0.6),
+                                      width: 1,
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.05),
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 4),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Material(
+                                    color: Colors.transparent,
+                                    child: InkWell(
+                                      borderRadius: BorderRadius.circular(20),
+                                      onTap: () => _shareResults(context),
+                                      child: const Icon(
+                                        Icons.ios_share,
+                                        color: Color(0xFF475569),
+                                        size: 20,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Scrollable content
+                  Expanded(
+                    child: Screenshot(
+                      controller: _screenshotController,
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 16,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            // Native Ad above first user
+                            const NativeAdWidget(),
+                            const SizedBox(height: 16),
+                            // Top 3 players with special glossy cards
+                            ..._sortedUsers.asMap().entries.take(3).map((
+                              entry,
+                            ) {
+                              final rank = entry.key + 1;
+                              final userEntry = entry.value;
+                              final user = userEntry.key;
+                              final totalScore = userEntry.value;
+                              final medalGradient = _getMedalGradient(rank);
+                              final rankTitle = _getRankTitle(rank);
+                              final iconColor = _getRankIconColor(rank);
+                              final isGold = rank == 1;
+
+                              return Container(
+                                margin: EdgeInsets.only(bottom: 16),
+                                decoration: BoxDecoration(
+                                  gradient: medalGradient,
+                                  borderRadius: BorderRadius.circular(
+                                    isGold ? 32 : 28,
+                                  ),
+                                  border: Border.all(
+                                    color: Colors.white.withOpacity(0.4),
+                                    width: 1,
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: rank == 1
+                                          ? const Color(
+                                              0xFFD97706,
+                                            ).withOpacity(0.4)
+                                          : rank == 2
+                                          ? const Color(
+                                              0xFF6B7280,
+                                            ).withOpacity(0.3)
+                                          : const Color(
+                                              0xFF7C2D12,
+                                            ).withOpacity(0.4),
+                                      blurRadius: 15,
+                                      spreadRadius: -5,
+                                      offset: const Offset(0, 10),
+                                    ),
+                                    BoxShadow(
+                                      color: Colors.white.withOpacity(0.6),
+                                      blurRadius: 0,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                                child: Stack(
+                                  children: [
+                                    // Glossy overlay effect
+                                    Positioned(
+                                      top: 0,
+                                      left: 0,
+                                      right: 0,
+                                      height: 100,
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          gradient: LinearGradient(
+                                            begin: Alignment.topCenter,
+                                            end: Alignment.bottomCenter,
+                                            colors: [
+                                              Colors.white.withOpacity(0.3),
+                                              Colors.white.withOpacity(0.0),
+                                            ],
+                                          ),
+                                          borderRadius: BorderRadius.only(
+                                            topLeft: Radius.circular(
+                                              isGold ? 32 : 28,
+                                            ),
+                                            topRight: Radius.circular(
+                                              isGold ? 32 : 28,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    // Content
+                                    Padding(
+                                      padding: EdgeInsets.all(isGold ? 24 : 20),
+                                      child: Column(
+                                        children: [
+                                          Row(
+                                            children: [
+                                              // Avatar with rank badge
+                                              Stack(
+                                                children: [
+                                                  Container(
+                                                    width: isGold ? 64 : 56,
+                                                    height: isGold ? 64 : 56,
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.white
+                                                          .withOpacity(
+                                                            rank == 1
+                                                                ? 0.2
+                                                                : rank == 2
+                                                                ? 0.4
+                                                                : 0.2,
+                                                          ),
+                                                      shape: BoxShape.circle,
+                                                      border: Border.all(
+                                                        color: Colors.white
+                                                            .withOpacity(
+                                                              rank == 1
+                                                                  ? 0.4
+                                                                  : rank == 2
+                                                                  ? 0.6
+                                                                  : 0.4,
+                                                            ),
+                                                        width: 2,
+                                                      ),
+                                                    ),
+                                                    child: Center(
+                                                      child: Text(
+                                                        user.length > 2
+                                                            ? '${rank}'
+                                                            : user.toUpperCase(),
+                                                        style: TextStyle(
+                                                          color: rank == 1
+                                                              ? Colors.white
+                                                              : rank == 2
+                                                              ? const Color(
+                                                                  0xFF374151,
+                                                                )
+                                                              : Colors.white,
+                                                          fontSize: isGold
+                                                              ? 20
+                                                              : 18,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  // Rank icon badge
+                                                  // Positioned(
+                                                  //   bottom: -4,
+                                                  //   right: -4,
+                                                  //   child: Container(
+                                                  //     width: isGold ? 32 : 24,
+                                                  //     height: isGold ? 32 : 24,
+                                                  //     decoration: BoxDecoration(
+                                                  //       color: Colors.white,
+                                                  //       shape: BoxShape.circle,
+                                                  //       boxShadow: [
+                                                  //         BoxShadow(
+                                                  //           color: Colors.black.withOpacity(0.1),
+                                                  //           blurRadius: isGold ? 8 : 4,
+                                                  //           offset: const Offset(0, 2),
+                                                  //         ),
+                                                  //       ],
+                                                  //     ),
+                                                  //     child: Icon(
+                                                  //       rank == 1
+                                                  //           ? Icons.stars
+                                                  //           : rank == 2
+                                                  //               ? Icons.looks_two
+                                                  //               : Icons.looks_3,
+                                                  //       color: iconColor,
+                                                  //       size: isGold ? 20 : 18,
+                                                  //     ),
+                                                  //   ),
+                                                  // ),
+                                                ],
+                                              ),
+                                              const SizedBox(width: 16),
+                                              // Name and title
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      user,
+                                                      style: TextStyle(
+                                                        color: rank == 1
+                                                            ? Colors.white
+                                                            : rank == 2
+                                                            ? const Color(
+                                                                0xFF1F2937,
+                                                              )
+                                                            : Colors.white,
+                                                        fontSize: isGold
+                                                            ? 20
+                                                            : 18,
+                                                        fontWeight:
+                                                            FontWeight.w800,
+                                                      ),
+                                                    ),
+                                                    const SizedBox(height: 4),
+                                                    Text(
+                                                      rankTitle,
+                                                      style: TextStyle(
+                                                        color: rank == 1
+                                                            ? Colors.white
+                                                                  .withOpacity(
+                                                                    0.8,
+                                                                  )
+                                                            : rank == 2
+                                                            ? const Color(
+                                                                0xFF6B7280,
+                                                              )
+                                                            : Colors.white
+                                                                  .withOpacity(
+                                                                    0.7,
+                                                                  ),
+                                                        fontSize: 10,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        letterSpacing: 2,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              // Total score
+                                              if (!widget.hideScores)
+                                                Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.end,
+                                                  children: [
+                                                    Text(
+                                                      'Total Score',
+                                                      style: TextStyle(
+                                                        color: rank == 1
+                                                            ? Colors.white
+                                                                  .withOpacity(
+                                                                    0.7,
+                                                                  )
+                                                            : rank == 2
+                                                            ? const Color(
+                                                                0xFF9CA3AF,
+                                                              )
+                                                            : Colors.white
+                                                                  .withOpacity(
+                                                                    0.6,
+                                                                  ),
+                                                        fontSize: 10,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        letterSpacing: 0.5,
+                                                      ),
+                                                    ),
+                                                    const SizedBox(height: 4),
+                                                    Text(
+                                                      totalScore.toString(),
+                                                      style: TextStyle(
+                                                        color: rank == 1
+                                                            ? Colors.white
+                                                            : rank == 2
+                                                            ? const Color(
+                                                                0xFF1F2937,
+                                                              )
+                                                            : Colors.white,
+                                                        fontSize: isGold
+                                                            ? 32
+                                                            : 24,
+                                                        fontWeight:
+                                                            FontWeight.w900,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                            ],
+                                          ),
+                                          // Round scores
+                                          if (!widget.hideScores) ...[
+                                            const SizedBox(height: 12),
+                                            Align(
+                                              alignment: Alignment.centerLeft,
+                                              child: Text(
+                                                l10n.rounds(
+                                                  List.generate(widget.rounds, (
+                                                    roundIndex,
+                                                  ) {
+                                                    final round =
+                                                        roundIndex + 1;
+                                                    final roundScore =
+                                                        widget
+                                                            .roundScores[round]?[user] ??
+                                                        0;
+                                                    return l10n.roundScore(
+                                                      round.toString(),
+                                                      roundScore.toString(),
+                                                    );
+                                                  }).join(' | '),
+                                                ),
+                                                style: TextStyle(
+                                                  color: rank == 1
+                                                      ? Colors.white
+                                                            .withOpacity(0.85)
+                                                      : rank == 2
+                                                      ? const Color(0xFF4B5563)
+                                                      : Colors.white
+                                                            .withOpacity(0.75),
+                                                  fontSize: 13,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }),
+                            // Other players (4th+) with glass cards
+                            if (_sortedUsers.length > 3) ...[
+                              const SizedBox(height: 8),
+                              ..._sortedUsers.asMap().entries.skip(3).map((
+                                entry,
+                              ) {
+                                final rank = entry.key + 1;
+                                final userEntry = entry.value;
+                                final user = userEntry.key;
+                                final totalScore = userEntry.value;
+
+                                return ClipRRect(
+                                  borderRadius: BorderRadius.circular(16),
+                                  child: BackdropFilter(
+                                    filter: ImageFilter.blur(
+                                      sigmaX: 12,
+                                      sigmaY: 12,
+                                    ),
+                                    child: Container(
+                                      margin: const EdgeInsets.only(bottom: 12),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withOpacity(0.4),
+                                        borderRadius: BorderRadius.circular(16),
+                                        border: Border.all(
+                                          color: Colors.white.withOpacity(0.6),
+                                          width: 1,
+                                        ),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black.withOpacity(
+                                              0.05,
+                                            ),
+                                            blurRadius: 10,
+                                            offset: const Offset(0, 4),
+                                          ),
+                                        ],
+                                      ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(16),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Row(
+                                              children: [
+                                                // Rank number
+                                                Container(
+                                                  width: 32,
+                                                  height: 32,
+                                                  decoration: BoxDecoration(
+                                                    color: const Color(
+                                                      0xFFE2E8F0,
+                                                    ),
+                                                    shape: BoxShape.circle,
+                                                  ),
+                                                  child: Center(
+                                                    child: Text(
+                                                      rank.toString(),
+                                                      style: const TextStyle(
+                                                        color: Color(
+                                                          0xFF64748B,
+                                                        ),
+                                                        fontSize: 12,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 12),
+                                                // Player name
+                                                Expanded(
+                                                  child: Text(
+                                                    user,
+                                                    style: const TextStyle(
+                                                      color: Color(0xFF1F2937),
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                ),
+                                                // Total score
+                                                if (!widget.hideScores)
+                                                  Row(
+                                                    children: [
+                                                      const Text(
+                                                        'Total',
+                                                        style: TextStyle(
+                                                          color: Color(
+                                                            0xFF9CA3AF,
+                                                          ),
+                                                          fontSize: 12,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                      const SizedBox(width: 16),
+                                                      Text(
+                                                        totalScore.toString(),
+                                                        style: const TextStyle(
+                                                          color: Color(
+                                                            0xFF1F2937,
+                                                          ),
+                                                          fontSize: 16,
+                                                          fontWeight:
+                                                              FontWeight.w800,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                              ],
+                                            ),
+                                            // Round scores
+                                            if (!widget.hideScores) ...[
+                                              const SizedBox(height: 12),
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                  left: 44,
+                                                ),
+                                                child: Text(
+                                                  l10n.rounds(
+                                                    List.generate(widget.rounds, (
+                                                      roundIndex,
+                                                    ) {
+                                                      final round =
+                                                          roundIndex + 1;
+                                                      final roundScore =
+                                                          widget
+                                                              .roundScores[round]?[user] ??
+                                                          0;
+                                                      return l10n.roundScore(
+                                                        round.toString(),
+                                                        roundScore.toString(),
+                                                      );
+                                                    }).join(' | '),
+                                                  ),
+                                                  style: const TextStyle(
+                                                    color: Color(0xFF6B7280),
+                                                    fontSize: 13,
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              }),
                             ],
+                            const SizedBox(height: 20),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  // Play Again button
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 8,
+                    ),
+                    child: SizedBox(
+                      width: double.infinity,
+                      height: 64,
+                      child: ElevatedButton(
+                        onPressed: _goHome,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(
+                            0xFF6366F1,
+                          ), // primary color
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(24),
                           ),
-                          child: IconButton(
-                            icon: const Icon(Icons.share, color: Colors.white, size: 24),
-                            onPressed: () => _shareResults(context),
-                          ),
-                        );
-                      },
+                          elevation: 8,
+                          shadowColor: const Color(0xFF6366F1).withOpacity(0.4),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.replay,
+                              color: Colors.white,
+                              size: 24,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              'Play Again',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  // Bottom indicator
+                  Container(
+                    width: 128,
+                    height: 6,
+                    margin: const EdgeInsets.only(bottom: 8),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF9CA3AF).withOpacity(0.3),
+                      borderRadius: BorderRadius.circular(3),
                     ),
                   ),
                 ],
               ),
             ),
-            // Scrollable content
-            Expanded(
-              child: Screenshot(
-                controller: _screenshotController,
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                    const SizedBox(height: 30),
-                    // Native Ad above first user
-                    const NativeAdWidget(),
-                    // Users List with Rankings
-                    ..._sortedUsers.asMap().entries.map((entry) {
-                      final rank = entry.key + 1;
-                      final userEntry = entry.value;
-                      final user = userEntry.key;
-                      final totalScore = userEntry.value;
-                      final medalEmoji = _getMedalEmoji(rank);
-                      final medalGradient = _getMedalGradient(rank);
-
-                      return Container(
-                        margin: const EdgeInsets.only(bottom: 16),
-                        decoration: BoxDecoration(
-                          gradient: medalGradient ?? LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [
-                              AppTheme.cardBackgroundColor,
-                              AppTheme.cardBackgroundColor.withOpacity(0.8),
-                              AppTheme.cardBackgroundColor,
-                            ],
-                            stops: const [0.0, 0.5, 1.0],
-                          ),
-                          borderRadius: BorderRadius.circular(16),
-                          border: rank <= 3
-                              ? Border.all(color: Colors.white.withOpacity(0.8), width: 2.5)
-                              : Border.all(color: Colors.white.withOpacity(0.2), width: 1.5),
-                          boxShadow: [
-                            BoxShadow(
-                              color: rank <= 3 
-                                  ? (rank == 1 
-                                      ? const Color(0xFFFFD700).withOpacity(0.4) // Gold glow
-                                      : rank == 2 
-                                          ? const Color(0xFFC0C0C0).withOpacity(0.4) // Silver glow
-                                          : const Color(0xFFCD7F32).withOpacity(0.4)) // Bronze glow
-                                  : Colors.black.withOpacity(0.3),
-                              blurRadius: rank <= 3 ? 12 : 8,
-                              spreadRadius: rank <= 3 ? 2 : 0,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // User header with rank
-                              Row(
-                                children: [
-                                  // Rank badge
-                                  Container(
-                                    width: 50,
-                                    height: 50,
-                                    decoration: BoxDecoration(
-                                      color: rank <= 3
-                                          ? Colors.white.withOpacity(0.3)
-                                          : Colors.white.withOpacity(0.2),
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        medalEmoji.isNotEmpty
-                                            ? medalEmoji
-                                            : '$rank',
-                                        style: TextStyle(
-                                          color: rank <= 3 ? Colors.white : Colors.white,
-                                          fontSize: rank <= 3 ? 24 : 20,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 16),
-                                  // User name
-                                  Expanded(
-                                    child: Text(
-                                      user,
-                                      style: TextStyle(
-                                        color: rank <= 3 ? Colors.black : Colors.white,
-                                        fontSize: 22,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                  // Total score
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                      vertical: 8,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: rank <= 3 
-                                          ? Colors.white.withOpacity(0.3)
-                                          : Colors.white.withOpacity(0.2),
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    child: Text(
-                                      l10n.total(totalScore.toString()),
-                                      style: TextStyle(
-                                        color: rank <= 3 ? Colors.black : Colors.white,
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 8),
-                              // Round scores - all in one line
-                              Text(
-                                l10n.rounds(
-                                  List.generate(widget.rounds, (roundIndex) {
-                                    final round = roundIndex + 1;
-                                    final roundScore = widget.roundScores[round]?[user] ?? 0;
-                                    return l10n.roundScore(round.toString(), roundScore.toString());
-                                  }).join(' | ')
-                                ),
-                                style: TextStyle(
-                                  color: rank <= 3 ? Colors.black87 : Colors.white70,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    }),
-                    const SizedBox(height: 20),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
           ),
         );
       },
     );
   }
 }
-

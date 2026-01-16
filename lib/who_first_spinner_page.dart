@@ -638,6 +638,67 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
     }
   }
 
+  // Helper widget for glossy card effect
+  Widget _buildGlossyCard({
+    required Widget child,
+    double borderRadius = 16,
+    Color? backgroundColor,
+    Border? border,
+  }) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(borderRadius),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+        child: Container(
+          decoration: BoxDecoration(
+            color: backgroundColor ?? Colors.white.withOpacity(0.45),
+            borderRadius: BorderRadius.circular(borderRadius),
+            border:
+                border ??
+                Border.all(color: Colors.white.withOpacity(0.6), width: 1),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF1F2687).withOpacity(0.07),
+                blurRadius: 32,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: Stack(
+            children: [
+              child,
+              // Glossy overlay effect
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                height: 100,
+                child: IgnorePointer(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.white.withOpacity(0.4),
+                          Colors.white.withOpacity(0),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(borderRadius),
+                        topRight: Radius.circular(borderRadius),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return PopScope(
@@ -1012,55 +1073,46 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
                                                                   userNameSpacing,
                                                             ),
                                                             // User name
-                                                            Container(
-                                                              padding:
-                                                                  EdgeInsets.symmetric(
-                                                                    horizontal:
-                                                                        isMobile
-                                                                        ? 6.0
-                                                                        : 8.0,
-                                                                    vertical:
-                                                                        isMobile
-                                                                        ? 6.0
-                                                                        : 8.0,
-                                                                  ),
-                                                              decoration: BoxDecoration(
-                                                                color: isWinner
-                                                                    ? const Color(
-                                                                        0xFF2D2D44,
-                                                                      )
-                                                                    : (isLoser
-                                                                          ? const Color(
-                                                                              0xFF2D2D44,
-                                                                            )
-                                                                          : (isCurrentUser
-                                                                                ? const Color(
-                                                                                    0xFF6C5CE7,
-                                                                                  )
-                                                                                : const Color(0xFF3D3D5C))),
-                                                                borderRadius:
-                                                                    BorderRadius.circular(
-                                                                      12,
-                                                                    ),
-                                                                border: Border.all(
-                                                                  color:
-                                                                      isWinner
-                                                                      ? const Color(
-                                                                          0xFF4CAF50,
+                                                            _buildGlossyCard(
+                                                              borderRadius: 12,
+                                                              backgroundColor: isWinner
+                                                                  ? const Color(0xFF2D2D44).withOpacity(0.6)
+                                                                  : (isLoser
+                                                                      ? const Color(0xFF2D2D44).withOpacity(0.6)
+                                                                      : (isCurrentUser
+                                                                          ? const Color(0xFF6366F1).withOpacity(0.7)
+                                                                          : Colors.white.withOpacity(0.3))),
+                                                              border: isCurrentUser && !isWinner && !isLoser
+                                                                  ? Border.all(
+                                                                      color: Colors.white,
+                                                                      width: 2,
+                                                                    )
+                                                                  : (isWinner
+                                                                      ? Border.all(
+                                                                          color: const Color(0xFF4CAF50).withOpacity(0.8),
+                                                                          width: 1.5,
                                                                         )
                                                                       : (isLoser
-                                                                            ? const Color(
-                                                                                0xFFEF5350,
-                                                                              )
-                                                                            : (isCurrentUser &&
-                                                                                      !isWinner &&
-                                                                                      !isLoser
-                                                                                  ? Colors.white
-                                                                                  : Colors.transparent)),
-                                                                  width: 2,
+                                                                          ? Border.all(
+                                                                              color: const Color(0xFFEF5350).withOpacity(0.8),
+                                                                              width: 1.5,
+                                                                            )
+                                                                          : Border.all(
+                                                                              color: Colors.white.withOpacity(0.6),
+                                                                              width: 1,
+                                                                            ))),
+                                                              child: Padding(
+                                                                padding: EdgeInsets.symmetric(
+                                                                  horizontal:
+                                                                      isMobile
+                                                                      ? 6.0
+                                                                      : 8.0,
+                                                                  vertical:
+                                                                      isMobile
+                                                                      ? 6.0
+                                                                      : 8.0,
                                                                 ),
-                                                              ),
-                                                              child: Row(
+                                                                child: Row(
                                                                 mainAxisSize:
                                                                     MainAxisSize
                                                                         .min,
@@ -1075,8 +1127,8 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
                                                                           color:
                                                                               (isWinner ||
                                                                                   isLoser)
-                                                                              ? Colors.white70
-                                                                              : Colors.white,
+                                                                              ? const Color(0xFF1F2937)
+                                                                              : const Color(0xFF111827),
                                                                           fontSize:
                                                                               isMobile
                                                                               ? math.max(
@@ -1149,7 +1201,8 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
                                                                             : 16.0,
                                                                       ),
                                                                     ),
-                                                                ],
+                                                                  ],
+                                                                ),
                                                               ),
                                                             ),
                                                           ],
@@ -1706,57 +1759,49 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
                                                                   userNameSpacing,
                                                             ),
                                                             // User name
-                                                            Container(
-                                                              constraints:
-                                                                  BoxConstraints(
-                                                                    maxHeight:
-                                                                        userNameHeight -
-                                                                        (userNamePadding *
-                                                                            2),
-                                                                  ),
-                                                              padding: EdgeInsets.symmetric(
-                                                                horizontal:
-                                                                    userNamePadding,
-                                                                vertical:
-                                                                    userNamePadding,
-                                                              ),
-                                                              decoration: BoxDecoration(
-                                                                color: isWinner
-                                                                    ? const Color(
-                                                                        0xFF2D2D44,
-                                                                      )
-                                                                    : (isLoser
-                                                                          ? const Color(
-                                                                              0xFF2D2D44,
-                                                                            )
-                                                                          : (isCurrentUser
-                                                                                ? const Color(
-                                                                                    0xFF6C5CE7,
-                                                                                  )
-                                                                                : const Color(0xFF3D3D5C))),
-                                                                borderRadius:
-                                                                    BorderRadius.circular(
-                                                                      12,
-                                                                    ),
-                                                                border: Border.all(
-                                                                  color:
-                                                                      isWinner
-                                                                      ? const Color(
-                                                                          0xFF4CAF50,
+                                                            _buildGlossyCard(
+                                                              borderRadius: 12,
+                                                              backgroundColor: isWinner
+                                                                  ? const Color(0xFF2D2D44).withOpacity(0.6)
+                                                                  : (isLoser
+                                                                      ? const Color(0xFF2D2D44).withOpacity(0.6)
+                                                                      : (isCurrentUser
+                                                                          ? const Color(0xFF6366F1).withOpacity(0.7)
+                                                                          : Colors.white.withOpacity(0.3))),
+                                                              border: isCurrentUser && !isWinner && !isLoser
+                                                                  ? Border.all(
+                                                                      color: Colors.white,
+                                                                      width: 2,
+                                                                    )
+                                                                  : (isWinner
+                                                                      ? Border.all(
+                                                                          color: const Color(0xFF4CAF50).withOpacity(0.8),
+                                                                          width: 1.5,
                                                                         )
                                                                       : (isLoser
-                                                                            ? const Color(
-                                                                                0xFFEF5350,
-                                                                              )
-                                                                            : (isCurrentUser &&
-                                                                                      !isWinner &&
-                                                                                      !isLoser
-                                                                                  ? Colors.white
-                                                                                  : Colors.transparent)),
-                                                                  width: 2,
+                                                                          ? Border.all(
+                                                                              color: const Color(0xFFEF5350).withOpacity(0.8),
+                                                                              width: 1.5,
+                                                                            )
+                                                                          : Border.all(
+                                                                              color: Colors.white.withOpacity(0.6),
+                                                                              width: 1,
+                                                                            ))),
+                                                              child: Container(
+                                                                constraints:
+                                                                    BoxConstraints(
+                                                                      maxHeight:
+                                                                          userNameHeight -
+                                                                          (userNamePadding *
+                                                                              2),
+                                                                    ),
+                                                                padding: EdgeInsets.symmetric(
+                                                                  horizontal:
+                                                                      userNamePadding,
+                                                                  vertical:
+                                                                      userNamePadding,
                                                                 ),
-                                                              ),
-                                                              child: Row(
+                                                                child: Row(
                                                                 mainAxisSize:
                                                                     MainAxisSize
                                                                         .min,
@@ -1771,8 +1816,8 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
                                                                           color:
                                                                               (isWinner ||
                                                                                   isLoser)
-                                                                              ? Colors.white70
-                                                                              : Colors.white,
+                                                                              ? const Color(0xFF1F2937)
+                                                                              : const Color(0xFF111827),
                                                                           fontSize:
                                                                               isMobile
                                                                               ? math.max(
@@ -1845,7 +1890,8 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
                                                                             : 16.0,
                                                                       ),
                                                                     ),
-                                                                ],
+                                                                  ],
+                                                                ),
                                                               ),
                                                             ),
                                                           ],

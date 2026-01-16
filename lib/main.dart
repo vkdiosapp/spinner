@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'l10n/app_localizations.dart';
 import 'home_page.dart';
 import 'sound_vibration_settings.dart';
@@ -9,12 +10,19 @@ import 'language_settings.dart';
 import 'language_selection_page.dart';
 import 'app_localizations_helper.dart';
 import 'app_theme.dart';
+import 'firebase_remote_config_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SoundVibrationSettings.initialize();
   await LanguageSettings.initialize();
   await AppTheme.initialize();
+  
+  // Initialize Firebase
+  await Firebase.initializeApp();
+  
+  // Initialize Firebase Remote Config
+  await FirebaseRemoteConfigService.initialize();
   
   // Initialize AdMob
   await MobileAds.instance.initialize();

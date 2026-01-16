@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'ad_manager.dart';
@@ -7,17 +6,9 @@ import 'sound_vibration_settings.dart';
 /// Helper class for managing AdMob banner ads
 class AdHelper {
   /// Get the appropriate banner ad unit ID based on platform
+  /// Returns empty string if no ad ID is configured (no ads will be shown)
   static String getBannerAdUnitId() {
-    if (AdManager.useTestAds) {
-      return AdManager.testBannerAdId;
-    }
-    
-    if (Platform.isAndroid) {
-      return AdManager.androidBannerAdId;
-    } else if (Platform.isIOS) {
-      return AdManager.iosBannerAdId;
-    }
-    return AdManager.testBannerAdId; // Default to test ad
+    return AdManager.getBannerAdId();
   }
 }
 
@@ -48,8 +39,16 @@ class _BannerAdWidgetState extends State<BannerAdWidget> {
       return;
     }
 
+    final adUnitId = AdHelper.getBannerAdUnitId();
+    
+    // Don't load ad if ad ID is empty (not configured in Remote Config)
+    if (adUnitId.isEmpty) {
+      debugPrint('Banner ad ID is empty, skipping ad load');
+      return;
+    }
+
     _bannerAd = BannerAd(
-      adUnitId: AdHelper.getBannerAdUnitId(),
+      adUnitId: adUnitId,
       size: AdSize.banner,
       request: const AdRequest(),
       listener: BannerAdListener(
@@ -124,13 +123,15 @@ class InterstitialAdHelper {
       return;
     }
 
-    _isLoading = true;
+    final adUnitId = AdManager.getInterstitialAdId();
+    
+    // Don't load ad if ad ID is empty (not configured in Remote Config)
+    if (adUnitId.isEmpty) {
+      debugPrint('Interstitial ad ID is empty, skipping ad load');
+      return;
+    }
 
-    final adUnitId = AdManager.useTestAds
-        ? AdManager.testInterstitialAdId
-        : (Platform.isAndroid
-            ? AdManager.testAndroidInterstitialAdId // TODO: Replace with actual Android interstitial ID when available
-            : AdManager.testIosInterstitialAdId); // TODO: Replace with actual iOS interstitial ID when available
+    _isLoading = true;
 
     await InterstitialAd.load(
       adUnitId: adUnitId,
@@ -268,13 +269,15 @@ class RewardedAdHelper {
       return;
     }
 
-    _isLoading = true;
+    final adUnitId = AdManager.getRewardedAdId();
+    
+    // Don't load ad if ad ID is empty (not configured in Remote Config)
+    if (adUnitId.isEmpty) {
+      debugPrint('Rewarded ad ID is empty, skipping ad load');
+      return;
+    }
 
-    final adUnitId = AdManager.useTestAds
-        ? AdManager.testRewardedAdId
-        : (Platform.isAndroid
-            ? AdManager.testAndroidRewardedAdId // TODO: Replace with actual Android rewarded ID when available
-            : AdManager.testIosRewardedAdId); // TODO: Replace with actual iOS rewarded ID when available
+    _isLoading = true;
 
     await RewardedAd.load(
       adUnitId: adUnitId,
@@ -387,7 +390,13 @@ class _NativeAdWidgetState extends State<NativeAdWidget> {
       return;
     }
 
-    final adUnitId = AdHelper.getBannerAdUnitId();
+    final adUnitId = AdManager.getNativeAdId();
+    
+    // Don't load ad if ad ID is empty (not configured in Remote Config)
+    if (adUnitId.isEmpty) {
+      debugPrint('Native ad ID is empty, skipping ad load');
+      return;
+    }
 
     _bannerAd = BannerAd(
       adUnitId: adUnitId,
@@ -453,3 +462,113 @@ class _NativeAdWidgetState extends State<NativeAdWidget> {
   }
 }
 
+/// App Open Ad Helper
+/// 
+/// Manages loading and showing app open ads
+/// App Open Ads are shown when the app is opened or comes to the foreground
+class AppOpenAdHelper {
+  static AppOpenAd? _appOpenAd;
+  static bool _isLoading = false;
+  static bool _isShowingAd = false;
+
+  /// Load an app open ad
+  static Future<void> loadAppOpenAd() async {
+    // Don't load if ads are disabled
+    if (!SoundVibrationSettings.adsEnabled) {
+      return;
+    }
+
+    // Don't load if already loading or loaded
+    if (_isLoading || _appOpenAd != null) {
+      return;
+    }
+
+    final adUnitId = AdManager.getAppOpenAdId();
+    
+    // Don't load ad if ad ID is empty (not configured in Remote Config)
+    if (adUnitId.isEmpty) {
+      debugPrint('App Open ad ID is empty, skipping ad load');
+      return;
+    }
+
+    _isLoading = true;
+
+    await AppOpenAd.load(
+      adUnitId: adUnitId,
+      request: const AdRequest(),
+      adLoadCallback: AppOpenAdLoadCallback(
+        onAdLoaded: (ad) {
+          _appOpenAd = ad;
+          _isLoading = false;
+          debugPrint('App Open ad loaded');
+        },
+        onAdFailedToLoad: (error) {
+          debugPrint('App Open ad failed to load: $error');
+          _isLoading = false;
+          _appOpenAd = null;
+        },
+      ),
+    );
+  }
+
+  /// Show app open ad
+  /// Returns true if ad was shown, false if ad was not available
+  static Future<bool> showAppOpenAd() async {
+    // Don't show if ads are disabled
+    if (!SoundVibrationSettings.adsEnabled) {
+      return false;
+    }
+
+    // Don't show if already showing an ad
+    if (_isShowingAd) {
+      return false;
+    }
+
+    // If ad is not loaded, try to load it first
+    if (_appOpenAd == null) {
+      await loadAppOpenAd();
+      // Wait a bit for ad to load
+      await Future.delayed(const Duration(milliseconds: 500));
+    }
+
+    // If still no ad, return false
+    if (_appOpenAd == null) {
+      return false;
+    }
+
+    _isShowingAd = true;
+
+    // Show the ad
+    _appOpenAd!.fullScreenContentCallback = FullScreenContentCallback(
+      onAdDismissedFullScreenContent: (ad) {
+        ad.dispose();
+        _appOpenAd = null;
+        _isShowingAd = false;
+        // Load next ad for future use
+        loadAppOpenAd();
+        debugPrint('App Open ad dismissed');
+      },
+      onAdFailedToShowFullScreenContent: (ad, error) {
+        debugPrint('App Open ad failed to show: $error');
+        ad.dispose();
+        _appOpenAd = null;
+        _isShowingAd = false;
+        // Load next ad for future use
+        loadAppOpenAd();
+      },
+      onAdShowedFullScreenContent: (ad) {
+        debugPrint('App Open ad showed');
+      },
+    );
+
+    await _appOpenAd!.show();
+    return true;
+  }
+
+  /// Dispose the current app open ad
+  static void dispose() {
+    _appOpenAd?.dispose();
+    _appOpenAd = null;
+    _isShowingAd = false;
+  }
+}

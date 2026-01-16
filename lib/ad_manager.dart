@@ -1,84 +1,124 @@
+import 'dart:io';
+import 'firebase_remote_config_service.dart';
+
 /// AdMob Ad Manager
 ///
-/// Replace the placeholder values below with your actual AdMob Ad Unit IDs
-/// You can find your Ad Unit IDs in the AdMob dashboard:
-/// https://apps.admob.com -> Select your app -> Ad units
+/// Ad IDs are now fetched dynamically from Firebase Remote Config.
+/// If no ad ID is found in Remote Config, an empty string is returned
+/// and no ads will be shown.
 class AdManager {
-  /// Your AdMob App ID (required for both Android and iOS)
-  /// Replace 'YOUR_ADMOB_APP_ID' with your actual App ID from AdMob dashboard
-  /// Format: ca-app-pub-XXXXXXXXXXXXXXXX/XXXXXXXXXX
-  static const String appId = 'YOUR_ADMOB_APP_ID';
-
-  /// Android Banner Ad Unit ID
-  /// Replace 'YOUR_ANDROID_BANNER_AD_ID' with your actual Android Banner Ad Unit ID
-  /// Format: ca-app-pub-XXXXXXXXXXXXXXXX/XXXXXXXXXX
-  static const String androidBannerAdId = 'YOUR_ANDROID_BANNER_AD_ID';
-
-  /// iOS Banner Ad Unit ID
-  /// Replace 'YOUR_IOS_BANNER_AD_ID' with your actual iOS Banner Ad Unit ID
-  /// Format: ca-app-pub-XXXXXXXXXXXXXXXX/XXXXXXXXXX
-  static const String iosBannerAdId = 'YOUR_IOS_BANNER_AD_ID';
-
-  /// Get the appropriate banner ad ID based on platform
-  static String getBannerAdId() {
-    // This will be determined at runtime based on the platform
-    // For now, return Android ID as default (will be overridden in ad_helper)
-    return androidBannerAdId;
+  /// Get Android Banner Ad Unit ID from Firebase Remote Config
+  /// Returns empty string if not found (no ads will be shown)
+  static String getAndroidBannerAdId() {
+    return FirebaseRemoteConfigService.getAdId('android_banner_ad_id');
   }
 
-  /// Test Ad Unit IDs (for testing - use these during development)
-  /// These are Google's official test ad IDs that always return test ads
-  /// Remove these in production and use your actual Ad Unit IDs above
+  /// Get iOS Banner Ad Unit ID from Firebase Remote Config
+  /// Returns empty string if not found (no ads will be shown)
+  static String getIosBannerAdId() {
+    return FirebaseRemoteConfigService.getAdId('ios_banner_ad_id');
+  }
 
-  /// Android Test Ad Unit IDs
-  static const String testAndroidBannerAdId =
-      'ca-app-pub-3940256099942544/6300978111';
-  static const String testAndroidInterstitialAdId =
-      'ca-app-pub-3940256099942544/1033173712';
-  static const String testAndroidRewardedAdId =
-      'ca-app-pub-3940256099942544/5224354917';
-  static const String testAndroidRewardedInterstitialAdId =
-      'ca-app-pub-3940256099942544/5354046379';
-  static const String testAndroidAppOpenAdId =
-      'ca-app-pub-3940256099942544/3419835294';
-  static const String testAndroidNativeAdId =
-      'ca-app-pub-3940256099942544/2247696110';
+  /// Get Android Interstitial Ad Unit ID from Firebase Remote Config
+  /// Returns empty string if not found (no ads will be shown)
+  static String getAndroidInterstitialAdId() {
+    return FirebaseRemoteConfigService.getAdId('android_interstitial_ad_id');
+  }
 
-  /// iOS Test Ad Unit IDs
-  static const String testIosBannerAdId =
-      'ca-app-pub-3940256099942544/2934735716';
-  static const String testIosInterstitialAdId =
-      'ca-app-pub-3940256099942544/4411468910';
-  static const String testIosRewardedAdId =
-      'ca-app-pub-3940256099942544/1712485313';
-  static const String testIosRewardedInterstitialAdId =
-      'ca-app-pub-3940256099942544/6978759866';
-  static const String testIosAppOpenAdId =
-      'ca-app-pub-3940256099942544/5662855259';
-  static const String testIosNativeAdId =
-      'ca-app-pub-3940256099942544/3986624511';
+  /// Get iOS Interstitial Ad Unit ID from Firebase Remote Config
+  /// Returns empty string if not found (no ads will be shown)
+  static String getIosInterstitialAdId() {
+    return FirebaseRemoteConfigService.getAdId('ios_interstitial_ad_id');
+  }
 
-  /// Universal Test Ad Unit IDs (work on both platforms)
-  static const String testBannerAdId = 'ca-app-pub-3940256099942544/6300978111';
-  static const String testInterstitialAdId =
-      'ca-app-pub-3940256099942544/1033173712';
-  static const String testRewardedAdId =
-      'ca-app-pub-3940256099942544/5224354917';
-  static const String testRewardedInterstitialAdId =
-      'ca-app-pub-3940256099942544/5354046379';
-  static const String testAppOpenAdId =
-      'ca-app-pub-3940256099942544/3419835294';
-  static const String testNativeAdId = 'ca-app-pub-3940256099942544/2247696110';
+  /// Get Android Native Ad Unit ID from Firebase Remote Config
+  /// Returns empty string if not found (no ads will be shown)
+  static String getAndroidNativeAdId() {
+    return FirebaseRemoteConfigService.getAdId('android_native_ad_id');
+  }
 
-  /// Test App ID (for testing - use this during development)
-  static const String testAppId = 'ca-app-pub-3940256099942544~3347511713';
+  /// Get iOS Native Ad Unit ID from Firebase Remote Config
+  /// Returns empty string if not found (no ads will be shown)
+  static String getIosNativeAdId() {
+    return FirebaseRemoteConfigService.getAdId('ios_native_ad_id');
+  }
 
-  /// Use test ads during development (set to false when using real ads)
-  static const bool useTestAds = true; // Set to false when using real ads
+  /// Get Android Rewarded Ad Unit ID from Firebase Remote Config
+  /// Returns empty string if not found (no ads will be shown)
+  static String getAndroidRewardedAdId() {
+    return FirebaseRemoteConfigService.getAdId('android_rewarded_ad_id');
+  }
 
-  /// Get test banner ad ID based on platform
-  static String getTestBannerAdId() {
-    // For testing, you can use platform-specific test IDs or the universal one
-    return testBannerAdId; // Universal test banner ad ID
+  /// Get iOS Rewarded Ad Unit ID from Firebase Remote Config
+  /// Returns empty string if not found (no ads will be shown)
+  static String getIosRewardedAdId() {
+    return FirebaseRemoteConfigService.getAdId('ios_rewarded_ad_id');
+  }
+
+  /// Get Android App Open Ad Unit ID from Firebase Remote Config
+  /// Returns empty string if not found (no ads will be shown)
+  static String getAndroidAppOpenAdId() {
+    return FirebaseRemoteConfigService.getAdId('android_app_open_ad_id');
+  }
+
+  /// Get iOS App Open Ad Unit ID from Firebase Remote Config
+  /// Returns empty string if not found (no ads will be shown)
+  static String getIosAppOpenAdId() {
+    return FirebaseRemoteConfigService.getAdId('ios_app_open_ad_id');
+  }
+
+  /// Get the appropriate banner ad ID based on platform
+  /// Returns empty string if not found (no ads will be shown)
+  static String getBannerAdId() {
+    if (Platform.isAndroid) {
+      return getAndroidBannerAdId();
+    } else if (Platform.isIOS) {
+      return getIosBannerAdId();
+    }
+    return ''; // Default to empty (no ads)
+  }
+
+  /// Get the appropriate interstitial ad ID based on platform
+  /// Returns empty string if not found (no ads will be shown)
+  static String getInterstitialAdId() {
+    if (Platform.isAndroid) {
+      return getAndroidInterstitialAdId();
+    } else if (Platform.isIOS) {
+      return getIosInterstitialAdId();
+    }
+    return ''; // Default to empty (no ads)
+  }
+
+  /// Get the appropriate native ad ID based on platform
+  /// Returns empty string if not found (no ads will be shown)
+  static String getNativeAdId() {
+    if (Platform.isAndroid) {
+      return getAndroidNativeAdId();
+    } else if (Platform.isIOS) {
+      return getIosNativeAdId();
+    }
+    return ''; // Default to empty (no ads)
+  }
+
+  /// Get the appropriate rewarded ad ID based on platform
+  /// Returns empty string if not found (no ads will be shown)
+  static String getRewardedAdId() {
+    if (Platform.isAndroid) {
+      return getAndroidRewardedAdId();
+    } else if (Platform.isIOS) {
+      return getIosRewardedAdId();
+    }
+    return ''; // Default to empty (no ads)
+  }
+
+  /// Get the appropriate app open ad ID based on platform
+  /// Returns empty string if not found (no ads will be shown)
+  static String getAppOpenAdId() {
+    if (Platform.isAndroid) {
+      return getAndroidAppOpenAdId();
+    } else if (Platform.isIOS) {
+      return getIosAppOpenAdId();
+    }
+    return ''; // Default to empty (no ads)
   }
 }

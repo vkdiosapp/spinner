@@ -31,10 +31,29 @@ class SubscriptionService {
 
   /// Initialize the subscription service
   static Future<void> initialize() async {
-    if (_isInitialized) return;
+    if (_isInitialized) {
+      debugPrint('⚠️ SubscriptionService already initialized. Available: $_isAvailable');
+      return;
+    }
 
     try {
+      debugPrint('🔍 Checking if In-App Purchase is available...');
       _isAvailable = await _inAppPurchase.isAvailable();
+      debugPrint('📱 In-App Purchase Available: $_isAvailable');
+
+      if (!_isAvailable) {
+        debugPrint('');
+        debugPrint('❌ EXACT REASON PLANS NOT SHOWING: In-App Purchase is NOT available');
+        debugPrint('');
+        debugPrint('POSSIBLE CAUSES:');
+        debugPrint('1. ⚠️ Running on iOS Simulator (IAP NOT supported - use REAL device)');
+        debugPrint('2. ⚠️ In-App Purchases disabled in device Settings → Screen Time → Content & Privacy Restrictions');
+        debugPrint('3. ⚠️ StoreKit not available on this device');
+        debugPrint('4. ⚠️ App not properly signed with provisioning profile');
+        debugPrint('');
+        debugPrint('✅ SOLUTION: Test on REAL iOS device (not simulator)');
+        debugPrint('');
+      }
 
       if (_isAvailable) {
         // Load subscription status from local storage
@@ -55,9 +74,10 @@ class SubscriptionService {
       }
 
       _isInitialized = true;
-      debugPrint('Subscription service initialized. Available: $_isAvailable');
+      debugPrint('✅ Subscription service initialized. Available: $_isAvailable');
     } catch (e) {
-      debugPrint('Error initializing subscription service: $e');
+      debugPrint('❌ Error initializing subscription service: $e');
+      debugPrint('⚠️ This error may prevent plans from loading');
       _isInitialized = true;
     }
   }
@@ -204,7 +224,13 @@ class SubscriptionService {
   /// Get available products with retry logic
   static Future<List<ProductDetails>> getProducts({int maxRetries = 3}) async {
     if (!_isAvailable) {
-      debugPrint('In-app purchase not available on this device');
+      debugPrint('');
+      debugPrint('❌ EXACT REASON PLANS NOT SHOWING: In-App Purchase is NOT available');
+      debugPrint('   _isAvailable = false');
+      debugPrint('');
+      debugPrint('This means _inAppPurchase.isAvailable() returned false during initialization.');
+      debugPrint('Check the initialization logs above for details.');
+      debugPrint('');
       return [];
     }
 

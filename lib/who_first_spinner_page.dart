@@ -784,7 +784,7 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
                               ],
                             ).createShader(bounds),
                             child: const Text(
-                              'Who First',
+                              'Race to 10',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 20,

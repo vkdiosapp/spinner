@@ -17,6 +17,10 @@ class SubscriptionService {
   static const String monthlyProductId = 'monthly_purchase';
   static const String yearlyProductId = 'yearly_purchase';
   static const String lifetimeProductId = 'lifetime_purchase';
+  
+  // Additional non-consumable product IDs - Add your new IAP product ID here
+  // Example: static const String additionalProductId = 'your_product_id_here';
+  // Then add it to the getAllProductIds() method below
 
   static final InAppPurchase _inAppPurchase = InAppPurchase.instance;
   static StreamSubscription<List<PurchaseDetails>>? _subscription;
@@ -221,8 +225,21 @@ class SubscriptionService {
     debugPrint('Purchase failed: ${purchase.error}');
   }
 
-  /// Get available products with retry logic
-  static Future<List<ProductDetails>> getProducts({int maxRetries = 3}) async {
+  /// Get all product IDs to query
+  /// Add your new non-consumable product ID here
+  static Set<String> getAllProductIds() {
+    final productIds = {
+      monthlyProductId,
+      yearlyProductId,
+      lifetimeProductId,
+      // Add additional non-consumable product IDs here:
+      // 'your_new_product_id_here',
+    };
+    return productIds;
+  }
+
+  /// Get available products
+  static Future<List<ProductDetails>> getProducts() async {
     if (!_isAvailable) {
       debugPrint('');
       debugPrint('❌ EXACT REASON PLANS NOT SHOWING: In-App Purchase is NOT available');
@@ -234,151 +251,48 @@ class SubscriptionService {
       return [];
     }
 
-    final productIds = {monthlyProductId, yearlyProductId, lifetimeProductId};
+    // Get all product IDs including any additional non-consumables
+    final productIds = getAllProductIds();
     debugPrint('Fetching products: $productIds');
 
-    // Retry logic with exponential backoff - reduced retries and faster timeouts
-    for (int attempt = 1; attempt <= maxRetries; attempt++) {
-      try {
-        debugPrint('Attempt $attempt of $maxRetries to fetch products...');
-
-        // Reduced timeout - StoreKit should respond quickly or not at all
-        final response = await _inAppPurchase
-            .queryProductDetails(productIds)
-            .timeout(
-              const Duration(seconds: 15), // Reduced from 60 to 15 seconds
-              onTimeout: () {
-                throw TimeoutException(
-                  'Product query timed out after 15 seconds',
-                  const Duration(seconds: 15),
-                );
-              },
-            );
-
-        if (response.error != null) {
-          final error = response.error!;
-          debugPrint(
-            'Error fetching products: ${error.code} - ${error.message}',
+    try {
+      // Single attempt - no retries
+      final response = await _inAppPurchase
+          .queryProductDetails(productIds)
+          .timeout(
+            const Duration(seconds: 30),
+            onTimeout: () {
+              throw TimeoutException(
+                'Product query timed out after 30 seconds',
+                const Duration(seconds: 30),
+              );
+            },
           );
-          debugPrint('Error details: ${error.details}');
-          debugPrint('Error source: ${error.source}');
 
-          // Handle storekit_no_response specifically
-          if (error.code == 'storekit_no_response') {
-            debugPrint('⚠️ StoreKit Error: storekit_no_response');
-            debugPrint('StoreKit cannot connect to App Store Connect.');
-            debugPrint('');
-            debugPrint('REQUIREMENTS for App Store Connect:');
-            debugPrint('1. ✅ Test on REAL device (iOS Simulator does NOT support IAP)');
-            debugPrint('2. ✅ Products must exist in App Store Connect');
-            debugPrint('   - Product IDs: monthly_purchase, yearly_purchase, lifetime_purchase');
-            debugPrint('   - Products must be in "Ready to Submit" or "Approved" status');
-            debugPrint('3. ✅ Sign out of real Apple ID (use sandbox test account)');
-            debugPrint('4. ✅ Check internet connection');
-            debugPrint('5. ✅ App must be signed with correct provisioning profile');
-            debugPrint('6. ✅ Bundle ID must match: com.vkd.spinner.game');
-            debugPrint('');
-            
-            // For storekit_no_response, don't retry too many times
-            // It usually means simulator or App Store Connect connection issue
-            if (attempt >= 2) {
-              debugPrint('⚠️ StoreKit not responding. Likely causes:');
-              debugPrint('   - Running on iOS Simulator (IAP not supported - use REAL device)');
-              debugPrint('   - Products not configured in App Store Connect');
-              debugPrint('   - Network/App Store Connect connection issue');
-              debugPrint('   - Products not in "Ready to Submit" status');
-              return [];
-            }
-
-            // Quick retry with short delay
-            final delay = Duration(seconds: 2);
-            debugPrint('Quick retry in ${delay.inSeconds} seconds...');
-            await Future.delayed(delay);
-            continue;
-          } else if (error.code == 'storekit_product_not_available' ||
-              error.code == 'storekit_cloud_service_permission_denied') {
-            debugPrint('StoreKit Error: ${error.code}');
-            debugPrint('Bundle ID: com.vkd.spinner.game');
-            debugPrint('Expected Product IDs: $productIds');
-            debugPrint('');
-            debugPrint('REQUIREMENTS:');
-            debugPrint('1. Products must exist in App Store Connect');
-            debugPrint('2. Product IDs must match exactly: $productIds');
-            debugPrint('3. Products must be in "Ready to Submit" status');
-            debugPrint('4. Testing on REAL device (not simulator)');
-            debugPrint('5. Signed out of real Apple ID (use sandbox account)');
-            
-            if (attempt == maxRetries) {
-              debugPrint('All $maxRetries retry attempts failed.');
-              return [];
-            }
-
-            final delay = Duration(seconds: attempt * 2);
-            debugPrint('Retrying in ${delay.inSeconds} seconds...');
-            await Future.delayed(delay);
-            continue;
-          } else {
-            // For other errors, don't retry
-            debugPrint('Non-retryable error: ${error.code}');
-            return [];
-          }
-        }
-
-        if (response.productDetails.isEmpty) {
-          debugPrint(
-            'Warning: No products returned. Check product IDs in App Store Connect.',
-          );
-          debugPrint('Expected IDs: $productIds');
-
-          if (attempt == maxRetries) {
-            return [];
-          }
-
-          final delay = Duration(seconds: attempt * 2);
-          debugPrint('Retrying in ${delay.inSeconds} seconds...');
-          await Future.delayed(delay);
-          continue;
-        }
-
-        debugPrint(
-          '✅ Successfully fetched ${response.productDetails.length} products',
-        );
-        for (final product in response.productDetails) {
-          debugPrint(
-            'Product: ${product.id} - ${product.title} - ${product.price}',
-          );
-        }
-
-        return response.productDetails;
-      } on TimeoutException catch (e) {
-        debugPrint('⏱️ Timeout getting products (attempt $attempt): $e');
-        
-        // Timeout usually means StoreKit isn't responding
-        if (attempt >= 2) {
-          debugPrint('⚠️ StoreKit timeout - cannot connect to App Store Connect');
-          debugPrint('   Fix: Run on REAL device (not simulator)');
-          debugPrint('   Verify products exist in App Store Connect and are "Ready to Submit"');
-          return [];
-        }
-
-        final delay = Duration(seconds: 2);
-        debugPrint('Quick retry in ${delay.inSeconds} seconds...');
-        await Future.delayed(delay);
-      } catch (e) {
-        debugPrint('Exception getting products (attempt $attempt): $e');
-
-        if (attempt == maxRetries) {
-          debugPrint('⚠️ All retry attempts failed');
-          return [];
-        }
-
-        final delay = Duration(seconds: attempt * 2);
-        debugPrint('Retrying in ${delay.inSeconds} seconds...');
-        await Future.delayed(delay);
+      if (response.error != null) {
+        final error = response.error!;
+        debugPrint('Error fetching products: ${error.code} - ${error.message}');
+        return [];
       }
-    }
 
-    return [];
+      if (response.productDetails.isEmpty) {
+        debugPrint('No products returned from App Store Connect');
+        return [];
+      }
+
+      debugPrint('✅ Successfully fetched ${response.productDetails.length} products');
+      for (final product in response.productDetails) {
+        debugPrint('   ✓ Product ID: ${product.id} - ${product.title} - ${product.price}');
+      }
+
+      return response.productDetails;
+    } on TimeoutException catch (e) {
+      debugPrint('⏱️ Timeout getting products: $e');
+      return [];
+    } catch (e) {
+      debugPrint('Exception getting products: $e');
+      return [];
+    }
   }
 
   /// Purchase a product

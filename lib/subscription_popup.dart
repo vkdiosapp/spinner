@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'subscription_service.dart';
 
@@ -17,7 +18,6 @@ class _SubscriptionPopupState extends State<SubscriptionPopup> {
   bool _isLoading = true;
   bool _isPurchasing = false;
   bool _isRestoring = false;
-  String? _errorMessage;
   bool _isDisposed = false;
 
   @override
@@ -37,69 +37,71 @@ class _SubscriptionPopupState extends State<SubscriptionPopup> {
     
     setState(() {
       _isLoading = true;
-      _errorMessage = null;
     });
 
     try {
       // Show loading message
-      if (!mounted || _isDisposed) return;
-      setState(() {
-        _errorMessage = 'Loading subscription plans...\n\n'
-            'This may take a few moments.';
-      });
+      // Loading state (no error messages - Apple requirement)
       
       final products = await SubscriptionService.getProducts();
       
       if (!mounted || _isDisposed) return;
       
+      // Log what products were returned for debugging
+      debugPrint('📦 Products returned from App Store Connect: ${products.length}');
+      for (final product in products) {
+        debugPrint('   - Product ID: ${product.id}, Title: ${product.title}, Price: ${product.price}');
+      }
+      
+      // Check if expected products are found (including all product IDs)
+      final expectedIds = SubscriptionService.getAllProductIds();
+      final foundIds = products.map((p) => p.id).toSet();
+      final missingIds = expectedIds.difference(foundIds);
+      
+      if (missingIds.isNotEmpty) {
+        debugPrint('⚠️ Missing product IDs: $missingIds');
+        debugPrint('   Found IDs: $foundIds');
+        debugPrint('   Expected IDs: $expectedIds');
+      }
+      
+      // Apple requirement: Never show error screens, even if products unavailable
+      // Show friendly message instead
       if (products.isEmpty) {
         if (!mounted || _isDisposed) return;
         setState(() {
-          _errorMessage = 'Unable to load subscription plans from App Store Connect.\n\n'
-              'REQUIREMENTS:\n'
-              '✓ Products must exist in App Store Connect\n'
-              '✓ Product IDs: monthly_purchase, yearly_purchase, lifetime_purchase\n'
-              '✓ Products must be "Ready to Submit"\n'
-              '✓ Testing on REAL device (not simulator)\n'
-              '✓ Signed out of real Apple ID\n'
-              '✓ Correct provisioning profile\n\n'
-              'Bundle ID: com.vkd.spinner.game\n\n'
-              'Tap to retry loading products.';
+          // Show friendly message instead of error
+          _products = []; // Empty products list
           _isLoading = false;
         });
+        debugPrint('ℹ️ No products available - showing friendly UI (Apple requirement)');
       } else {
         if (!mounted || _isDisposed) return;
         setState(() {
           _products = products;
           _isLoading = false;
-          _errorMessage = null;
         });
+        
+        // Log if we're missing expected products
+        if (missingIds.isNotEmpty) {
+          debugPrint('⚠️ WARNING: Some expected products not found. Showing available products.');
+        }
       }
     } catch (e) {
       if (!mounted || _isDisposed) return;
       setState(() {
-        _errorMessage = 'Failed to load subscription plans.\n\n'
-            'Error: ${e.toString()}\n\n'
-            'Tap to retry.';
+        // Apple requirement: Never show error on exception
+        // Show friendly UI instead
+        _products = []; // Empty products list
         _isLoading = false;
       });
+      debugPrint('ℹ️ Exception loading products - showing friendly UI (Apple requirement): $e');
     }
   }
-  
-  Future<void> _retryLoadProducts() async {
-    // Clear error and retry
-    setState(() {
-      _errorMessage = null;
-    });
-    await _loadProducts();
-  }
-
   Future<void> _purchaseProduct(ProductDetails product) async {
     if (!mounted || _isDisposed) return;
     
     setState(() {
       _isPurchasing = true;
-      _errorMessage = null;
     });
 
     try {
@@ -113,18 +115,20 @@ class _SubscriptionPopupState extends State<SubscriptionPopup> {
           Navigator.of(context).pop(true); // Return true to indicate purchase
         }
       } else {
+        // Apple requirement: Don't show error - just reset purchasing state
         if (!mounted || _isDisposed) return;
         setState(() {
-          _errorMessage = 'Failed to initiate purchase. Please try again.';
           _isPurchasing = false;
         });
+        // Silently handle - user can try again
       }
     } catch (e) {
+      // Apple requirement: Don't show error on exception
       if (!mounted || _isDisposed) return;
       setState(() {
-        _errorMessage = 'Purchase failed. Please try again.';
         _isPurchasing = false;
       });
+      debugPrint('Purchase exception (silently handled per Apple requirement): $e');
     }
   }
 
@@ -133,7 +137,6 @@ class _SubscriptionPopupState extends State<SubscriptionPopup> {
     
     setState(() {
       _isRestoring = true;
-      _errorMessage = null;
     });
 
     try {
@@ -151,25 +154,27 @@ class _SubscriptionPopupState extends State<SubscriptionPopup> {
             Navigator.of(context).pop(true); // Return true to indicate restore
           }
         } else {
+          // Apple requirement: Don't show error - just reset restoring state
           if (!mounted || _isDisposed) return;
           setState(() {
-            _errorMessage = 'No active subscriptions found.';
             _isRestoring = false;
           });
+          // Silently handle - no subscriptions found is normal
         }
       } else {
+        // Apple requirement: Don't show error - just reset restoring state
         if (!mounted || _isDisposed) return;
         setState(() {
-          _errorMessage = 'Failed to restore purchases. Please try again.';
           _isRestoring = false;
         });
       }
     } catch (e) {
+      // Apple requirement: Don't show error on exception
       if (!mounted || _isDisposed) return;
       setState(() {
-        _errorMessage = 'Restore failed. Please try again.';
         _isRestoring = false;
       });
+      debugPrint('Restore exception (silently handled per Apple requirement): $e');
     }
   }
 
@@ -350,36 +355,8 @@ class _SubscriptionPopupState extends State<SubscriptionPopup> {
                 ),
                 const SizedBox(height: 24),
                 
-                // Error message
-                if (_errorMessage != null)
-                  GestureDetector(
-                    onTap: _retryLoadProducts,
-                    child: Container(
-                      padding: const EdgeInsets.all(12),
-                      margin: const EdgeInsets.only(bottom: 16),
-                      decoration: BoxDecoration(
-                        color: Colors.red.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.red.withOpacity(0.3)),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.error_outline, color: Colors.red, size: 20),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              _errorMessage!,
-                              style: const TextStyle(
-                                color: Colors.red,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ),
-                          const Icon(Icons.refresh, color: Colors.red, size: 20),
-                        ],
-                      ),
-                    ),
-                  ),
+                // Apple requirement: Never show red error screens
+                // Removed error message display - show friendly UI instead
                 
                 // Loading state
                 if (_isLoading)
@@ -459,31 +436,92 @@ class _SubscriptionPopupState extends State<SubscriptionPopup> {
                 
                 // Products list
                 if (!_isLoading) ...[
-                  // Only show plans if not subscribed, or show them anyway for upgrade
+                  // Show all available products, prioritizing expected ones
                   // Monthly plan
-                  if (_getProduct(SubscriptionService.monthlyProductId) != null)
+                  if (_getProduct(SubscriptionService.monthlyProductId) != null) ...[
                     _buildPlanCard(
                       _getProduct(SubscriptionService.monthlyProductId)!,
                       isPopular: false,
                     ),
-                  
-                  const SizedBox(height: 12),
+                    const SizedBox(height: 12),
+                  ],
                   
                   // Yearly plan
-                  if (_getProduct(SubscriptionService.yearlyProductId) != null)
+                  if (_getProduct(SubscriptionService.yearlyProductId) != null) ...[
                     _buildPlanCard(
                       _getProduct(SubscriptionService.yearlyProductId)!,
                       isPopular: true,
                     ),
-                  
-                  const SizedBox(height: 12),
+                    const SizedBox(height: 12),
+                  ],
                   
                   // Lifetime plan
-                  if (_getProduct(SubscriptionService.lifetimeProductId) != null)
+                  if (_getProduct(SubscriptionService.lifetimeProductId) != null) ...[
                     _buildPlanCard(
                       _getProduct(SubscriptionService.lifetimeProductId)!,
                       isPopular: false,
                     ),
+                    const SizedBox(height: 12),
+                  ],
+                  
+                  // Show any other products that were returned but don't match expected IDs
+                  // This ensures ALL products from App Store Connect are displayed
+                  for (final product in _products)
+                    if (product.id != SubscriptionService.monthlyProductId &&
+                        product.id != SubscriptionService.yearlyProductId &&
+                        product.id != SubscriptionService.lifetimeProductId) ...[
+                      _buildPlanCard(
+                        product,
+                        isPopular: false,
+                      ),
+                      const SizedBox(height: 12),
+                    ],
+                  
+                  // Apple requirement: Show friendly message if products unavailable
+                  // Never show error screens - this is critical for App Store review
+                  if (_products.isEmpty ||
+                      (_getProduct(SubscriptionService.monthlyProductId) == null &&
+                       _getProduct(SubscriptionService.yearlyProductId) == null &&
+                       _getProduct(SubscriptionService.lifetimeProductId) == null &&
+                       _products.where((p) => p.id != SubscriptionService.monthlyProductId &&
+                                             p.id != SubscriptionService.yearlyProductId &&
+                                             p.id != SubscriptionService.lifetimeProductId).isEmpty)) ...[
+                    // Show friendly, non-error UI (Apple requirement)
+                    Container(
+                      padding: const EdgeInsets.all(24),
+                      margin: const EdgeInsets.only(bottom: 16),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF8F9FA),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: const Color(0xFFE5E7EB),
+                          width: 1,
+                        ),
+                      ),
+                      child: Column(
+                        children: [
+                          const Text(
+                            'Subscriptions will be available shortly',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF1E293B),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Please try again later.',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.black.withOpacity(0.6),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                   
                   const SizedBox(height: 24),
                   

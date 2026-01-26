@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -44,7 +45,7 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
@@ -54,13 +55,25 @@ class _MyAppState extends State<MyApp> {
     LanguageSettings.localeNotifier.addListener(_onLocaleChanged);
     // Listen to theme changes and rebuild app
     AppTheme.themeNotifier.addListener(_onThemeChanged);
+    // Listen to app lifecycle changes
+    WidgetsBinding.instance.addObserver(this);
   }
   
   @override
   void dispose() {
     LanguageSettings.localeNotifier.removeListener(_onLocaleChanged);
     AppTheme.themeNotifier.removeListener(_onThemeChanged);
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    // When app comes to foreground, fetch fresh ad IDs from Firebase
+    if (state == AppLifecycleState.resumed) {
+      FirebaseRemoteConfigService.fetchFreshValues();
+    }
   }
   
   void _onLocaleChanged() {

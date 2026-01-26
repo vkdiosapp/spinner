@@ -783,9 +783,9 @@ class _WhoFirstSpinnerPageState extends State<WhoFirstSpinnerPage>
                                 Color.fromARGB(255, 136, 16, 248),
                               ],
                             ).createShader(bounds),
-                            child: const Text(
-                              'Race to 10',
-                              style: TextStyle(
+                            child: Text(
+                              AppLocalizationsHelper.of(context).whoFirst,
+                              style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 20,
                                 fontWeight: FontWeight.w800,

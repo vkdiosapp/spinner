@@ -799,11 +799,11 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
                     ],
                   ),
                 ),
-                // Main content with native ad
+                // Main content with banner ad
                 Expanded(
                   child: Column(
                     children: [
-                      // Spinner content - 80% of screen
+                      // Spinner content
                       Expanded(
                         flex: 8,
                         child: LayoutBuilder(
@@ -1308,14 +1308,8 @@ class _MathSpinnerPageState extends State<MathSpinnerPage>
                           },
                         ),
                       ),
-                      // Native Ad at bottom - 20% of screen
-                      Expanded(
-                        flex: 2,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: const NativeAdWidget(),
-                        ),
-                      ),
+                      // Banner Ad at bottom
+                      const BannerAdWidget(),
                     ],
                   ),
                 ),

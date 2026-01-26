@@ -4,9 +4,14 @@ import 'firebase_remote_config_service.dart';
 /// AdMob Ad Manager
 ///
 /// Ad IDs are now fetched dynamically from Firebase Remote Config.
-/// If no ad ID is found in Remote Config, an empty string is returned
-/// and no ads will be shown.
+/// If no ad ID is found in Remote Config, static fallback IDs are used for iOS.
 class AdManager {
+  // Static fallback ad IDs for iOS (used only if Remote Config doesn't provide an ID)
+  static const String _iosBannerAdIdFallback = 'ca-app-pub-9475071886046004/3205559202';
+  static const String _iosInterstitialAdIdFallback = 'ca-app-pub-9475071886046004/3078895684';
+  static const String _iosRewardedAdIdFallback = 'ca-app-pub-9475071886046004/4680408503';
+  static const String _iosAppOpenAdIdFallback = 'ca-app-pub-9475071886046004/6177323006';
+  static const String _iosNativeAdIdFallback = 'ca-app-pub-9475071886046004/6209112598';
   /// Get Android Banner Ad Unit ID from Firebase Remote Config
   /// Returns empty string if not found (no ads will be shown)
   static String getAndroidBannerAdId() {
@@ -14,9 +19,10 @@ class AdManager {
   }
 
   /// Get iOS Banner Ad Unit ID from Firebase Remote Config
-  /// Returns empty string if not found (no ads will be shown)
+  /// Falls back to static ID if Remote Config doesn't provide one
   static String getIosBannerAdId() {
-    return FirebaseRemoteConfigService.getAdId('ios_banner_ad_id');
+    final remoteConfigId = FirebaseRemoteConfigService.getAdId('ios_banner_ad_id');
+    return remoteConfigId.isEmpty ? _iosBannerAdIdFallback : remoteConfigId;
   }
 
   /// Get Android Interstitial Ad Unit ID from Firebase Remote Config
@@ -26,9 +32,10 @@ class AdManager {
   }
 
   /// Get iOS Interstitial Ad Unit ID from Firebase Remote Config
-  /// Returns empty string if not found (no ads will be shown)
+  /// Falls back to static ID if Remote Config doesn't provide one
   static String getIosInterstitialAdId() {
-    return FirebaseRemoteConfigService.getAdId('ios_interstitial_ad_id');
+    final remoteConfigId = FirebaseRemoteConfigService.getAdId('ios_interstitial_ad_id');
+    return remoteConfigId.isEmpty ? _iosInterstitialAdIdFallback : remoteConfigId;
   }
 
   /// Get Android Native Ad Unit ID from Firebase Remote Config
@@ -38,9 +45,10 @@ class AdManager {
   }
 
   /// Get iOS Native Ad Unit ID from Firebase Remote Config
-  /// Returns empty string if not found (no ads will be shown)
+  /// Falls back to static ID if Remote Config doesn't provide one
   static String getIosNativeAdId() {
-    return FirebaseRemoteConfigService.getAdId('ios_native_ad_id');
+    final remoteConfigId = FirebaseRemoteConfigService.getAdId('ios_native_ad_id');
+    return remoteConfigId.isEmpty ? _iosNativeAdIdFallback : remoteConfigId;
   }
 
   /// Get Android Rewarded Ad Unit ID from Firebase Remote Config
@@ -50,9 +58,10 @@ class AdManager {
   }
 
   /// Get iOS Rewarded Ad Unit ID from Firebase Remote Config
-  /// Returns empty string if not found (no ads will be shown)
+  /// Falls back to static ID if Remote Config doesn't provide one
   static String getIosRewardedAdId() {
-    return FirebaseRemoteConfigService.getAdId('ios_rewarded_ad_id');
+    final remoteConfigId = FirebaseRemoteConfigService.getAdId('ios_rewarded_ad_id');
+    return remoteConfigId.isEmpty ? _iosRewardedAdIdFallback : remoteConfigId;
   }
 
   /// Get Android App Open Ad Unit ID from Firebase Remote Config
@@ -62,9 +71,10 @@ class AdManager {
   }
 
   /// Get iOS App Open Ad Unit ID from Firebase Remote Config
-  /// Returns empty string if not found (no ads will be shown)
+  /// Falls back to static ID if Remote Config doesn't provide one
   static String getIosAppOpenAdId() {
-    return FirebaseRemoteConfigService.getAdId('ios_app_open_ad_id');
+    final remoteConfigId = FirebaseRemoteConfigService.getAdId('ios_app_open_ad_id');
+    return remoteConfigId.isEmpty ? _iosAppOpenAdIdFallback : remoteConfigId;
   }
 
   /// Get the appropriate banner ad ID based on platform

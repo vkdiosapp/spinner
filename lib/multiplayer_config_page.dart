@@ -277,14 +277,14 @@ class _MultiplayerConfigPageState extends State<MultiplayerConfigPage> {
                 child: IgnorePointer(
                   child: Container(
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Colors.white.withOpacity(0.4),
-                          Colors.white.withOpacity(0),
-                        ],
-                      ),
+                      // gradient: LinearGradient(
+                      //   begin: Alignment.topCenter,
+                      //   end: Alignment.bottomCenter,
+                      //   colors: [
+                      //     Colors.white.withOpacity(0.4),
+                      //     Colors.white.withOpacity(0),
+                      //   ],
+                      // ),
                       borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(borderRadius),
                         topRight: Radius.circular(borderRadius),
